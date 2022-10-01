@@ -42,17 +42,21 @@ CreateThread(function()
                             isTakingKeys = true
 
                             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 1)
-                            QBCore.Functions.Progressbar("steal_keys", Lang:t("progress.takekeys"), 2500, false, false, {
-                                disableMovement = false,
-                                disableCarMovement = true,
-                                disableMouse = false,
-                                disableCombat = true
-                            }, {}, {}, {}, function() -- Done
+                            if lib.progressCircle({
+                                duration = 2500,
+                                label = Lang:t("progress.takekeys"),
+                                position = 'bottom',
+                                useWhileDead = false,
+                                canCancel = true,
+                                disable = {
+                                    car = true,
+                                },
+                            }) then
                                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
                                 isTakingKeys = false
-                            end, function()
+                            else
                                 isTakingKeys = false
-                            end)
+                            end
                         end
                     elseif Config.LockNPCDrivingCars then
                         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 2)
@@ -214,7 +218,17 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
                 end
             end
         else
-            QBCore.Functions.Notify(Lang:t("notify.ydhk"), 'error')
+            lib.notify({
+                id = 'notify_ydhk',
+                description = Lang:t("notify.ydhk"),
+                position = 'top-right',
+                style = {
+                    backgroundColor = '#141517',
+                    color = '#909296'
+                },
+                icon = 'xmark',
+                iconColor = '#C53030'
+            })
         end
     end
 end)
@@ -239,7 +253,17 @@ function GiveKeys(id, plate)
     if distance < 1.5 and distance > 0.0 then
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
     else
-        QBCore.Functions.Notify(Lang:t("notify.nonear"),'error')
+        lib.notify({
+            id = 'notify_nonear',
+            description = Lang:t("notify.nonear"),
+            position = 'top-right',
+            style = {
+                backgroundColor = '#141517',
+                color = '#909296'
+            },
+            icon = 'xmark',
+            iconColor = '#C53030'
+        })
     end
 end
 
@@ -328,10 +352,30 @@ function ToggleVehicleLocks(veh)
                 NetworkRequestControlOfEntity(veh)
                 if vehLockStatus == 1 then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
-                    QBCore.Functions.Notify(Lang:t("notify.vlock"), "primary")
+                    lib.notify({
+                        id = 'notify_vlock',
+                        description = Lang:t("notify.vlock"),
+                        position = 'top-right',
+                        style = {
+                            backgroundColor = '#141517',
+                            color = '#909296'
+                        },
+                        icon = 'circle-info',
+                        iconColor = '#2980B9'
+                    })
                 else
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
-                    QBCore.Functions.Notify(Lang:t("notify.vunlock"), "success")
+                    lib.notify({
+                        id = 'notify_vunlock',
+                        description = Lang:t("notify.vunlock"),
+                        position = 'top-right',
+                        style = {
+                            backgroundColor = '#141517',
+                            color = '#909296'
+                        },
+                        icon = 'circle-info',
+                        iconColor = '#2980B9'
+                    })
                 end
 
                 SetVehicleLights(veh, 2)
@@ -342,7 +386,17 @@ function ToggleVehicleLocks(veh)
                 Wait(300)
                 ClearPedTasks(ped)
             else
-                QBCore.Functions.Notify(Lang:t("notify.ydhk"), 'error')
+                lib.notify({
+                    id = 'notify_ydhk2',
+                    description = Lang:t("notify.ydhk"),
+                    position = 'top-right',
+                    style = {
+                        backgroundColor = '#141517',
+                        color = '#909296'
+                    },
+                    icon = 'xmark',
+                    iconColor = '#C53030'
+                })
             end
         else
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
@@ -409,7 +463,17 @@ function LockpickFinishCallback(success)
         if GetPedInVehicleSeat(vehicle, -1) == PlayerPedId() then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', QBCore.Functions.GetPlate(vehicle))
         else
-            QBCore.Functions.Notify(Lang:t("notify.vlockpick"), 'success')
+            lib.notify({
+                id = 'notify_vlockpick',
+                description = Lang:t("notify.vlockpick"),
+                position = 'top-right',
+                style = {
+                    backgroundColor = '#141517',
+                    color = '#909296'
+                },
+                icon = 'check',
+                iconColor = '#27AE60'
+            })
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
         end
 
@@ -436,29 +500,40 @@ function Hotwire(vehicle, plate)
 
     SetVehicleAlarm(vehicle, true)
     SetVehicleAlarmTimeLeft(vehicle, hotwireTime)
-    QBCore.Functions.Progressbar("hotwire_vehicle", Lang:t("progress.hskeys"), hotwireTime, false, true, {
-        disableMovement = true,
-        disableCarMovement = true,
-        disableMouse = false,
-        disableCombat = true
-    }, {
-        animDict = "anim@amb@clubhouse@tutorial@bkr_tut_ig3@",
-        anim = "machinic_loop_mechandplayer",
-        flags = 16
-    }, {}, {}, function() -- Done
+    if lib.progressCircle({
+        duration = hotwireTime,
+        label = Lang:t("progress.hskeys"),
+        position = 'bottom',
+        useWhileDead = false,
+        canCancel = true,
+        anim = {
+            dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@',
+            clip = 'machinic_loop_mechandplayer'
+        },
+    }) then
         StopAnimTask(ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         if (math.random() <= Config.HotwireChance) then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
-            QBCore.Functions.Notify(Lang:t("notify.fvlockpick"), "error")
+            lib.notify({
+                id = 'notify_fvlockpick',
+                description = Lang:t("notify.fvlockpick"),
+                position = 'top-right',
+                style = {
+                    backgroundColor = '#141517',
+                    color = '#909296'
+                },
+                icon = 'xmark',
+                iconColor = '#C0392B'
+            })
         end
         Wait(Config.TimeBetweenHotwires)
         IsHotwiring = false
-    end, function() -- Cancel
+    else
         StopAnimTask(ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
         IsHotwiring = false
-    end)
+    end
     SetTimeout(10000, function()
         AttemptPoliceAlert("steal")
     end)
@@ -485,12 +560,22 @@ function CarjackVehicle(target)
         while isCarjacking do
             local distance = #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(target))
             if IsPedDeadOrDying(target) or distance > 7.5 then
-                TriggerEvent("progressbar:client:cancel")
+                lib.cancelProgress()
             end
             Wait(100)
         end
     end)
-    QBCore.Functions.Progressbar("rob_keys", Lang:t("progress.acjack"), Config.CarjackingTime, false, true, {}, {}, {}, {}, function()
+    
+    if lib.progressCircle({
+        duration = Config.CarjackingTime,
+        label = Lang:t("progress.acjack"),
+        position = 'bottom',
+        useWhileDead = false,
+        canCancel = true,
+        disable = {
+            car = true,
+        },
+    }) then
         local hasWeapon, weaponHash = GetCurrentPedWeapon(PlayerPedId(), true)
         if hasWeapon and isCarjacking then
             local carjackChance
@@ -515,7 +600,17 @@ function CarjackVehicle(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
-                QBCore.Functions.Notify(Lang:t("notify.cjackfail"), "error")
+                lib.notify({
+                    id = 'notify_cjackfail',
+                    description = Lang:t("notify.cjackfail"),
+                    position = 'top-right',
+                    style = {
+                        backgroundColor = '#141517',
+                        color = '#909296'
+                    },
+                    icon = 'xmark',
+                    iconColor = '#C0392B'
+                })
                 MakePedFlee(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             end
@@ -525,12 +620,12 @@ function CarjackVehicle(target)
             Wait(Config.DelayBetweenCarjackings)
             canCarjack = true
         end
-    end, function()
+    else
         MakePedFlee(target)
         isCarjacking = false
         Wait(Config.DelayBetweenCarjackings)
         canCarjack = true
-    end)
+    end
 end
 
 function AttemptPoliceAlert(type)

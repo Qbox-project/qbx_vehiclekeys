@@ -18,7 +18,17 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     local giver = source
 
     if HasKeys(giver, plate) then
-        TriggerClientEvent('QBCore:Notify', giver, Lang:t("notify.vgkeys"), 'success')
+        TriggerClientEvent('ox_lib:notify', giver, {
+            id = 'give_car_keys',
+            description = Lang:t("notify.vgkeys"),
+            duration = 5000,
+            style = {
+                backgroundColor = '#141517',
+                color = '#ffffff'
+            },
+            icon = 'check',
+            iconColor = '#27AE60'
+        })
         if type(receiver) == 'table' then
             for _,r in ipairs(receiver) do
                 GiveKeys(receiver[r], plate)
@@ -27,7 +37,17 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
             GiveKeys(receiver, plate)
         end
     else
-        TriggerClientEvent('QBCore:Notify', giver, Lang:t("notify.ydhk"), "error")
+        TriggerClientEvent('ox_lib:notify', giver, {
+            id = 'server_no_keys',
+            description = Lang:t("notify.ydhk"),
+            duration = 5000,
+            style = {
+                backgroundColor = '#141517',
+                color = '#ffffff'
+            },
+            icon = 'xmark',
+            iconColor = '#C0392B'
+        })
     end
 end)
 
@@ -70,7 +90,17 @@ function GiveKeys(id, plate)
     if not VehicleList[plate] then VehicleList[plate] = {} end
     VehicleList[plate][citizenid] = true
     
-    TriggerClientEvent('QBCore:Notify', id, Lang:t("notify.vgetkeys"))
+    TriggerClientEvent('ox_lib:notify', id, {
+        id = 'server_id_get_keys',
+        description = Lang:t("notify.vgetkeys"),
+        duration = 5000,
+        style = {
+            backgroundColor = '#141517',
+            color = '#ffffff'
+        },
+        icon = 'circle-info',
+        iconColor = '#2980B9'
+    })
     TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
 end
 
@@ -100,7 +130,17 @@ end)
 QBCore.Commands.Add("addkeys", Lang:t("addcom.addkeys"), {{name = Lang:t("addcom.addkeys_id"), help = Lang:t("addcom.addkeys_id_help")}, {name = Lang:t("addcom.addkeys_plate"), help = Lang:t("addcom.addkeys_plate_help")}}, true, function(source, args)
 	local src = source
     if not args[1] or not args[2] then
-        TriggerClientEvent('QBCore:Notify', src, Lang:t("notify.fpid"))
+        TriggerClientEvent('ox_lib:notify', src, {
+            id = 'server_notify_fpid',
+            description = Lang:t("notify.fpid"),
+            duration = 5000,
+            style = {
+                backgroundColor = '#141517',
+                color = '#ffffff'
+            },
+            icon = 'xmark',
+            iconColor = '#C0392B'
+        })
         return
     end
     GiveKeys(tonumber(args[1]), args[2])
@@ -109,7 +149,17 @@ end, 'admin')
 QBCore.Commands.Add("removekeys", Lang:t("addcom.rkeys"), {{name = Lang:t("addcom.rkeys_id"), help = Lang:t("addcom.rkeys_id_help")}, {name = Lang:t("addcom.rkeys_plate"), help = Lang:t("addcom.rkeys_plate_help")}}, true, function(source, args)
 	local src = source
     if not args[1] or not args[2] then
-        TriggerClientEvent('QBCore:Notify', src, Lang:t("notify.fpid"))
+        TriggerClientEvent('ox_lib:notify', src, {
+            id = 'server_notify_fpid',
+            description = Lang:t("notify.fpid"),
+            duration = 5000,
+            style = {
+                backgroundColor = '#141517',
+                color = '#ffffff'
+            },
+            icon = 'xmark',
+            iconColor = '#C0392B'
+        })
         return
     end
     RemoveKeys(tonumber(args[1]), args[2])
