@@ -4,26 +4,26 @@ Translation done by wanderrer (Martin Riggs#0807 on Discord)
 ]]--
 local Translations = {
     notify = {
-        ydhk = 'Nu ai cheile acestui vehicul.',
-        nonear = 'Nu este nimeni langa tine sa-i dai cheile vehiculului',
-        vlock = 'Vehicul blocat - Alarma activa!',
-        vunlock = 'Vehicul deblocat - Alarma inactiva!',
-        vlockpick = 'Felicitari, ai reusit sa spargi incuietoarea!',
-        fvlockpick = 'Nu ai putut clona cheile masinii si te stresezi.',
-        vgkeys = 'Ai dat cheile vehiculului.',
-        vgetkeys = 'Ai primit cheile vehiculului!',
+        no_keys = 'Nu ai cheile acestui vehicul.',
+        not_near = 'Nu este nimeni langa tine sa-i dai cheile vehiculului',
+        vehicle_locked = 'Vehicul blocat - Alarma activa!',
+        vehicle_unlocked = 'Vehicul deblocat - Alarma inactiva!',
+        vehicle_lockedpick = 'Felicitari, ai reusit sa spargi incuietoarea!',
+        failed_lockedpick = 'Nu ai putut clona cheile masinii si te stresezi.',
+        gave_keys = 'Ai dat cheile vehiculului.',
+        keys_taken = 'Ai primit cheile vehiculului!',
         fpid = 'Trebuie sa introduci ID-ul jucatorului si numarul de inmatriculare',
-        cjackfail = 'Furtul de mașină a eșuat',
+        carjack_failed = 'Furtul de mașină a eșuat',
     },
     progress = {
         takekeys = 'Iei chile de la vehicul...',
-        hskeys = 'Clonezi cheile vehiculului...',
-        acjack = 'Incerci sa fur vehiculul...',
+        searching_keys = 'Clonezi cheile vehiculului...',
+        attempting_carjack = 'Incerci sa fur vehiculul...',
     },
     info = {
         skeys = '~g~[H]~w~ - Cloneaza cheile',
-        tlock = 'Blocheaza/Deblocheaza vehiculul',
-        palert = 'Furt auto in desfasurare. Tip: ',
+        toggle_locks = 'Blocheaza/Deblocheaza vehiculul',
+        vehicle_theft = 'Furt auto in desfasurare. Tip: ',
         engine = 'Porneste/Opreste motorul',
     },
     addcom = {
@@ -35,11 +35,11 @@ local Translations = {
         addkeys_id_help = 'ID-ul jucatorului',
         addkeys_plate = 'numar',
         addkeys_plate_help = 'Numarul de inmatriculare al vehiculului',
-        rkeys = 'Anulezi setul de chei aditional, pentru o persoana.',
-        rkeys_id = 'ID',
-        rkeys_id_help = 'ID-ul jucatorului',
-        rkeys_plate = 'numar',
-        rkeys_plate_help = 'Numarul de inmatriculare al vehiculului',
+        remove_keys = 'Anulezi setul de chei aditional, pentru o persoana.',
+        remove_keys_id = 'ID',
+        remove_keys_id_help = 'ID-ul jucatorului',
+        remove_keys_plate = 'numar',
+        remove_keys_plate_help = 'Numarul de inmatriculare al vehiculului',
     }
 
 }

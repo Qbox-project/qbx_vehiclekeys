@@ -92,7 +92,7 @@ CreateThread(function()
                     sleep = 0
 
                     local vehiclePos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0, 1.0, 0.5)
-                    DrawText3D(vehiclePos.x, vehiclePos.y, vehiclePos.z, Lang:t("info.skeys"))
+                    DrawText3D(vehiclePos.x, vehiclePos.y, vehiclePos.z, Lang:t("info.search_keys"))
                     SetVehicleEngineOn(vehicle, false, false, true)
 
                     if IsControlJustPressed(0, 74) then
@@ -143,7 +143,7 @@ end
 ---- Client Events ----
 -----------------------
 
-RegisterKeyMapping('togglelocks', Lang:t("info.tlock"), 'keyboard', 'L')
+RegisterKeyMapping('togglelocks', Lang:t("info.toggle_locks"), 'keyboard', 'L')
 RegisterCommand('togglelocks', function()
     ToggleVehicleLocks(GetVehicle())
 end)
@@ -219,8 +219,8 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
             end
         else
             lib.notify({
-                id = 'notify_ydhk',
-                description = Lang:t("notify.ydhk"),
+                id = 'notify_no_keys',
+                description = Lang:t("notify.no_keys"),
                 position = 'top-right',
                 style = {
                     backgroundColor = '#141517',
@@ -254,8 +254,8 @@ function GiveKeys(id, plate)
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
     else
         lib.notify({
-            id = 'notify_nonear',
-            description = Lang:t("notify.nonear"),
+            id = 'notify_not_near',
+            description = Lang:t("notify.not_near"),
             position = 'top-right',
             style = {
                 backgroundColor = '#141517',
@@ -353,8 +353,8 @@ function ToggleVehicleLocks(veh)
                 if vehLockStatus == 1 then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
                     lib.notify({
-                        id = 'notify_vlock',
-                        description = Lang:t("notify.vlock"),
+                        id = 'notify_vehicle_locked',
+                        description = Lang:t("notify.vehicle_locked"),
                         position = 'top-right',
                         style = {
                             backgroundColor = '#141517',
@@ -366,8 +366,8 @@ function ToggleVehicleLocks(veh)
                 else
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
                     lib.notify({
-                        id = 'notify_vunlock',
-                        description = Lang:t("notify.vunlock"),
+                        id = 'notify_vehicle_unlocked',
+                        description = Lang:t("notify.vehicle_unlocked"),
                         position = 'top-right',
                         style = {
                             backgroundColor = '#141517',
@@ -387,8 +387,8 @@ function ToggleVehicleLocks(veh)
                 ClearPedTasks(ped)
             else
                 lib.notify({
-                    id = 'notify_ydhk2',
-                    description = Lang:t("notify.ydhk"),
+                    id = 'notify_no_keys2',
+                    description = Lang:t("notify.no_keys"),
                     position = 'top-right',
                     style = {
                         backgroundColor = '#141517',
@@ -464,8 +464,8 @@ function LockpickFinishCallback(success)
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', QBCore.Functions.GetPlate(vehicle))
         else
             lib.notify({
-                id = 'notify_vlockpick',
-                description = Lang:t("notify.vlockpick"),
+                id = 'notify_vehicle_lockedpick',
+                description = Lang:t("notify.vehicle_lockedpick"),
                 position = 'top-right',
                 style = {
                     backgroundColor = '#141517',
@@ -502,7 +502,7 @@ function Hotwire(vehicle, plate)
     SetVehicleAlarmTimeLeft(vehicle, hotwireTime)
     if lib.progressCircle({
         duration = hotwireTime,
-        label = Lang:t("progress.hskeys"),
+        label = Lang:t("progress.searching_keys"),
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
@@ -517,8 +517,8 @@ function Hotwire(vehicle, plate)
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
             lib.notify({
-                id = 'notify_fvlockpick',
-                description = Lang:t("notify.fvlockpick"),
+                id = 'notify_failed_lockedpick',
+                description = Lang:t("notify.failed_lockedpick"),
                 position = 'top-right',
                 style = {
                     backgroundColor = '#141517',
@@ -568,7 +568,7 @@ function CarjackVehicle(target)
     
     if lib.progressCircle({
         duration = Config.CarjackingTime,
-        label = Lang:t("progress.acjack"),
+        label = Lang:t("progress.attempting_carjack"),
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
@@ -601,8 +601,8 @@ function CarjackVehicle(target)
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
                 lib.notify({
-                    id = 'notify_cjackfail',
-                    description = Lang:t("notify.cjackfail"),
+                    id = 'notify_carjack_failed',
+                    description = Lang:t("notify.carjack_failed"),
                     position = 'top-right',
                     style = {
                         backgroundColor = '#141517',
@@ -635,7 +635,7 @@ function AttemptPoliceAlert(type)
             chance = Config.PoliceNightAlertChance
         end
         if math.random() <= chance then
-           TriggerServerEvent('police:server:policeAlert', Lang:t("info.palert") .. type)
+           TriggerServerEvent('police:server:policeAlert', Lang:t("info.vehicle_theft") .. type)
         end
         AlertSend = true
         SetTimeout(Config.AlertCooldown, function()
