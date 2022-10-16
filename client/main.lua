@@ -218,17 +218,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
                 end
             end
         else
-            lib.notify({
-                id = 'notify_no_keys',
-                description = Lang:t("notify.no_keys"),
-                position = 'top-right',
-                style = {
-                    backgroundColor = '#141517',
-                    color = '#909296'
-                },
-                icon = 'xmark',
-                iconColor = '#C53030'
-            })
+            lib.notify({ description = Lang:t("notify.no_keys"), type = 'error' })
         end
     end
 end)
@@ -253,17 +243,7 @@ function GiveKeys(id, plate)
     if distance < 1.5 and distance > 0.0 then
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
     else
-        lib.notify({
-            id = 'notify_not_near',
-            description = Lang:t("notify.not_near"),
-            position = 'top-right',
-            style = {
-                backgroundColor = '#141517',
-                color = '#909296'
-            },
-            icon = 'xmark',
-            iconColor = '#C53030'
-        })
+        lib.notify({ description = Lang:t("notify.not_near"), type = 'error' })
     end
 end
 
@@ -352,30 +332,10 @@ function ToggleVehicleLocks(veh)
                 NetworkRequestControlOfEntity(veh)
                 if vehLockStatus == 1 then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
-                    lib.notify({
-                        id = 'notify_vehicle_locked',
-                        description = Lang:t("notify.vehicle_locked"),
-                        position = 'top-right',
-                        style = {
-                            backgroundColor = '#141517',
-                            color = '#909296'
-                        },
-                        icon = 'circle-info',
-                        iconColor = '#2980B9'
-                    })
+                    lib.notify({ description = Lang:t("notify.vehicle_locked"), type = 'inform' })
                 else
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
-                    lib.notify({
-                        id = 'notify_vehicle_unlocked',
-                        description = Lang:t("notify.vehicle_unlocked"),
-                        position = 'top-right',
-                        style = {
-                            backgroundColor = '#141517',
-                            color = '#909296'
-                        },
-                        icon = 'circle-info',
-                        iconColor = '#2980B9'
-                    })
+                    lib.notify({ description = Lang:t("notify.vehicle_unlocked"), type = 'inform' })
                 end
 
                 SetVehicleLights(veh, 2)
@@ -386,17 +346,7 @@ function ToggleVehicleLocks(veh)
                 Wait(300)
                 ClearPedTasks(ped)
             else
-                lib.notify({
-                    id = 'notify_no_keys2',
-                    description = Lang:t("notify.no_keys"),
-                    position = 'top-right',
-                    style = {
-                        backgroundColor = '#141517',
-                        color = '#909296'
-                    },
-                    icon = 'xmark',
-                    iconColor = '#C53030'
-                })
+                lib.notify({ description = Lang:t("notify.no_keys"), type = 'error' })
             end
         else
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
@@ -463,17 +413,7 @@ function LockpickFinishCallback(success)
         if GetPedInVehicleSeat(vehicle, -1) == PlayerPedId() then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', QBCore.Functions.GetPlate(vehicle))
         else
-            lib.notify({
-                id = 'notify_vehicle_lockedpick',
-                description = Lang:t("notify.vehicle_lockedpick"),
-                position = 'top-right',
-                style = {
-                    backgroundColor = '#141517',
-                    color = '#909296'
-                },
-                icon = 'check',
-                iconColor = '#27AE60'
-            })
+            lib.notify({ description = Lang:t("notify.vehicle_lockedpick"), type = 'success' })
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
         end
 
@@ -516,17 +456,7 @@ function Hotwire(vehicle, plate)
         if (math.random() <= Config.HotwireChance) then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
-            lib.notify({
-                id = 'notify_failed_lockedpick',
-                description = Lang:t("notify.failed_lockedpick"),
-                position = 'top-right',
-                style = {
-                    backgroundColor = '#141517',
-                    color = '#909296'
-                },
-                icon = 'xmark',
-                iconColor = '#C0392B'
-            })
+            lib.notify({ description = Lang:t("notify.failed_lockedpick"), type = 'error' })
         end
         Wait(Config.TimeBetweenHotwires)
         IsHotwiring = false
@@ -600,17 +530,7 @@ function CarjackVehicle(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
-                lib.notify({
-                    id = 'notify_carjack_failed',
-                    description = Lang:t("notify.carjack_failed"),
-                    position = 'top-right',
-                    style = {
-                        backgroundColor = '#141517',
-                        color = '#909296'
-                    },
-                    icon = 'xmark',
-                    iconColor = '#C0392B'
-                })
+                lib.notify({ description = Lang:t("notify.carjack_failed"), type = 'error' })
                 MakePedFlee(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             end
