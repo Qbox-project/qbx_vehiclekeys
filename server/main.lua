@@ -20,7 +20,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     if HasKeys(giver, plate) then
         TriggerClientEvent('ox_lib:notify', giver, {
             id = 'give_car_keys',
-            description = Lang:t("notify.vgkeys"),
+            description = Lang:t("notify.gave_keys"),
             duration = 5000,
             style = {
                 backgroundColor = '#141517',
@@ -39,7 +39,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     else
         TriggerClientEvent('ox_lib:notify', giver, {
             id = 'server_no_keys',
-            description = Lang:t("notify.ydhk"),
+            description = Lang:t("notify.no_keys"),
             duration = 5000,
             style = {
                 backgroundColor = '#141517',
@@ -92,7 +92,7 @@ function GiveKeys(id, plate)
     
     TriggerClientEvent('ox_lib:notify', id, {
         id = 'server_id_get_keys',
-        description = Lang:t("notify.vgetkeys"),
+        description = Lang:t("notify.keys_taken"),
         duration = 5000,
         style = {
             backgroundColor = '#141517',
@@ -146,7 +146,7 @@ QBCore.Commands.Add("addkeys", Lang:t("addcom.addkeys"), {{name = Lang:t("addcom
     GiveKeys(tonumber(args[1]), args[2])
 end, 'admin')
 
-QBCore.Commands.Add("removekeys", Lang:t("addcom.rkeys"), {{name = Lang:t("addcom.rkeys_id"), help = Lang:t("addcom.rkeys_id_help")}, {name = Lang:t("addcom.rkeys_plate"), help = Lang:t("addcom.rkeys_plate_help")}}, true, function(source, args)
+QBCore.Commands.Add("removekeys", Lang:t("addcom.remove_keys"), {{name = Lang:t("addcom.remove_keys_id"), help = Lang:t("addcom.remove_keys_id_help")}, {name = Lang:t("addcom.remove_keys_plate"), help = Lang:t("addcom.remove_keys_plate_help")}}, true, function(source, args)
 	local src = source
     if not args[1] or not args[2] then
         TriggerClientEvent('ox_lib:notify', src, {

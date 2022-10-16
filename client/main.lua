@@ -92,7 +92,7 @@ CreateThread(function()
                     sleep = 0
 
                     local vehiclePos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0, 1.0, 0.5)
-                    DrawText3D(vehiclePos.x, vehiclePos.y, vehiclePos.z, Lang:t("info.skeys"))
+                    DrawText3D(vehiclePos.x, vehiclePos.y, vehiclePos.z, Lang:t("info.search_keys"))
                     SetVehicleEngineOn(vehicle, false, false, true)
 
                     if IsControlJustPressed(0, 74) then
@@ -143,7 +143,7 @@ end
 ---- Client Events ----
 -----------------------
 
-RegisterKeyMapping('togglelocks', Lang:t("info.tlock"), 'keyboard', 'L')
+RegisterKeyMapping('togglelocks', Lang:t("info.toggle_locks"), 'keyboard', 'L')
 RegisterCommand('togglelocks', function()
     ToggleVehicleLocks(GetVehicle())
 end)
@@ -218,7 +218,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
                 end
             end
         else
-            lib.notify({ description = Lang:t("notify.ydhk"), type = 'error' })
+            lib.notify({ description = Lang:t("notify.no_keys"), type = 'error' })
         end
     end
 end)
@@ -243,7 +243,7 @@ function GiveKeys(id, plate)
     if distance < 1.5 and distance > 0.0 then
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
     else
-        lib.notify({ description = Lang:t("notify.nonear"), type = 'error' })
+        lib.notify({ description = Lang:t("notify.not_near"), type = 'error' })
     end
 end
 
@@ -332,10 +332,10 @@ function ToggleVehicleLocks(veh)
                 NetworkRequestControlOfEntity(veh)
                 if vehLockStatus == 1 then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
-                    lib.notify({ description = Lang:t("notify.vlock"), type = 'inform' })
+                    lib.notify({ description = Lang:t("notify.vehicle_locked"), type = 'inform' })
                 else
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
-                    lib.notify({ description = Lang:t("notify.vunlock"), type = 'inform' })
+                    lib.notify({ description = Lang:t("notify.vehicle_unlocked"), type = 'inform' })
                 end
 
                 SetVehicleLights(veh, 2)
@@ -346,7 +346,7 @@ function ToggleVehicleLocks(veh)
                 Wait(300)
                 ClearPedTasks(ped)
             else
-                lib.notify({ description = Lang:t("notify.ydhk"), type = 'error' })
+                lib.notify({ description = Lang:t("notify.no_keys"), type = 'error' })
             end
         else
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
@@ -413,7 +413,7 @@ function LockpickFinishCallback(success)
         if GetPedInVehicleSeat(vehicle, -1) == PlayerPedId() then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', QBCore.Functions.GetPlate(vehicle))
         else
-            lib.notify({ description = Lang:t("notify.vlockpick"), type = 'success' })
+            lib.notify({ description = Lang:t("notify.vehicle_lockedpick"), type = 'success' })
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
         end
 
@@ -442,7 +442,7 @@ function Hotwire(vehicle, plate)
     SetVehicleAlarmTimeLeft(vehicle, hotwireTime)
     if lib.progressCircle({
         duration = hotwireTime,
-        label = Lang:t("progress.hskeys"),
+        label = Lang:t("progress.searching_keys"),
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
@@ -456,7 +456,7 @@ function Hotwire(vehicle, plate)
         if (math.random() <= Config.HotwireChance) then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
-            lib.notify({ description = Lang:t("notify.fvlockpick"), type = 'error' })
+            lib.notify({ description = Lang:t("notify.failed_lockedpick"), type = 'error' })
         end
         Wait(Config.TimeBetweenHotwires)
         IsHotwiring = false
@@ -498,7 +498,7 @@ function CarjackVehicle(target)
     
     if lib.progressCircle({
         duration = Config.CarjackingTime,
-        label = Lang:t("progress.acjack"),
+        label = Lang:t("progress.attempting_carjack"),
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
@@ -530,7 +530,7 @@ function CarjackVehicle(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
-                lib.notify({ description = Lang:t("notify.cjackfail"), type = 'error' })
+                lib.notify({ description = Lang:t("notify.carjack_failed"), type = 'error' })
                 MakePedFlee(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             end
@@ -555,7 +555,7 @@ function AttemptPoliceAlert(type)
             chance = Config.PoliceNightAlertChance
         end
         if math.random() <= chance then
-           TriggerServerEvent('police:server:policeAlert', Lang:t("info.palert") .. type)
+           TriggerServerEvent('police:server:policeAlert', Lang:t("info.vehicle_theft") .. type)
         end
         AlertSend = true
         SetTimeout(Config.AlertCooldown, function()
