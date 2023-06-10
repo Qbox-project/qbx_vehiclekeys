@@ -234,6 +234,10 @@ RegisterNetEvent('vehiclekeys:client:SetOwner', function(plate)
 end)
 -- Backwards Compatibility ONLY -- Remove at some point --
 
+RegisterNetEvent('vehiclekeys:client:SetOwnerByNetworkId', function(vehicleId)
+    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', QBCore.Functions.GetPlate(NetworkGetEntityFromNetworkId(vehicleId)))
+end)
+
 -----------------------
 ----   Functions   ----
 -----------------------
