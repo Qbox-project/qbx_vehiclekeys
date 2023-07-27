@@ -18,7 +18,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     local giver = source
 
     if HasKeys(giver, plate) then
-        TriggerClientEvent('QBCore:NotifyV2', giver, { id = 'give_car_keys', description = Lang:t("notify.gave_keys") })
+        TriggerClientEvent('QBCore:Notify', giver, {text = Lang:t("notify.gave_keys") })
         if type(receiver) == 'table' then
             for _,r in ipairs(receiver) do
                 GiveKeys(receiver[r], plate)
@@ -27,7 +27,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
             GiveKeys(receiver, plate)
         end
     else
-        TriggerClientEvent('QBCore:NotifyV2', giver, { id = 'server_no_keys', description = Lang:t("notify.no_keys") })
+        TriggerClientEvent('QBCore:Notify', giver, {text = Lang:t("notify.no_keys") })
     end
 end)
 
@@ -63,14 +63,13 @@ end)
 -----------------------
 ----   Functions   ----
 -----------------------
-
 function GiveKeys(id, plate)
     local citizenid = QBCore.Functions.GetPlayer(id).PlayerData.citizenid
 
     if not VehicleList[plate] then VehicleList[plate] = {} end
     VehicleList[plate][citizenid] = true
 
-    TriggerClientEvent('QBCore:NotifyV2', id, { id = 'server_id_get_keys', description = Lang:t("notify.keys_taken") })
+    TriggerClientEvent('QBCore:Notify', id, {text = Lang:t('notify.keys_taken')})
     TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
 end
 
@@ -96,56 +95,70 @@ lib.addCommand('givekeys', {
     help = Lang:t("addcom.givekeys"),
     params = {
         {
-            name = Lang:t("addcom.givekeys_id"), 
-            help = Lang:t("addcom.givekeys_id_help")
+            name = Lang:t("addcom.givekeys_id"),
+            type = 'number',
+            help = Lang:t("addcom.givekeys_id_help"),
+            optional = true
         },
     },
     restricted = false,
 }, function (source, args)
     local src = source
-    TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', src, tonumber(args[1]))
+    if not args.id then
+        TriggerClientEvent('QBCore:Notify', src, {text = Lang:t("notify.not_near")})
+        return
+    end
+    TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', src, args.id)
 end)
 
 lib.addCommand('addkeys', {
     help = Lang:t("addcom.addkeys"),
     params = {
         {
-            name = Lang:t("addcom.addkeys_id"),
-            help = Lang:t("addcom.addkeys_id_help")
+            name = 'id',
+            type = 'number',
+            help = Lang:t("addcom.addkeys_id_help"),
+            optional = true
         },
         {
-            name = Lang:t("addcom.addkeys_plate"),
-            help = Lang:t("addcom.addkeys_plate_help")
+            name = 'plate',
+            type = 'string',
+            help = Lang:t("addcom.addkeys_plate_help"),
+            optional = true
         },
     },
     restricted = 'group.admin',
 }, function (source, args)
     local src = source
-    if not args[1] or not args[2] then
-        TriggerClientEvent('QBCore:NotifyV2', src, { id = 'server_notify_fpid', description = Lang:t("notify.fpid") })
+    if not args.id or not args.plate then
+        TriggerClientEvent('QBCore:Notify', src, {text = Lang:t("notify.fpid")})
         return
     end
-    GiveKeys(tonumber(args[1]), args[2])
+    GiveKeys(args.id, args.plate)
 end)
 
 lib.addCommand('removekeys', {
     help = Lang:t("addcom.remove_keys"),
     params = {
         {
-            name = Lang:t("addcom.remove_keys_id"),
-            help = Lang:t("addcom.remove_keys_id_help")
+            name = 'id',
+            type = 'number',
+            help = Lang:t("addcom.remove_keys_id_help"),
+            optional = true
         },
         {
-            name = Lang:t("addcom.remove_keys_plate"),
-            help = Lang:t("addcom.remove_keys_plate_help")
+            name = 'plate',
+            type = 'string',
+            help = Lang:t("addcom.remove_keys_plate_help"),
+            optional = true
         }
     },
     restricted = 'group.admin',
 }, function (source, args)
     local src = source
-    if not args[1] or not args[2] then
-        TriggerClientEvent('QBCore:NotifyV2', src, { id = 'server_notify_fpid', description = Lang:t("notify.fpid") })
+    if not args.id or not args.plate then
+        TriggerClientEvent('QBCore:Notify', src, {text = Lang:t("notify.fpid")})
         return
     end
-    RemoveKeys(tonumber(args[1]), args[2])
+    RemoveKeys(args.id, args.plate)
 end)
