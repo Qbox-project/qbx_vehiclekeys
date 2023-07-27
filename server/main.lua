@@ -104,10 +104,6 @@ lib.addCommand('givekeys', {
     restricted = false,
 }, function (source, args)
     local src = source
-    if not args.id then
-        TriggerClientEvent('QBCore:Notify', src, {text = Lang:t("notify.not_near")})
-        return
-    end
     TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', src, args.id)
 end)
 
