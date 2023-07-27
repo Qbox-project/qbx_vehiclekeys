@@ -217,7 +217,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
                 end
             end
         else
-            QBCore.Functions.Notify({ text= Lang:t("notify.no_keys"), type = 'error' })
+            QBCore.Functions.Notify({ text = Lang:t("notify.no_keys"), type = 'error' })
         end
     end
 end)
@@ -241,7 +241,7 @@ function GiveKeys(id, plate)
     if distance < 1.5 and distance > 0.0 then
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
     else
-        QBCore.Functions.Notify({ text= Lang:t("notify.not_near"), type = 'error' })
+        QBCore.Functions.Notify({ text = Lang:t("notify.not_near"), type = 'error' })
     end
 end
 
@@ -330,10 +330,10 @@ function ToggleVehicleLocks(veh)
                 NetworkRequestControlOfEntity(veh)
                 if vehLockStatus == 1 then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
-                    QBCore.Functions.Notify({ text= Lang:t("notify.vehicle_locked"), type = 'inform' })
+                    QBCore.Functions.Notify({ text = Lang:t("notify.vehicle_locked"), type = 'inform' })
                 else
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
-                    QBCore.Functions.Notify({ text= Lang:t("notify.vehicle_unlocked"), type = 'inform' })
+                    QBCore.Functions.Notify({ text = Lang:t("notify.vehicle_unlocked"), type = 'inform' })
                 end
 
                 SetVehicleLights(veh, 2)
@@ -344,7 +344,7 @@ function ToggleVehicleLocks(veh)
                 Wait(300)
                 ClearPedTasks(ped)
             else
-                QBCore.Functions.Notify({ text= Lang:t("notify.no_keys"), type = 'error' })
+                QBCore.Functions.Notify({ text = Lang:t("notify.no_keys"), type = 'error' })
             end
         else
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
@@ -411,7 +411,7 @@ function LockpickFinishCallback(success)
         if GetPedInVehicleSeat(vehicle, -1) == cache.ped then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', QBCore.Functions.GetPlate(vehicle))
         else
-            QBCore.Functions.Notify({ text= Lang:t("notify.vehicle_lockedpick"), type = 'success' })
+            QBCore.Functions.Notify({ text = Lang:t("notify.vehicle_lockedpick"), type = 'success' })
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
         end
 
@@ -454,7 +454,7 @@ function Hotwire(vehicle, plate)
         if (math.random() <= Config.HotwireChance) then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
-            QBCore.Functions.Notify({ text= Lang:t("notify.failed_lockedpick"), type = 'error' })
+            QBCore.Functions.Notify({ text = Lang:t("notify.failed_lockedpick"), type = 'error' })
         end
         Wait(Config.TimeBetweenHotwires)
         IsHotwiring = false
@@ -528,7 +528,7 @@ function CarjackVehicle(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
-                QBCore.Functions.Notify({ text= Lang:t("notify.carjack_failed"), type = 'error' })
+                QBCore.Functions.Notify({ text = Lang:t("notify.carjack_failed"), type = 'error' })
                 MakePedFlee(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             end
