@@ -2,12 +2,12 @@ local Translations = {
     notify = {
         no_keys = 'No tienes las llaves de este vehículo',
         not_near = 'No hay nadie cerca a quién darle las llaves',
-        vehicle_locked = '¡Vehículo cerrado!',
-        vehicle_unlocked = '¡Vehículo abierto!',
-        vehicle_lockedpick = '¡Lograste abrir la cerradura!',
+        vehicle_locked = 'Vehículo cerrado',
+        vehicle_unlocked = 'Vehículo abierto',
+        vehicle_lockedpick = 'Lograste abrir la cerradura',
         failed_lockedpick = 'No logras encontrar las llaves y te frustras',
         gave_keys = 'Has entregado las llaves',
-        keys_taken = '¡Has recibido las llaves al vehículo!',
+        keys_taken = 'Has recibido las llaves del vehículo',
         fpid = 'Llena los argumentos de ID y placa del jugador',
         carjack_failed = '¡Robo de carro falló!',
     },
@@ -17,7 +17,7 @@ local Translations = {
         attempting_carjack = 'Intentando robar carro...',
     },
     info = {
-        skeys = '[H] - Buscar llaves',
+        search_keys = '[H] - Buscar llaves',
         toggle_locks = 'Habilitar/deshabilitar seguro de carro',
         vehicle_theft = 'Robo de vehículo en progreso. Tipo: ',
         engine = 'Encender/apagar motor',
@@ -40,7 +40,10 @@ local Translations = {
 
 }
 
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+if GetConvar('qb_locale', 'en') == 'es' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end
