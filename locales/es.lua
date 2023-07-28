@@ -17,7 +17,7 @@ local Translations = {
         attempting_carjack = 'Intentando robar carro...',
     },
     info = {
-        skeys = '[H] - Buscar llaves',
+        search_keys = '[H] - Buscar llaves',
         toggle_locks = 'Habilitar/deshabilitar seguro de carro',
         vehicle_theft = 'Robo de vehículo en progreso. Tipo: ',
         engine = 'Encender/apagar motor',
