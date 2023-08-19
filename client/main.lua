@@ -436,7 +436,6 @@ function Hotwire(vehicle, plate)
     local ped = cache.ped
     IsHotwiring = true
 
-    SetVehicleEngineOn(vehicle, false, false, true)
     SetVehicleAlarm(vehicle, true)
     SetVehicleAlarmTimeLeft(vehicle, hotwireTime)
     if lib.progressCircle({
