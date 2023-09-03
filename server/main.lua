@@ -14,7 +14,7 @@ local VehicleList = {}
 
 -- Event to give keys. receiver can either be a single id, or a table of ids.
 -- Must already have keys to the vehicle, trigger the event from the server, or pass forcegive paramter as true.
-RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, plate)
+RegisterNetEvent('qbx-vehiclekeys:server:GiveVehicleKeys', function(receiver, plate)
     local giver = source
 
     if HasKeys(giver, plate) then
@@ -31,12 +31,12 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     end
 end)
 
-RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(plate)
+RegisterNetEvent('qbx-vehiclekeys:server:AcquireVehicleKeys', function(plate)
     local src = source
     GiveKeys(src, plate)
 end)
 
-RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
+RegisterNetEvent('qbx-vehiclekeys:server:breakLockpick', function(itemName)
     local Player = QBCore.Functions.GetPlayer(source)
     if not Player then return end
     if not (itemName == "lockpick" or itemName == "advancedlockpick") then return end
@@ -45,11 +45,11 @@ RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
     end
 end)
 
-RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, state)
+RegisterNetEvent('qbx-vehiclekeys:server:setVehLockState', function(vehNetId, state)
     SetVehicleDoorsLocked(NetworkGetEntityFromNetworkId(vehNetId), state)
 end)
 
-QBCore.Functions.CreateCallback('qb-vehiclekeys:server:GetVehicleKeys', function(source, cb)
+lib.callback.register('qbx-vehiclekeys:server:GetVehicleKeys', function(source)
     local citizenid = QBCore.Functions.GetPlayer(source).PlayerData.citizenid
     local keysList = {}
     for plate, citizenids in pairs (VehicleList) do
@@ -57,7 +57,7 @@ QBCore.Functions.CreateCallback('qb-vehiclekeys:server:GetVehicleKeys', function
             keysList[plate] = true
         end
     end
-    cb(keysList)
+    return keysList
 end)
 
 -----------------------
@@ -70,7 +70,7 @@ function GiveKeys(id, plate)
     VehicleList[plate][citizenid] = true
 
     TriggerClientEvent('QBCore:Notify', id, Lang:t('notify.keys_taken'))
-    TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
+    TriggerClientEvent('qbx-vehiclekeys:client:AddKeys', id, plate)
 end
 
 function RemoveKeys(id, plate)
@@ -80,7 +80,7 @@ function RemoveKeys(id, plate)
         VehicleList[plate][citizenid] = nil
     end
 
-    TriggerClientEvent('qb-vehiclekeys:client:RemoveKeys', id, plate)
+    TriggerClientEvent('qbx-vehiclekeys:client:RemoveKeys', id, plate)
 end
 
 function HasKeys(id, plate)
@@ -104,7 +104,7 @@ lib.addCommand('givekeys', {
     restricted = false,
 }, function (source, args)
     local src = source
-    TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', src, args.id)
+    TriggerClientEvent('qbx-vehiclekeys:client:GiveKeys', src, args.id)
 end)
 
 lib.addCommand('addkeys', {
