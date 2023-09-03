@@ -448,12 +448,17 @@ function Hotwire(vehicle, plate)
             dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@',
             clip = 'machinic_loop_mechandplayer'
         },
+        disable = {
+            move = true,
+            car = true,
+            combat = true,
+        }
     }) then
         StopAnimTask(ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
-        TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         if (math.random() <= Config.HotwireChance) then
             TriggerServerEvent('qbx-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
+            TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             QBCore.Functions.Notify(Lang:t("notify.failed_lockedpick"), 'error')
         end
         Wait(Config.TimeBetweenHotwires)
