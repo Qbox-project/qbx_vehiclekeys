@@ -8,15 +8,15 @@ Config.LockNPCParkedCars = true -- Lock state for NPC parked cars [true = locked
 Config.RemoveLockpickNormal = 0.5 -- Chance to remove lockpick on fail
 Config.RemoveLockpickAdvanced = 0.2 -- Chance to remove advanced lockpick on fail
 Config.LockPickDoorEvent = function()
-    loadAnimDict("veh@break_in@0h@p_m_one@")
-    TaskPlayAnim(PlayerPedId(), "veh@break_in@0h@p_m_one@", "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, 0, 0, 0)
+    loadAnimDict('veh@break_in@0h@p_m_one@')
+    TaskPlayAnim(PlayerPedId(), 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, 0, 0, 0)
     local success = lib.skillCheck({'easy', 'easy', {areaSize = 60, speedMultiplier = 1}, 'medium'}, {'1', '2', '3', '4'})
     if success then
         LockpickFinishCallback(success)
     else
-        AttemptPoliceAlert("carjack")
+        AttemptPoliceAlert('carjack')
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-        TriggerEvent("QBCore:Notify", "You failed to lockpick.", "error")
+        lib.notify({ description = 'You failed to lockpick.', type = 'error' })
     end
 end
 
