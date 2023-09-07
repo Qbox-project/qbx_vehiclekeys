@@ -1,2 +1,2 @@
-# qb-vehiclekeys
-Vehicle Keys System For QB-Core
+# qbx-vehiclekeys
+Vehicle Keys System For QBOX
