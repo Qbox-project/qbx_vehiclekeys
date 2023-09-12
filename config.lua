@@ -8,7 +8,7 @@ Config.LockNPCParkedCars = true -- Lock state for NPC parked cars [true = locked
 Config.RemoveLockpickNormal = 0.5 -- Chance to remove lockpick on fail
 Config.RemoveLockpickAdvanced = 0.2 -- Chance to remove advanced lockpick on fail
 Config.LockPickDoorEvent = function()
-    loadAnimDict('veh@break_in@0h@p_m_one@')
+    lib.requestAnimDict('veh@break_in@0h@p_m_one@')
     TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, 0, 0, 0)
     local success = lib.skillCheck({'easy', 'easy', {areaSize = 60, speedMultiplier = 1}, 'medium'}, {'1', '2', '3', '4'})
     if success then
