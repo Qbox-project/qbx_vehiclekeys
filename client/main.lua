@@ -80,7 +80,7 @@ CreateThread(function()
             end
 
             -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
-            if IsPedInAnyVehicle(ped, false) and not IsHotwiring then
+            if IsPedInAnyVehicle(cache.ped, false) and not IsHotwiring then
                 sleep = 1000
                 local vehicle = GetVehiclePedIsIn(cache.ped)
                 local plate = QBCore.Functions.GetPlate(vehicle)
@@ -109,7 +109,7 @@ CreateThread(function()
                             end
                         end
                         if GetPedInVehicleSeat(targetveh, -1) == target and not IsBlacklistedWeapon() then
-                            local pos = GetEntityCoords(ped, true)
+                            local pos = GetEntityCoords(cache.ped, true)
                             local targetpos = GetEntityCoords(target, true)
                             if #(pos - targetpos) < 5.0 and not carIsImmune then
                                 CarjackVehicle(target)
