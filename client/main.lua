@@ -168,7 +168,7 @@ end)
 RegisterNetEvent('qb-vehiclekeys:client:AddKeys', function(plate)
     KeysList[plate] = true
 
-    if IsPedInAnyVehicle(cache.ped, false) then
+    if cache.vehicle then
         local vehicle = GetVehiclePedIsIn(cache.ped)
         local vehicleplate = QBCore.Functions.GetPlate(vehicle)
 
