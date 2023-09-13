@@ -80,7 +80,7 @@ CreateThread(function()
             end
 
             -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
-            if IsPedInAnyVehicle(cache.ped, false) and not IsHotwiring then
+            if cache.vehicle and not IsHotwiring then
                 sleep = 1000
                 local vehicle = GetVehiclePedIsIn(cache.ped)
                 local plate = QBCore.Functions.GetPlate(vehicle)
