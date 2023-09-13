@@ -1,15 +1,15 @@
 local Translations = {
     notify = {
-        no_keys = 'Sie haben keine Schlüssel für das Fahrzeug!',
+        no_keys = 'Du hast keine Schlüssel für das Fahrzeug!',
         not_near = 'Es ist niemand in der Nähe, der den Schlüssel bekommen könnte!',
         vehicle_locked = 'Fahrzeug verriegelt!',
         vehicle_unlocked = 'Fahrzeug entriegelt.',
-        vehicle_lockedpick = 'Sie haben es geschafft, das Türschloss zu knacken!',
-        failed_lockedpick = 'Sie können keine Schlüssel finden und sind frustriert.',
-        gave_keys = 'Sie geben die Schlüssel ab.',
-        keys_taken = 'Sie erhalten die Schlüssel für das Fahrzeug!',
-        fpid = 'Geben Sie alle Argumente, nämlich die Bürger-ID und das Kennzeichen, an.',
-        carjack_failed = 'Knacken des Autos fehlgeschlagen!',
+        vehicle_lockedpick = 'Du hast es geschafft, das Türschloss zu knacken!',
+        failed_lockedpick = 'Du kannst keine Schlüssel finden und bist frustriert.',
+        gave_keys = 'Du gibst die Schlüssel ab.',
+        keys_taken = 'Du erhälst die Schlüssel für das Fahrzeug!',
+        fpid = 'Gebe die Bürger-ID und das Kennzeichen an.',
+        carjack_failed = 'Knacken des Autos ist fehlgeschlagen!',
     },
     progress = {
         takekeys = 'Fahrzeugschlüssel abnehmen...',
@@ -23,7 +23,7 @@ local Translations = {
         engine = 'Motor ein-/ausschalten',
     },
     addcom = {
-        givekeys = 'Übergeben Sie die Schlüssel an jemanden. Wenn keine Bürger-ID angegeben, geht er an die nächstgelegene Person oder an alle Personen im Fahrzeug.',
+        givekeys = 'Übergebe die Schlüssel an jemanden. Wenn keine Bürger-ID angegeben, geht er an die nächstgelegene Person oder an alle Personen im Fahrzeug.',
         givekeys_id = 'id',
         givekeys_id_help = 'Bürger-ID',
         addkeys = 'Fügt Schlüssel zu einem Fahrzeug für jemanden hinzu.',
