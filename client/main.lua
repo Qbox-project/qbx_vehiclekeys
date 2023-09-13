@@ -3,7 +3,6 @@
 -----------------------
 local QBCore = exports['qbx-core']:GetCoreObject()
 local KeysList = {}
-
 local isTakingKeys = false
 local isCarjacking = false
 local canCarjack = true
@@ -21,8 +20,7 @@ CreateThread(function()
         if LocalPlayer.state.isLoggedIn then
             sleep = 100
 
-            local ped = cache.ped
-            local entering = GetVehiclePedIsTryingToEnter(ped)
+            local entering = GetVehiclePedIsTryingToEnter(cache.ped)
             local carIsImmune = false
             if entering ~= 0 and not isBlacklistedVehicle(entering) then
                 sleep = 2000
@@ -84,7 +82,7 @@ CreateThread(function()
             -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
             if IsPedInAnyVehicle(ped, false) and not IsHotwiring then
                 sleep = 1000
-                local vehicle = GetVehiclePedIsIn(ped)
+                local vehicle = GetVehiclePedIsIn(cache.ped)
                 local plate = QBCore.Functions.GetPlate(vehicle)
 
                 if GetPedInVehicleSeat(vehicle, -1) == cache.ped and not HasKeys(plate) and not isBlacklistedVehicle(vehicle) and not AreKeysJobShared(vehicle) then
@@ -101,8 +99,7 @@ CreateThread(function()
             end
 
             if Config.CarJackEnable and canCarjack then
-                local playerid = PlayerId()
-                local aiming, target = GetEntityPlayerIsFreeAimingAt(playerid)
+                local aiming, target = GetEntityPlayerIsFreeAimingAt(cache.playerId)
                 if aiming and (target ~= nil and target ~= 0) then
                     if DoesEntityExist(target) and IsPedInAnyVehicle(target, false) and not IsEntityDead(target) and not IsPedAPlayer(target) then
                         local targetveh = GetVehiclePedIsIn(target)
@@ -129,7 +126,7 @@ end)
 function isBlacklistedVehicle(vehicle)
     local isBlacklisted = false
     for _,v in ipairs(Config.NoLockVehicles) do
-        if GetHashKey(v) == GetEntityModel(vehicle) then
+        if joaat(v) == GetEntityModel(vehicle) then
             isBlacklisted = true
             break;
         end
@@ -171,9 +168,8 @@ end)
 RegisterNetEvent('qb-vehiclekeys:client:AddKeys', function(plate)
     KeysList[plate] = true
 
-    local ped = cache.ped
-    if IsPedInAnyVehicle(ped, false) then
-        local vehicle = GetVehiclePedIsIn(ped)
+    if IsPedInAnyVehicle(cache.ped, false) then
+        local vehicle = GetVehiclePedIsIn(cache.ped)
         local vehicleplate = QBCore.Functions.GetPlate(vehicle)
 
         if plate == vehicleplate then
@@ -256,18 +252,9 @@ function HasKeys(plate)
 end
 exports('HasKeys', HasKeys)
 
-function loadAnimDict(dict)
-    while (not HasAnimDictLoaded(dict)) do
-        RequestAnimDict(dict)
-        Wait(0)
-    end
-end
-
 function GetVehicleInDirection(coordFromOffset, coordToOffset)
-    local ped = cache.ped
-    local coordFrom = GetOffsetFromEntityInWorldCoords(ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
-    local coordTo = GetOffsetFromEntityInWorldCoords(ped, coordToOffset.x, coordToOffset.y, coordToOffset.z)
-
+    local coordFrom = GetOffsetFromEntityInWorldCoords(cache.ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
+    local coordTo = GetOffsetFromEntityInWorldCoords(cache.ped, coordToOffset.x, coordToOffset.y, coordToOffset.z)
     local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, cache.ped, 0)
     local _, _, _, _, vehicle = GetShapeTestResult(rayHandle)
     return vehicle
@@ -319,11 +306,10 @@ function ToggleVehicleLocks(veh)
     if veh then
         if not isBlacklistedVehicle(veh) then
             if HasKeys(QBCore.Functions.GetPlate(veh)) or AreKeysJobShared(veh) then
-                local ped = cache.ped
                 local vehLockStatus = GetVehicleDoorLockStatus(veh)
 
-                loadAnimDict("anim@mp_player_intmenu@key_fob@")
-                TaskPlayAnim(ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
+                lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
+                TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
 
                 TriggerServerEvent("InteractSound_SV:PlayWithinDistance", 5, "lock", 0.3)
 
@@ -342,7 +328,7 @@ function ToggleVehicleLocks(veh)
                 Wait(200)
                 SetVehicleLights(veh, 0)
                 Wait(300)
-                ClearPedTasks(ped)
+                ClearPedTasks(cache.ped)
             else
                 QBCore.Functions.Notify(Lang:t("notify.no_keys"), 'error')
             end
@@ -378,7 +364,7 @@ function IsBlacklistedWeapon()
     local weapon = GetSelectedPedWeapon(cache.ped)
     if weapon ~= nil then
         for _, v in pairs(Config.NoCarjackWeapons) do
-            if weapon == GetHashKey(v) then
+            if weapon == joaat(v) then
                 return true
             end
         end
@@ -387,8 +373,7 @@ function IsBlacklistedWeapon()
 end
 
 function LockpickDoor(isAdvanced)
-    local ped = cache.ped
-    local pos = GetEntityCoords(ped)
+    local pos = GetEntityCoords(cache.ped)
     local vehicle = QBCore.Functions.GetClosestVehicle()
 
     if vehicle == nil or vehicle == 0 then return end
@@ -433,7 +418,6 @@ end
 
 function Hotwire(vehicle, plate)
     local hotwireTime = math.random(Config.minHotwireTime, Config.maxHotwireTime)
-    local ped = cache.ped
     IsHotwiring = true
 
     SetVehicleAlarm(vehicle, true)
@@ -454,7 +438,7 @@ function Hotwire(vehicle, plate)
             combat = true,
         }
     }) then
-        StopAnimTask(ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
+        StopAnimTask(cache.ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
         if (math.random() <= Config.HotwireChance) then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
@@ -464,7 +448,7 @@ function Hotwire(vehicle, plate)
         Wait(Config.TimeBetweenHotwires)
         IsHotwiring = false
     else
-        StopAnimTask(ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
+        StopAnimTask(cache.ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
         IsHotwiring = false
     end
     SetTimeout(10000, function()
@@ -477,7 +461,7 @@ function CarjackVehicle(target)
     if not Config.CarJackEnable then return end
     isCarjacking = true
     canCarjack = false
-    loadAnimDict('mp_am_hold_up')
+    lib.requestAnimDict('mp_am_hold_up')
     local vehicle = GetVehiclePedIsUsing(target)
     local occupants = GetPedsInVehicle(vehicle)
     for p=1,#occupants do
