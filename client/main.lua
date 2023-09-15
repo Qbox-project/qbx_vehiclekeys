@@ -393,8 +393,7 @@ function LockpickDoor(isAdvanced)
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         lib.notify({ description = 'You failed to lockpick.', type = 'error' })
     end
-end
-
+	
 function LockpickFinishCallback(success)
     local vehicle = QBCore.Functions.GetClosestVehicle()
 
