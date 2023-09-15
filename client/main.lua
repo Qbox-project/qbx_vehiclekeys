@@ -372,8 +372,7 @@ function IsBlacklistedWeapon()
 end
 
 function LockpickDoor(isAdvanced)
-    local ped = cache.ped
-    local pos = GetEntityCoords(ped)
+    local pos = GetEntityCoords(cache.ped)
     local vehicle = QBCore.Functions.GetClosestVehicle()
 
     if vehicle == nil or vehicle == 0 then return end
