@@ -311,9 +311,7 @@ function ToggleVehicleLocks(veh)
                 local vehLockStatus = GetVehicleDoorLockStatus(veh)
                 lib.requestAnimDict("anim@mp_player_intmenu@key_fob@")
                 TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
-
                 TriggerServerEvent("InteractSound_SV:PlayWithinDistance", 5, "lock", 0.3)
-
                 NetworkRequestControlOfEntity(veh)
                 if vehLockStatus == 1 then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
@@ -374,7 +372,8 @@ function IsBlacklistedWeapon()
 end
 
 function LockpickDoor(isAdvanced)
-    local pos = GetEntityCoords(cache.ped)
+    local ped = cache.ped
+    local pos = GetEntityCoords(ped)
     local vehicle = QBCore.Functions.GetClosestVehicle()
 
     if vehicle == nil or vehicle == 0 then return end
@@ -392,7 +391,8 @@ function LockpickDoor(isAdvanced)
         AttemptPoliceAlert('carjack')
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         lib.notify({ description = 'You failed to lockpick.', type = 'error' })
-    end 
+    end
+  end
 end
 
 function LockpickFinishCallback(success)
