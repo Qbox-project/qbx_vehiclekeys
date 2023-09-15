@@ -382,7 +382,7 @@ function LockpickDoor(isAdvanced)
     if GetVehicleDoorLockStatus(vehicle) <= 0 then return end
 
     usingAdvanced = isAdvanced
-    lib.requestAnimDict('veh@break_in@0h@p_m_one@')
+   function lib.requestAnimDict('veh@break_in@0h@p_m_one@')
     TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, 0, 0, 0)
     local success = lib.skillCheck({'easy', 'easy', {areaSize = 60, speedMultiplier = 1}, 'medium'}, {'1', '2', '3', '4'})
     if success then
