@@ -389,8 +389,8 @@ function LockpickDoor(isAdvanced)
     else
         AttemptPoliceAlert('carjack')
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-        lib.notify({ description = 'You failed to lockpick.', type = 'error' })
-    end
+        TriggerEvent("QBCore:Notify", "You failed to lockpick.", "error"
+     end
   end
 
 function LockpickFinishCallback(success)
