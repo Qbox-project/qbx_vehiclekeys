@@ -243,7 +243,7 @@ function GiveKeys(id, plate)
 end
 
 function GetKeys()
-    QBCore.Functions.TriggerCallback('qb-vehiclekeys:server:GetVehicleKeys', function(keysList)
+    lib.callback('qb-vehiclekeys:server:GetVehicleKeys', function(keysList)
       KeysList = keysList
     end)
 end
