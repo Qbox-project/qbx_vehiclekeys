@@ -1,15 +1,14 @@
 -----------------------
 ----   Variables   ----
 -----------------------
-local QBCore = exports['qbx-core']:GetCoreObject()
 local KeysList = {}
 local isTakingKeys = false
 local isCarjacking = false
 local canCarjack = true
-local AlertSend = false
+local alertSend = false
 local lastPickedVehicle = nil
 local usingAdvanced = false
-local IsHotwiring = false
+local isHotwiring = false
 
 -----------------------
 ----   Threads     ----
@@ -24,7 +23,7 @@ CreateThread(function()
             local carIsImmune = false
             if entering ~= 0 and not isBlacklistedVehicle(entering) then
                 sleep = 2000
-                local plate = QBCore.Functions.GetPlate(entering)
+                local plate = GetPlate(entering)
 
                 local driver = GetPedInVehicleSeat(entering, -1)
                 for _, veh in ipairs(Config.ImmuneVehicles) do
@@ -80,20 +79,19 @@ CreateThread(function()
             end
 
             -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
-            if cache.vehicle and not IsHotwiring then
+            if cache.vehicle and not isHotwiring then
                 sleep = 1000
-                local vehicle = cache.vehicle
-                local plate = QBCore.Functions.GetPlate(vehicle)
+                local plate = GetPlate(cache.vehicle)
 
-                if GetPedInVehicleSeat(vehicle, -1) == cache.ped and not HasKeys(plate) and not isBlacklistedVehicle(vehicle) and not AreKeysJobShared(vehicle) then
+                if GetPedInVehicleSeat(cache.vehicle, -1) == cache.ped and not HasKeys(plate) and not isBlacklistedVehicle(cache.vehicle) and not AreKeysJobShared(cache.vehicle) then
                     sleep = 0
 
-                    local vehiclePos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0, 1.0, 0.5)
-                    DrawText3D(vehiclePos.x, vehiclePos.y, vehiclePos.z, Lang:t("info.search_keys"))
-                    SetVehicleEngineOn(vehicle, false, false, true)
+                    local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
+                    DrawText3D(Lang:t('info.search_keys'), vehiclePos)
+                    SetVehicleEngineOn(cache.vehicle, false, false, true)
 
                     if IsControlJustPressed(0, 74) then
-                        Hotwire(vehicle, plate)
+                        Hotwire(cache.vehicle, plate)
                     end
                 end
             end
@@ -150,7 +148,7 @@ RegisterCommand('engine', function()
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)
-	if resourceName == GetCurrentResourceName() and QBCore.Functions.GetPlayerData() ~= {} then
+	if resourceName == GetCurrentResourceName() and PlayerData ~= {} then
 		GetKeys()
 	end
 end)
@@ -169,11 +167,10 @@ RegisterNetEvent('qb-vehiclekeys:client:AddKeys', function(plate)
     KeysList[plate] = true
 
     if cache.vehicle then
-        local vehicle = cache.vehicle
-        local vehicleplate = QBCore.Functions.GetPlate(vehicle)
+        local vehicleplate = GetPlate(cache.vehicle)
 
         if plate == vehicleplate then
-            SetVehicleEngineOn(vehicle, false, false, false)
+            SetVehicleEngineOn(cache.vehicle, false, false, false)
         end
     end
 end)
@@ -183,10 +180,10 @@ RegisterNetEvent('qb-vehiclekeys:client:RemoveKeys', function(plate)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:client:ToggleEngine', function()
-    local EngineOn = GetIsVehicleEngineRunning(GetVehiclePedIsIn(cache.ped))
+    local engineOn = GetIsVehicleEngineRunning(GetVehiclePedIsIn(cache.ped))
     local vehicle = GetVehiclePedIsIn(cache.ped, true)
-    if HasKeys(QBCore.Functions.GetPlate(vehicle)) then
-        if EngineOn then
+    if HasKeys(GetPlate(vehicle)) then
+        if engineOn then
             SetVehicleEngineOn(vehicle, false, false, true)
         else
             SetVehicleEngineOn(vehicle, true, false, true)
@@ -198,18 +195,18 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
     local targetVehicle = GetVehicle()
 
     if targetVehicle then
-        local targetPlate = QBCore.Functions.GetPlate(targetVehicle)
+        local targetPlate = GetPlate(targetVehicle)
         if HasKeys(targetPlate) then
             if id and type(id) == "number" then -- Give keys to specific ID
                 GiveKeys(id, targetPlate)
             else
                 if IsPedSittingInVehicle(cache.ped, targetVehicle) then -- Give keys to everyone in vehicle
                     local otherOccupants = GetOtherPlayersInVehicle(targetVehicle)
-                    for p=1,#otherOccupants do
+                    for p = 1, #otherOccupants do
                         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', GetPlayerServerId(NetworkGetPlayerIndexFromPed(otherOccupants[p])), targetPlate)
                     end
                 else -- Give keys to closest player
-                    GiveKeys(GetPlayerServerId(QBCore.Functions.GetClosestPlayer()), targetPlate)
+                    GiveKeys(GetPlayerServerId(GetClosestPlayer()), targetPlate)
                 end
             end
         else
@@ -284,18 +281,16 @@ end
 function AreKeysJobShared(veh)
     local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
     local vehPlate = GetVehicleNumberPlateText(veh)
-    local jobName = QBCore.Functions.GetPlayerData().job.name
-    local onDuty = QBCore.Functions.GetPlayerData().job.onduty
     for job, v in pairs(Config.SharedKeys) do
-        if job == jobName then
-	    if Config.SharedKeys[job].requireOnduty and not onDuty then return false end
-	    for _, vehicle in pairs(v.vehicles) do
-	        if string.upper(vehicle) == string.upper(vehName) then
-		    if not HasKeys(vehPlate) then
-		        TriggerServerEvent("qb-vehiclekeys:server:AcquireVehicleKeys", vehPlate)
-		    end
-		    return true
-	        end
+        if job == PlayerData.job.name then
+            if Config.SharedKeys[job].requireOnduty and not PlayerData.job.onduty then return false end
+            for _, vehicle in pairs(v.vehicles) do
+                if string.upper(vehicle) == string.upper(vehName) then
+                    if not HasKeys(vehPlate) then
+                        TriggerServerEvent("qb-vehiclekeys:server:AcquireVehicleKeys", vehPlate)
+                    end
+                    return true
+                end
             end
         end
     end
@@ -305,7 +300,7 @@ end
 function ToggleVehicleLocks(veh)
     if veh then
         if not isBlacklistedVehicle(veh) then
-            if HasKeys(QBCore.Functions.GetPlate(veh)) or AreKeysJobShared(veh) then
+            if HasKeys(GetPlate(veh)) or AreKeysJobShared(veh) then
                 local vehLockStatus = GetVehicleDoorLockStatus(veh)
 
                 lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
@@ -339,10 +334,10 @@ end
 
 function GetOtherPlayersInVehicle(vehicle)
     local otherPeds = {}
-    for seat=-1,GetVehicleModelNumberOfSeats(GetEntityModel(vehicle))-2 do
+    for seat = -1, GetVehicleModelNumberOfSeats(GetEntityModel(vehicle)) - 2 do
         local pedInSeat = GetPedInVehicleSeat(vehicle, seat)
         if IsPedAPlayer(pedInSeat) and pedInSeat ~= cache.ped then
-            otherPeds[#otherPeds+1] = pedInSeat
+            otherPeds[#otherPeds + 1] = pedInSeat
         end
     end
     return otherPeds
@@ -350,10 +345,10 @@ end
 
 function GetPedsInVehicle(vehicle)
     local otherPeds = {}
-    for seat=-1,GetVehicleModelNumberOfSeats(GetEntityModel(vehicle))-2 do
+    for seat = -1, GetVehicleModelNumberOfSeats(GetEntityModel(vehicle)) - 2 do
         local pedInSeat = GetPedInVehicleSeat(vehicle, seat)
         if not IsPedAPlayer(pedInSeat) and pedInSeat ~= 0 then
-            otherPeds[#otherPeds+1] = pedInSeat
+            otherPeds[#otherPeds + 1] = pedInSeat
         end
     end
     return otherPeds
@@ -376,7 +371,7 @@ function LockpickDoor(isAdvanced)
     local vehicle = QBCore.Functions.GetClosestVehicle()
 
     if vehicle == nil or vehicle == 0 then return end
-    if HasKeys(QBCore.Functions.GetPlate(vehicle)) then return end
+    if HasKeys(GetPlate(vehicle)) then return end
     if #(pos - GetEntityCoords(vehicle)) > 2.5 then return end
     if GetVehicleDoorLockStatus(vehicle) <= 0 then return end
 
@@ -402,7 +397,7 @@ function LockpickFinishCallback(success)
         lastPickedVehicle = vehicle
 
         if GetPedInVehicleSeat(vehicle, -1) == cache.ped then
-            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', QBCore.Functions.GetPlate(vehicle))
+            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', GetPlate(vehicle))
         else
             QBCore.Functions.Notify(Lang:t("notify.vehicle_lockedpick"), 'success')
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
@@ -426,7 +421,7 @@ end
 
 function Hotwire(vehicle, plate)
     local hotwireTime = math.random(Config.minHotwireTime, Config.maxHotwireTime)
-    IsHotwiring = true
+    isHotwiring = true
 
     SetVehicleAlarm(vehicle, true)
     SetVehicleAlarmTimeLeft(vehicle, hotwireTime)
@@ -454,15 +449,15 @@ function Hotwire(vehicle, plate)
             QBCore.Functions.Notify(Lang:t("notify.failed_lockedpick"), 'error')
         end
         Wait(Config.TimeBetweenHotwires)
-        IsHotwiring = false
+        isHotwiring = false
     else
         StopAnimTask(cache.ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
-        IsHotwiring = false
+        isHotwiring = false
     end
     SetTimeout(10000, function()
         AttemptPoliceAlert("steal")
     end)
-    IsHotwiring = false
+    isHotwiring = false
 end
 
 function CarjackVehicle(target)
@@ -472,7 +467,7 @@ function CarjackVehicle(target)
     lib.requestAnimDict('mp_am_hold_up')
     local vehicle = GetVehiclePedIsUsing(target)
     local occupants = GetPedsInVehicle(vehicle)
-    for p=1,#occupants do
+    for p = 1, #occupants do
         local ped = occupants[p]
         CreateThread(function()
             TaskPlayAnim(ped, "mp_am_hold_up", "holdup_victim_20s", 8.0, -8.0, -1, 49, 0, false, false, false)
@@ -510,7 +505,7 @@ function CarjackVehicle(target)
                 carjackChance = 0.5
             end
             if math.random() <= carjackChance then
-                local plate = QBCore.Functions.GetPlate(vehicle)
+                local plate = GetPlate(vehicle)
                     for p=1,#occupants do
                         local ped = occupants[p]
                         CreateThread(function()
@@ -518,7 +513,7 @@ function CarjackVehicle(target)
                         PlayPain(ped, 6, 0)
                         Wait(1250)
                         ClearPedTasksImmediately(ped)
-                        PlayPain(ped, math.random(7,8), 0)
+                        PlayPain(ped, math.random(7, 8), 0)
                         MakePedFlee(ped)
                     end)
                 end
@@ -544,7 +539,7 @@ function CarjackVehicle(target)
 end
 
 function AttemptPoliceAlert(type)
-    if not AlertSend then
+    if not alertSend then
         local chance = Config.PoliceAlertChance
         if GetClockHours() >= 1 and GetClockHours() <= 6 then
             chance = Config.PoliceNightAlertChance
@@ -552,9 +547,9 @@ function AttemptPoliceAlert(type)
         if math.random() <= chance then
            TriggerServerEvent('police:server:policeAlert', Lang:t("info.vehicle_theft") .. type)
         end
-        AlertSend = true
+        alertSend = true
         SetTimeout(Config.AlertCooldown, function()
-            AlertSend = false
+            alertSend = false
         end)
     end
 end
@@ -562,19 +557,4 @@ end
 function MakePedFlee(ped)
     SetPedFleeAttributes(ped, 0, 0)
     TaskReactAndFleePed(ped, cache.ped)
-end
-
-function DrawText3D(x, y, z, text)
-    SetTextScale(0.35, 0.35)
-    SetTextFont(4)
-    SetTextProportional(1)
-    SetTextColour(255, 255, 255, 215)
-    SetTextEntry("STRING")
-    SetTextCentre(true)
-    AddTextComponentString(text)
-    SetDrawOrigin(x, y, z, 0)
-    DrawText(0.0, 0.0)
-    local factor = (string.len(text)) / 370
-    DrawRect(0.0, 0.0 + 0.0125, 0.017 + factor, 0.03, 0, 0, 0, 75)
-    ClearDrawOrigin()
 end
