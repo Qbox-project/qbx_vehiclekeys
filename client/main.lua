@@ -3,7 +3,6 @@
 -----------------------
 local QBCore = exports['qbx-core']:GetCoreObject()
 local KeysList = {}
-
 local isTakingKeys = false
 local isCarjacking = false
 local canCarjack = true
@@ -20,6 +19,7 @@ CreateThread(function()
         local sleep = 1000
         if LocalPlayer.state.isLoggedIn then
             sleep = 100
+
             local entering = GetVehiclePedIsTryingToEnter(cache.ped)
             local carIsImmune = false
             if entering ~= 0 and not isBlacklistedVehicle(entering) then
@@ -99,8 +99,7 @@ CreateThread(function()
             end
 
             if Config.CarJackEnable and canCarjack then
-                local playerid = PlayerId()
-                local aiming, target = GetEntityPlayerIsFreeAimingAt(playerid)
+                local aiming, target = GetEntityPlayerIsFreeAimingAt(cache.playerId)
                 if aiming and (target ~= nil and target ~= 0) then
                     if DoesEntityExist(target) and IsPedInAnyVehicle(target, false) and not IsEntityDead(target) and not IsPedAPlayer(target) then
                         local targetveh = GetVehiclePedIsIn(target)
@@ -256,7 +255,6 @@ exports('HasKeys', HasKeys)
 function GetVehicleInDirection(coordFromOffset, coordToOffset)
     local coordFrom = GetOffsetFromEntityInWorldCoords(cache.ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
     local coordTo = GetOffsetFromEntityInWorldCoords(cache.ped, coordToOffset.x, coordToOffset.y, coordToOffset.z)
-
     local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, cache.ped, 0)
     local _, _, _, _, vehicle = GetShapeTestResult(rayHandle)
     return vehicle
@@ -309,8 +307,10 @@ function ToggleVehicleLocks(veh)
         if not isBlacklistedVehicle(veh) then
             if HasKeys(QBCore.Functions.GetPlate(veh)) or AreKeysJobShared(veh) then
                 local vehLockStatus = GetVehicleDoorLockStatus(veh)
-                lib.requestAnimDict("anim@mp_player_intmenu@key_fob@")
+
+                lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
                 TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
+
                 TriggerServerEvent("InteractSound_SV:PlayWithinDistance", 5, "lock", 0.3)
                 NetworkRequestControlOfEntity(veh)
                 if vehLockStatus == 1 then
@@ -363,7 +363,7 @@ function IsBlacklistedWeapon()
     local weapon = GetSelectedPedWeapon(cache.ped)
     if weapon ~= nil then
         for _, v in pairs(Config.NoCarjackWeapons) do
-            if weapon == GetHashKey(v) then
+            if weapon == joaat(v) then
                 return true
             end
         end
