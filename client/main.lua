@@ -243,7 +243,7 @@ function GiveKeys(id, plate)
 end
 
 function GetKeys()
-    lib.callback('qb-vehiclekeys:server:GetVehicleKeys', function(keysList)
+    lib.callback('qbx-vehiclekeys:server:getVehicleKeys', function(keysList)
       KeysList = keysList
     end)
 end
