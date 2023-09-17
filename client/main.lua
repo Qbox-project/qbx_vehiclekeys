@@ -242,8 +242,8 @@ function GiveKeys(id, plate)
 end
 
 function GetKeys()
-    QBCore.Functions.TriggerCallback('qb-vehiclekeys:server:GetVehicleKeys', function(keysList)
-        KeysList = keysList
+    lib.callback('qbx-vehiclekeys:server:getVehicleKeys', function(keysList)
+      KeysList = keysList
     end)
 end
 
@@ -312,7 +312,6 @@ function ToggleVehicleLocks(veh)
                 TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
 
                 TriggerServerEvent("InteractSound_SV:PlayWithinDistance", 5, "lock", 0.3)
-
                 NetworkRequestControlOfEntity(veh)
                 if vehLockStatus == 1 then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
@@ -382,8 +381,17 @@ function LockpickDoor(isAdvanced)
     if GetVehicleDoorLockStatus(vehicle) <= 0 then return end
 
     usingAdvanced = isAdvanced
-    Config.LockPickDoorEvent()
-end
+    lib.requestAnimDict('veh@break_in@0h@p_m_one@')
+    TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, 0, 0, 0)
+    local success = lib.skillCheck({'easy', 'easy', {areaSize = 60, speedMultiplier = 1}, 'medium'}, {'1', '2', '3', '4'})
+    if success then
+        LockpickFinishCallback(success)
+    else
+        AttemptPoliceAlert('carjack')
+        TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+        TriggerEvent('QBCore:Notify', 'You failed to lockpick.', 'error')
+     end
+  end
 
 function LockpickFinishCallback(success)
     local vehicle = QBCore.Functions.GetClosestVehicle()
