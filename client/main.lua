@@ -23,7 +23,7 @@ CreateThread(function()
             local carIsImmune = false
             if entering ~= 0 and not isBlacklistedVehicle(entering) then
                 sleep = 2000
-                local plate = GetPlate(entering)
+                local plate = QBX.Functions.GetPlate(entering)
 
                 local driver = GetPedInVehicleSeat(entering, -1)
                 for _, veh in ipairs(Config.ImmuneVehicles) do
@@ -81,13 +81,13 @@ CreateThread(function()
             -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
             if cache.vehicle and not isHotwiring then
                 sleep = 1000
-                local plate = GetPlate(cache.vehicle)
+                local plate = QBX.Functions.GetPlate(cache.vehicle)
 
                 if GetPedInVehicleSeat(cache.vehicle, -1) == cache.ped and not HasKeys(plate) and not isBlacklistedVehicle(cache.vehicle) and not AreKeysJobShared(cache.vehicle) then
                     sleep = 0
 
                     local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
-                    DrawText3D(Lang:t('info.search_keys'), vehiclePos)
+                    QBX.Functions.DrawText3D(Lang:t('info.search_keys'), vehiclePos)
                     SetVehicleEngineOn(cache.vehicle, false, false, true)
 
                     if IsControlJustPressed(0, 74) then
@@ -148,7 +148,7 @@ RegisterCommand('engine', function()
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)
-	if resourceName == GetCurrentResourceName() and PlayerData ~= {} then
+	if resourceName == GetCurrentResourceName() and QBX.PlayerData ~= {} then
 		GetKeys()
 	end
 end)
@@ -167,7 +167,7 @@ RegisterNetEvent('qb-vehiclekeys:client:AddKeys', function(plate)
     KeysList[plate] = true
 
     if cache.vehicle then
-        local vehicleplate = GetPlate(cache.vehicle)
+        local vehicleplate = QBX.Functions.GetPlate(cache.vehicle)
 
         if plate == vehicleplate then
             SetVehicleEngineOn(cache.vehicle, false, false, false)
@@ -182,7 +182,7 @@ end)
 RegisterNetEvent('qb-vehiclekeys:client:ToggleEngine', function()
     local engineOn = GetIsVehicleEngineRunning(GetVehiclePedIsIn(cache.ped))
     local vehicle = GetVehiclePedIsIn(cache.ped, true)
-    if HasKeys(GetPlate(vehicle)) then
+    if HasKeys(QBX.Functions.GetPlate(vehicle)) then
         if engineOn then
             SetVehicleEngineOn(vehicle, false, false, true)
         else
@@ -195,7 +195,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
     local targetVehicle = GetVehicle()
 
     if targetVehicle then
-        local targetPlate = GetPlate(targetVehicle)
+        local targetPlate = QBX.Functions.GetPlate(targetVehicle)
         if HasKeys(targetPlate) then
             if id and type(id) == "number" then -- Give keys to specific ID
                 GiveKeys(id, targetPlate)
@@ -210,7 +210,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
                 end
             end
         else
-            QBCore.Functions.Notify(Lang:t("notify.no_keys"), 'error')
+            QBX.Functions.Notify(Lang:t("notify.no_keys"), 'error')
         end
     end
 end)
@@ -234,7 +234,7 @@ function GiveKeys(id, plate)
     if distance < 1.5 and distance > 0.0 then
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
     else
-        QBCore.Functions.Notify(Lang:t("notify.not_near"), 'error')
+        QBX.Functions.Notify(Lang:t("notify.not_near"), 'error')
     end
 end
 
@@ -282,8 +282,8 @@ function AreKeysJobShared(veh)
     local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
     local vehPlate = GetVehicleNumberPlateText(veh)
     for job, v in pairs(Config.SharedKeys) do
-        if job == PlayerData.job.name then
-            if Config.SharedKeys[job].requireOnduty and not PlayerData.job.onduty then return false end
+        if job == QBX.PlayerData.job.name then
+            if Config.SharedKeys[job].requireOnduty and not QBX.PlayerData.job.onduty then return false end
             for _, vehicle in pairs(v.vehicles) do
                 if string.upper(vehicle) == string.upper(vehName) then
                     if not HasKeys(vehPlate) then
@@ -300,7 +300,7 @@ end
 function ToggleVehicleLocks(veh)
     if veh then
         if not isBlacklistedVehicle(veh) then
-            if HasKeys(GetPlate(veh)) or AreKeysJobShared(veh) then
+            if HasKeys(QBX.Functions.GetPlate(veh)) or AreKeysJobShared(veh) then
                 local vehLockStatus = GetVehicleDoorLockStatus(veh)
 
                 lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
@@ -310,10 +310,10 @@ function ToggleVehicleLocks(veh)
                 NetworkRequestControlOfEntity(veh)
                 if vehLockStatus == 1 then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
-                    QBCore.Functions.Notify(Lang:t("notify.vehicle_locked"), 'inform')
+                    QBX.Functions.Notify(Lang:t("notify.vehicle_locked"), 'inform')
                 else
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
-                    QBCore.Functions.Notify(Lang:t("notify.vehicle_unlocked"), 'inform')
+                    QBX.Functions.Notify(Lang:t("notify.vehicle_unlocked"), 'inform')
                 end
 
                 SetVehicleLights(veh, 2)
@@ -324,7 +324,7 @@ function ToggleVehicleLocks(veh)
                 Wait(300)
                 ClearPedTasks(cache.ped)
             else
-                QBCore.Functions.Notify(Lang:t("notify.no_keys"), 'error')
+                QBX.Functions.Notify(Lang:t("notify.no_keys"), 'error')
             end
         else
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
@@ -368,10 +368,10 @@ end
 
 function LockpickDoor(isAdvanced)
     local pos = GetEntityCoords(cache.ped)
-    local vehicle = QBCore.Functions.GetClosestVehicle()
+    local vehicle = QBX.Functions.GetClosestVehicle()
 
     if vehicle == nil or vehicle == 0 then return end
-    if HasKeys(GetPlate(vehicle)) then return end
+    if HasKeys(QBX.Functions.GetPlate(vehicle)) then return end
     if #(pos - GetEntityCoords(vehicle)) > 2.5 then return end
     if GetVehicleDoorLockStatus(vehicle) <= 0 then return end
 
@@ -389,7 +389,7 @@ function LockpickDoor(isAdvanced)
   end
 
 function LockpickFinishCallback(success)
-    local vehicle = QBCore.Functions.GetClosestVehicle()
+    local vehicle = QBX.Functions.GetClosestVehicle()
 
     local chance = math.random()
     if success then
@@ -397,9 +397,9 @@ function LockpickFinishCallback(success)
         lastPickedVehicle = vehicle
 
         if GetPedInVehicleSeat(vehicle, -1) == cache.ped then
-            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', GetPlate(vehicle))
+            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', QBX.Functions.GetPlate(vehicle))
         else
-            QBCore.Functions.Notify(Lang:t("notify.vehicle_lockedpick"), 'success')
+            QBX.Functions.Notify(Lang:t("notify.vehicle_lockedpick"), 'success')
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
         end
 
@@ -446,7 +446,7 @@ function Hotwire(vehicle, plate)
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-            QBCore.Functions.Notify(Lang:t("notify.failed_lockedpick"), 'error')
+            QBX.Functions.Notify(Lang:t("notify.failed_lockedpick"), 'error')
         end
         Wait(Config.TimeBetweenHotwires)
         isHotwiring = false
@@ -505,7 +505,7 @@ function CarjackVehicle(target)
                 carjackChance = 0.5
             end
             if math.random() <= carjackChance then
-                local plate = GetPlate(vehicle)
+                local plate = QBX.Functions.GetPlate(vehicle)
                     for p=1,#occupants do
                         local ped = occupants[p]
                         CreateThread(function()
@@ -520,7 +520,7 @@ function CarjackVehicle(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
-                QBCore.Functions.Notify(Lang:t("notify.carjack_failed"), 'error')
+                QBX.Functions.Notify(Lang:t("notify.carjack_failed"), 'error')
                 MakePedFlee(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             end

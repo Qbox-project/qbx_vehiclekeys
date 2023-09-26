@@ -5,18 +5,18 @@ description 'https://github.com/Qbox-project/qbx-vehiclekeys'
 version '1.0.0'
 
 shared_scripts {
-	'@qbx-core/import.lua',
-	'@qbx-core/shared/locale.lua',
+	'@ox_lib/init.lua',
+	'@qbx_core/import.lua',
+	'@qbx_core/shared/locale.lua',
 	'locales/en.lua',
 	'locales/*.lua',
-	'@ox_lib/init.lua',
 	'config.lua',
 }
 client_script 'client/main.lua'
 server_script 'server/main.lua'
 
 modules {
-	'qbx-core:core',
-	'qbx-core:playerdata',
-	'qbx-core:utils'
+	'qbx_core:core',
+	'qbx_core:playerdata',
+	'qbx_core:utils'
 }
