@@ -87,7 +87,7 @@ CreateThread(function()
                     sleep = 0
 
                     local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
-                    QBX.Functions.DrawText3D(Lang:t('info.search_keys'), vehiclePos)
+                    DrawText3D(Lang:t('info.search_keys'), vehiclePos)
                     SetVehicleEngineOn(cache.vehicle, false, false, true)
 
                     if IsControlJustPressed(0, 74) then
