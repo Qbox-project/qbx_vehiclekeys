@@ -48,7 +48,7 @@ RegisterNetEvent('qbx_vehiclekeys:server:setVehLockState', function(vehNetId, st
     SetVehicleDoorsLocked(NetworkGetEntityFromNetworkId(vehNetId), state)
 end)
 
-lib.callback.register('qbx-vehiclekeys:server:getVehicleKeys', function(source)
+lib.callback.register('qbx_vehiclekeys:server:getVehicleKeys', function(source)
     local citizenid = exports.qbx_core:GetPlayer(source).PlayerData.citizenid
     local keysList = {}
     for plate, citizenids in pairs (vehicleList) do
