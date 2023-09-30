@@ -13,7 +13,7 @@ local vehicleList = {}
 
 -- Event to give keys. receiver can either be a single id, or a table of ids.
 -- Must already have keys to the vehicle, trigger the event from the server, or pass forcegive paramter as true.
-RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, plate)
+RegisterNetEvent('qbx_vehiclekeys:server:GiveVehicleKeys', function(receiver, plate)
     local giver = source
 
     if HasKeys(giver, plate) then
@@ -30,13 +30,13 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     end
 end)
 
-RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(plate)
+RegisterNetEvent('qbx_vehiclekeys:server:AcquireVehicleKeys', function(plate)
     local src = source
     GiveKeys(src, plate)
 end)
 
-RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
-    local player = QBX.Functions.GetPlayer(source)
+RegisterNetEvent('qbx_vehiclekeys:server:breakLockpick', function(itemName)
+    local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
     if not (itemName == "lockpick" or itemName == "advancedlockpick") then return end
     if player.Functions.RemoveItem(itemName, 1) then
@@ -44,12 +44,12 @@ RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
     end
 end)
 
-RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, state)
+RegisterNetEvent('qbx_vehiclekeys:server:setVehLockState', function(vehNetId, state)
     SetVehicleDoorsLocked(NetworkGetEntityFromNetworkId(vehNetId), state)
 end)
 
 lib.callback.register('qbx-vehiclekeys:server:getVehicleKeys', function(source)
-    local citizenid = QBX.Functions.GetPlayer(source).PlayerData.citizenid
+    local citizenid = exports.qbx_core:GetPlayer(source).PlayerData.citizenid
     local keysList = {}
     for plate, citizenids in pairs (vehicleList) do
         if citizenids[citizenid] then
@@ -63,27 +63,27 @@ end)
 ----   Functions   ----
 -----------------------
 function GiveKeys(id, plate)
-    local citizenid = QBX.Functions.GetPlayer(id).PlayerData.citizenid
+    local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
 
     if not vehicleList[plate] then vehicleList[plate] = {} end
     vehicleList[plate][citizenid] = true
 
     TriggerClientEvent('QBCore:Notify', id, Lang:t('notify.keys_taken'))
-    TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
+    TriggerClientEvent('qbx_vehiclekeys:client:AddKeys', id, plate)
 end
 
 function RemoveKeys(id, plate)
-    local citizenid = QBX.Functions.GetPlayer(id).PlayerData.citizenid
+    local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
 
     if vehicleList[plate] and vehicleList[plate][citizenid] then
         vehicleList[plate][citizenid] = nil
     end
 
-    TriggerClientEvent('qb-vehiclekeys:client:RemoveKeys', id, plate)
+    TriggerClientEvent('qbx_vehiclekeys:client:RemoveKeys', id, plate)
 end
 
 function HasKeys(id, plate)
-    local citizenid = QBX.Functions.GetPlayer(id).PlayerData.citizenid
+    local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
     if vehicleList[plate] and vehicleList[plate][citizenid] then
         return true
     end
@@ -103,7 +103,7 @@ lib.addCommand('givekeys', {
     restricted = false,
 }, function (source, args)
     local src = source
-    TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', src, args.id)
+    TriggerClientEvent('qbx_vehiclekeys:client:GiveKeys', src, args.id)
 end)
 
 lib.addCommand('addkeys', {
