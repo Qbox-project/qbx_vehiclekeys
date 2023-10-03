@@ -17,7 +17,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     local giver = source
 
     if HasKeys(giver, plate) then
-        TriggerClientEvent('QBCore:Notify', giver, Lang:t("notify.gave_keys"))
+        exports.qbx_core:Notify(giver, Lang:t("notify.gave_keys"))
         if type(receiver) == 'table' then
             for _,r in ipairs(receiver) do
                 GiveKeys(receiver[r], plate)
@@ -26,7 +26,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
             GiveKeys(receiver, plate)
         end
     else
-        TriggerClientEvent('QBCore:Notify', giver, Lang:t("notify.no_keys"))
+        exports.qbx_core:Notify(giver, Lang:t("notify.no_keys"))
     end
 end)
 
@@ -68,7 +68,7 @@ function GiveKeys(id, plate)
     if not vehicleList[plate] then vehicleList[plate] = {} end
     vehicleList[plate][citizenid] = true
 
-    TriggerClientEvent('QBCore:Notify', id, Lang:t('notify.keys_taken'))
+    exports.qbx_core:Notify(id, Lang:t('notify.keys_taken'))
     TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
 end
 
@@ -126,7 +126,7 @@ lib.addCommand('addkeys', {
 }, function (source, args)
     local src = source
     if not args.id or not args.plate then
-        TriggerClientEvent('QBCore:Notify', src, Lang:t("notify.fpid"))
+        exports.qbx_core:Notify(src, Lang:t("notify.fpid"))
         return
     end
     GiveKeys(args.id, args.plate)
@@ -152,7 +152,7 @@ lib.addCommand('removekeys', {
 }, function (source, args)
     local src = source
     if not args.id or not args.plate then
-        TriggerClientEvent('QBCore:Notify', src, Lang:t("notify.fpid"))
+        exports.qbx_core:Notify(src, Lang:t("notify.fpid"))
         return
     end
     RemoveKeys(args.id, args.plate)
