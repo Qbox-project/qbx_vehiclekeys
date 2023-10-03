@@ -36,7 +36,7 @@ RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(plate)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
-    local player = QBX.Functions.GetPlayer(source)
+    local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
     if not (itemName == "lockpick" or itemName == "advancedlockpick") then return end
     if player.Functions.RemoveItem(itemName, 1) then
@@ -49,7 +49,7 @@ RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, sta
 end)
 
 lib.callback.register('qbx-vehiclekeys:server:getVehicleKeys', function(source)
-    local citizenid = QBX.Functions.GetPlayer(source).PlayerData.citizenid
+    local citizenid = exports.qbx_core:GetPlayer(source).PlayerData.citizenid
     local keysList = {}
     for plate, citizenids in pairs (vehicleList) do
         if citizenids[citizenid] then
@@ -63,7 +63,7 @@ end)
 ----   Functions   ----
 -----------------------
 function GiveKeys(id, plate)
-    local citizenid = QBX.Functions.GetPlayer(id).PlayerData.citizenid
+    local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
 
     if not vehicleList[plate] then vehicleList[plate] = {} end
     vehicleList[plate][citizenid] = true
@@ -73,7 +73,7 @@ function GiveKeys(id, plate)
 end
 
 function RemoveKeys(id, plate)
-    local citizenid = QBX.Functions.GetPlayer(id).PlayerData.citizenid
+    local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
 
     if vehicleList[plate] and vehicleList[plate][citizenid] then
         vehicleList[plate][citizenid] = nil
@@ -83,7 +83,7 @@ function RemoveKeys(id, plate)
 end
 
 function HasKeys(id, plate)
-    local citizenid = QBX.Functions.GetPlayer(id).PlayerData.citizenid
+    local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
     if vehicleList[plate] and vehicleList[plate][citizenid] then
         return true
     end

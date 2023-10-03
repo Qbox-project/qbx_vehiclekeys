@@ -16,7 +16,6 @@ client_script 'client/main.lua'
 server_script 'server/main.lua'
 
 modules {
-	'qbx_core:core',
 	'qbx_core:playerdata',
 	'qbx_core:utils'
 }
