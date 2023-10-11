@@ -39,9 +39,7 @@ RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
     local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
     if not (itemName == "lockpick" or itemName == "advancedlockpick") then return end
-    if player.Functions.RemoveItem(itemName, 1) then
-        TriggerClientEvent("inventory:client:ItemBox", source, QBX.Shared.Items[itemName], "remove")
-    end
+    exports.ox_inventory:RemoveItem(source, itemName, 1)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, state)
