@@ -69,6 +69,7 @@ function GiveKeys(id, plate)
     exports.qbx_core:Notify(id, Lang:t('notify.keys_taken'))
     TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
 end
+exports('GiveKeys', GiveKeys)
 
 function RemoveKeys(id, plate)
     local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
