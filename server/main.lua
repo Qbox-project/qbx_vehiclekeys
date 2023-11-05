@@ -155,7 +155,7 @@ lib.callback.register('vehiclekeys:server:RemoveKey', function(source, netId, ta
     -- This callback is not yet implemented
 end)
 
---- Sets the door state to a desired value.
+--- Toggles the door state of the vehicle between open and closed.
 ---@param source number ID of the player
 ---@param netId number The network ID of the entity
 ---@return number | nil -- Returns the current Door State

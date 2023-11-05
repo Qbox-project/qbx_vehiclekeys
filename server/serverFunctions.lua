@@ -30,7 +30,8 @@ function SetDoorState(entity, doorState)
     -- This function is not yet implemented
 end
 
----@param entity number The entity (vehicle) for which the door state is updated.
+--- Toggles the door state of the vehicle between open and closed.
+---@param entity number The entity (vehicle) for which the door state is being toggled.
 ---@return number | nil returns the new doorState of the vehicle
 function ToggleDoorState(entity)
     -- This function is not yet implemented
