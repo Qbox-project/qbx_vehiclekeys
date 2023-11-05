@@ -10,6 +10,7 @@ end
 ---@param vehicle number The entity number of the vehicle for which the key is being given.
 function GiveKey(targetPlayerId, vehicle)
     -- This function is not yet implemented
+    -- Will call the corresponding callback
 end
 
 --- Attempt to Remove a key from a target player for the specified vehicle.
@@ -17,11 +18,13 @@ end
 ---@param vehicle number The entity number of the vehicle from which the key is being removed.
 function RemoveKey(targetPlayerId, vehicle)
     -- This function is not yet implemented
+    -- Will call the corresponding callback
 end
 
 --- Toggles the state of a vehicle's doors. If a door is open, it will be closed, and if it's closed, it will be opened.
 ---@param vehicle number The entity number of the vehicle for which the door state is being toggled.
 function ToggleVehicleDoor(vehicle)
     -- This function is not yet implemented
+    -- Will call the corresponding callback
 end
 

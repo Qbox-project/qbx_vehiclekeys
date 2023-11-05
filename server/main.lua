@@ -88,3 +88,78 @@ function HasKeys(id, plate)
     end
     return false
 end
+
+--- ##########################
+--- ### SERVER-ONLY EVENTS ###
+--- ##########################
+
+--- Gives a key to an entity based on the player's CitizenID.
+---@param id integer The player's ID.
+---@param netId number The network ID of the entity.
+---@param doorState number | nil Sets the door state if given
+RegisterNetEvent('qb-vehiclekeys:server:GiveKey', function(id, netId, doorState)
+    if source == -1 then
+        -- This event is not yet implemented
+    else
+        -- drop player
+    end
+end)
+exports('GiveKey', GiveKey)
+
+--- Removes a key from an entity based on the player's CitizenID.
+---@param id integer The player's ID.
+---@param netId number The network ID of the entity.
+RegisterNetEvent('vehiclekeys:server:RemoveKey', function(id, netId)
+    if source == -1 then
+        -- This event is not yet implemented
+    else
+        -- drop player
+    end
+end)
+exports('RemoveKey', RemoveKey)
+
+--- Sets the door state to a desired value.
+--- This event is expected to be called only by the server.
+---@param netId number The network ID of the entity.
+---@param doorState number | nil Sets the door state if given
+RegisterNetEvent('vehiclekeys:server:SetDoorState', function(netId, doorState)
+    if source == -1 then
+        -- This event is not yet implemented
+    else
+        -- drop player
+    end
+end)
+exports('SetDoorState', SetDoorState)
+
+--- #############################
+--- ### CLIENT-SIDE CALLBACKS ###
+--- #############################
+
+--- Gives a key to an entity based on the target player's CitizenID but only if the owner already has a key.
+---@param source number ID of the player
+---@param netId number The network ID of the entity.
+---@param targetPlayerId number ID of the target player who receives the key
+---@return boolean | nil
+lib.callback.register('vehiclekeys:server:GiveKey', function(source, netId, targetPlayerId)
+    if not source or not netId or not targetPlayerId then return end
+    -- This callback is not yet implemented
+end)
+
+--- Removes a key from an entity based on the target player's CitizenID but only if the owner has a key.
+---@param source number ID of the player
+---@param netId number The network ID of the entity.
+---@param targetPlayerId number ID of the target player who receives the key
+---@return boolean | nil
+lib.callback.register('vehiclekeys:server:RemoveKey', function(source, netId, targetPlayerId)
+    if not source or not netId or not targetPlayerId then return end
+    -- This callback is not yet implemented
+end)
+
+--- Sets the door state to a desired value.
+---@param source number ID of the player
+---@param netId number The network ID of the entity
+---@return number | nil -- Returns the current Door State
+lib.callback.register('vehiclekeys:server:ToggleDoorState', function(source, netId)
+    if not source or not netId then return end
+    -- This callback is not yet implemented
+end)
