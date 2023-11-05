@@ -15,11 +15,12 @@ shared_scripts {
 	'shared/functions.lua',
 }
 client_scripts {
-	'client/main.lua'
+	'client/main.lua',
+	'client/clientFunctions.lua'
 }
 server_script {
 	'server/main.lua',
-	'server/serverFunctions.lua',
+	'server/serverFunctions.lua'
 }
 
 modules {
