@@ -1,69 +1,68 @@
-Config = {}
-
 Config = {
-    debug = true, -- Set to true for development purposes only
+    debug = true, -- Set to true for development purposes only. Used for zones, and essential prints. Will be removed upon release
 
-    vehicleLockingDistance = 5.0, -- Minimum distance for vehicle locking
+    vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
     -- NPC Vehicle Lock States
     lockNPCDrivenCars = true, -- Lock state for NPC cars being driven by NPCs [true = locked, false = unlocked]
     lockNPCParkedCars = true, -- Lock state for NPC parked cars [true = locked, false = unlocked]
 
     -- Lockpick Settings
-    removeNormalLockpickChance = { -- Chance to remove lockpick on fail by vehicle class        [0] = 0.5, -- Compacts  
-        [1] = 0.5, -- Sedans  
-        [2] = 0.5, -- SUVs  
-        [3] = 0.5, -- Coupes  
-        [4] = 0.5, -- Muscle  
-        [5] = 0.5, -- Sports Classics  
-        [6] = 0.5, -- Sports  
-        [7] = 0.5, -- Super  
-        [8] = 0.5, -- Motorcycles  
-        [9] = 0.5, -- Off-road  
-        [10] = 0.5, -- Industrial  
-        [11] = 0.5, -- Utility  
-        [12] = 0.5, -- Vans  
-        [13] = 0.5, -- Cycles  
-        [14] = 0.5, -- Boats  
-        [15] = 0.5, -- Helicopters  
-        [16] = 0.5, -- Planes  
-        [17] = 0.5, -- Service  
-        [18] = 0.5, -- Emergency  
-        [19] = 0.5, -- Military  
-        [20] = 0.5, -- Commercial  
-        [21] = 0.5, -- Trains  
+    removeNormalLockpickChance = { -- Chance to remove lockpick on fail by vehicle class
+        [0] = 0.5, -- Compacts
+        [1] = 0.5, -- Sedans
+        [2] = 0.5, -- SUVs
+        [3] = 0.5, -- Coupes
+        [4] = 0.5, -- Muscle
+        [5] = 0.5, -- Sports Classics
+        [6] = 0.5, -- Sports
+        [7] = 0.5, -- Super
+        [8] = 0.5, -- Motorcycles
+        [9] = 0.5, -- Off-road
+        [10] = 0.5, -- Industrial
+        [11] = 0.5, -- Utility
+        [12] = 0.5, -- Vans
+        [13] = 0.5, -- Cycles
+        [14] = 0.5, -- Boats
+        [15] = 0.5, -- Helicopters
+        [16] = 0.5, -- Planes
+        [17] = 0.5, -- Service
+        [18] = 0.5, -- Emergency
+        [19] = 0.5, -- Military
+        [20] = 0.5, -- Commercial
+        [21] = 0.5, -- Trains
         [22] = 0.5, -- Open Wheel
     },
     removeLockpickAdvanced = { -- Chance to remove advanced lockpick on fail by vehicle class
-        [0] = 0.5, -- Compacts  
-        [1] = 0.5, -- Sedans  
-        [2] = 0.5, -- SUVs  
-        [3] = 0.5, -- Coupes  
-        [4] = 0.5, -- Muscle  
-        [5] = 0.5, -- Sports Classics  
-        [6] = 0.5, -- Sports  
-        [7] = 0.5, -- Super  
-        [8] = 0.5, -- Motorcycles  
-        [9] = 0.5, -- Off-road  
-        [10] = 0.5, -- Industrial  
-        [11] = 0.5, -- Utility  
-        [12] = 0.5, -- Vans  
-        [13] = 0.5, -- Cycles  
-        [14] = 0.5, -- Boats  
-        [15] = 0.5, -- Helicopters  
-        [16] = 0.5, -- Planes  
-        [17] = 0.5, -- Service  
-        [18] = 0.5, -- Emergency  
-        [19] = 0.5, -- Military  
-        [20] = 0.5, -- Commercial  
-        [21] = 0.5, -- Trains  
+        [0] = 0.5, -- Compacts
+        [1] = 0.5, -- Sedans
+        [2] = 0.5, -- SUVs
+        [3] = 0.5, -- Coupes
+        [4] = 0.5, -- Muscle
+        [5] = 0.5, -- Sports Classics
+        [6] = 0.5, -- Sports
+        [7] = 0.5, -- Super
+        [8] = 0.5, -- Motorcycles
+        [9] = 0.5, -- Off-road
+        [10] = 0.5, -- Industrial
+        [11] = 0.5, -- Utility
+        [12] = 0.5, -- Vans
+        [13] = 0.5, -- Cycles
+        [14] = 0.5, -- Boats
+        [15] = 0.5, -- Helicopters
+        [16] = 0.5, -- Planes
+        [17] = 0.5, -- Service
+        [18] = 0.5, -- Emergency
+        [19] = 0.5, -- Military
+        [20] = 0.5, -- Commercial
+        [21] = 0.5, -- Trains
         [22] = 0.5, -- Open Wheel
     },
 
     -- Carjack Settings
-    carjackEnable = true, -- Enables the ability to carjack pedestrians
-    carjackingTime = 7500, -- Time it takes to successfully carjack
-    delayBetweenCarjackings = 10000, -- Time before you can attempt another carjack
+    carjackEnable = true, -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
+    carjackingTimeInMs = 7500, -- Time it takes to successfully carjack in miliseconds
+    delayBetweenCarjackingsInMs = 10000, -- Time before you can attempt another carjack in miliseconds
     carjackChance = { -- Probability of successful carjacking based on weapon used
         [2685387236] = 0.0, -- melee
         [416676503] = 0.5, -- handguns
@@ -88,6 +87,23 @@ Config = {
     alertCooldown = 10000, -- Cooldown period in milliseconds (10 seconds)
     policeAlertChance = 0.75, -- Chance of alerting the police during the day
     policeNightAlertChance = 0.50, -- Chance of alerting the police at night (times: 01-06)
+
+    -- Job Settings
+    sharedKeys = { -- Share keys amongst employees. Employees can lock/unlock any job-listed vehicle
+        ['police'] = { -- Job name
+            requireOnduty = false,
+            vehicles = {
+                'police', -- Vehicle model
+                'police2', -- Vehicle model
+            }
+        },
+        ['mechanic'] = {
+            requireOnduty = false,
+            vehicles = {
+                'towtruck',
+            }
+        }
+    },
 
     -- Vehicles that cannot be jacked
     immuneVehicles = {
