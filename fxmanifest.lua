@@ -20,7 +20,8 @@ client_scripts {
 }
 server_script {
 	'server/main.lua',
-	'server/serverFunctions.lua'
+	'server/serverFunctions.lua',
+	'server/commands.lua',
 }
 
 modules {
