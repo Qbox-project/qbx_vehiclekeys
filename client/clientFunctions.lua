@@ -2,7 +2,7 @@
 ---@param vehicle number The entity number of the vehicle to check for a key.
 ---@return boolean True if the player has a key for the vehicle, false otherwise.
 function HasKey(vehicle)
-    return Entity(vehicle).state.keys[QBCore.Functions.GetPlayerData().citizenid]
+    return Entity(vehicle).state.keys[QBX.PlayerData.citizenid]
 end
 
 --- Gives a key to a target player for the specified vehicle.
