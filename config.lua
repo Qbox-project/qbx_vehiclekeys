@@ -78,7 +78,31 @@ Config = {
     },
 
     -- Hotwire Settings
-    hotwireChance = 0.5, -- Chance for a successful hotwire
+    hotwireChance = {
+        [0] = 0.5, -- Compacts
+        [1] = 0.5, -- Sedans
+        [2] = 0.5, -- SUVs
+        [3] = 0.5, -- Coupes
+        [4] = 0.5, -- Muscle
+        [5] = 0.5, -- Sports Classics
+        [6] = 0.5, -- Sports
+        [7] = 0.5, -- Super
+        [8] = 0.5, -- Motorcycles
+        [9] = 0.5, -- Off-road
+        [10] = 0.5, -- Industrial
+        [11] = 0.5, -- Utility
+        [12] = 0.5, -- Vans
+        [13] = 0.5, -- Cycles
+        [14] = 0.5, -- Boats
+        [15] = 0.5, -- Helicopters
+        [16] = 0.5, -- Planes
+        [17] = 0.5, -- Service
+        [18] = 0.5, -- Emergency
+        [19] = 0.5, -- Military
+        [20] = 0.5, -- Commercial
+        [21] = 0.5, -- Trains
+        [22] = 0.5, -- Open Wheel
+    }, -- Chance for a successful hotwire by vehicle Class
     timeBetweenHotwires = 5000, -- Time in milliseconds between hotwire attempts
     minHotwireTime = 20000, -- Minimum hotwire time in milliseconds
     maxHotwireTime = 40000, -- Maximum hotwire time in milliseconds
