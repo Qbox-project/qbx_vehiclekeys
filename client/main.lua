@@ -9,6 +9,7 @@ local alertSend = false
 local lastPickedVehicle = nil
 local usingAdvanced = false
 local isHotwiring = false
+local config = require 'config.client'
 
 -----------------------
 ----   Threads     ----
@@ -26,7 +27,7 @@ CreateThread(function()
                 local plate = GetPlate(entering)
 
                 local driver = GetPedInVehicleSeat(entering, -1)
-                for _, veh in ipairs(Config.immuneVehicles) do
+                for _, veh in ipairs(config.immuneVehicles) do
                     if GetEntityModel(entering) == joaat(veh) then
                         carIsImmune = true
                     end
@@ -54,7 +55,7 @@ CreateThread(function()
                                 isTakingKeys = false
                             end
                         end
-                    elseif Config.lockNPCDrivingCars then
+                    elseif config.lockNPCDrivingCars then
                         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 2)
                     else
                         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 1)
@@ -70,7 +71,7 @@ CreateThread(function()
                     end
                 -- Parked car logic
                 elseif driver == 0 and entering ~= lastPickedVehicle and not HasKeys(plate) and not isTakingKeys then
-                    if Config.lockNPCParkedCars then
+                    if config.lockNPCParkedCars then
                         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 2)
                     else
                         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 1)
@@ -96,12 +97,12 @@ CreateThread(function()
                 end
             end
 
-            if Config.carJackEnable and canCarjack then
+            if config.carJackEnable and canCarjack then
                 local aiming, target = GetEntityPlayerIsFreeAimingAt(cache.playerId)
                 if aiming and (target ~= nil and target ~= 0) then
                     if DoesEntityExist(target) and IsPedInAnyVehicle(target, false) and not IsEntityDead(target) and not IsPedAPlayer(target) then
                         local targetveh = GetVehiclePedIsIn(target)
-                        for _, veh in ipairs(Config.immuneVehicles) do
+                        for _, veh in ipairs(config.immuneVehicles) do
                             if GetEntityModel(targetveh) == joaat(veh) then
                                 carIsImmune = true
                             end
@@ -123,7 +124,7 @@ end)
 
 function isBlacklistedVehicle(vehicle)
     local isBlacklisted = false
-    for _,v in ipairs(Config.noLockVehicles) do
+    for _,v in ipairs(config.noLockVehicles) do
         if joaat(v) == GetEntityModel(vehicle) then
             isBlacklisted = true
             break;
@@ -281,9 +282,9 @@ end
 function AreKeysJobShared(veh)
     local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
     local vehPlate = GetVehicleNumberPlateText(veh)
-    for job, v in pairs(Config.sharedKeys) do
+    for job, v in pairs(config.sharedKeys) do
         if job == QBX.PlayerData.job.name then
-            if Config.sharedKeys[job].requireOnduty and not QBX.PlayerData.job.onduty then return false end
+            if config.sharedKeys[job].requireOnduty and not QBX.PlayerData.job.onduty then return false end
             for _, vehicle in pairs(v.vehicles) do
                 if string.upper(vehicle) == string.upper(vehName) then
                     if not HasKeys(vehPlate) then
@@ -357,7 +358,7 @@ end
 function IsBlacklistedWeapon()
     local weapon = GetSelectedPedWeapon(cache.ped)
     if weapon ~= nil then
-        for _, v in pairs(Config.noCarjackWeapons) do
+        for _, v in pairs(config.noCarjackWeapons) do
             if weapon == joaat(v) then
                 return true
             end
@@ -409,18 +410,18 @@ function LockpickFinishCallback(success)
     end
 
     if usingAdvanced then
-        if chance <= Config.removeAdvancedLockpickChance[GetVehicleClass(vehicle)] then
+        if chance <= config.removeAdvancedLockpickChance[GetVehicleClass(vehicle)] then
             TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "advancedlockpick")
         end
     else
-        if chance <= Config.removeNormalLockpickChance[GetVehicleClass(vehicle)] then
+        if chance <= config.removeNormalLockpickChance[GetVehicleClass(vehicle)] then
             TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "lockpick")
         end
     end
 end
 
 function Hotwire(vehicle, plate)
-    local hotwireTime = math.random(Config.minHotwireTime, Config.maxHotwireTime)
+    local hotwireTime = math.random(config.minHotwireTime, config.maxHotwireTime)
     isHotwiring = true
 
     SetVehicleAlarm(vehicle, true)
@@ -442,13 +443,13 @@ function Hotwire(vehicle, plate)
         }
     }) then
         StopAnimTask(cache.ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
-        if (math.random() <= Config.hotwireChance[GetVehicleClass(vehicle)]) then
+        if (math.random() <= config.hotwireChance[GetVehicleClass(vehicle)]) then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             exports.qbx_core:Notify(Lang:t("notify.failed_lockedpick"), 'error')
         end
-        Wait(Config.timeBetweenHotwires)
+        Wait(config.timeBetweenHotwires)
         isHotwiring = false
     else
         StopAnimTask(cache.ped, "anim@amb@clubhouse@tutorial@bkr_tut_ig3@", "machinic_loop_mechandplayer", 1.0)
@@ -461,7 +462,7 @@ function Hotwire(vehicle, plate)
 end
 
 function CarjackVehicle(target)
-    if not Config.carJackEnable then return end
+    if not config.carJackEnable then return end
     isCarjacking = true
     canCarjack = false
     lib.requestAnimDict('mp_am_hold_up')
@@ -487,7 +488,7 @@ function CarjackVehicle(target)
     end)
     
     if lib.progressCircle({
-        duration = Config.carjackingTime,
+        duration = config.carjackingTime,
         label = Lang:t("progress.attempting_carjack"),
         position = 'bottom',
         useWhileDead = false,
@@ -499,8 +500,8 @@ function CarjackVehicle(target)
         local hasWeapon, weaponHash = GetCurrentPedWeapon(cache.ped, true)
         if hasWeapon and isCarjacking then
             local carjackChance
-            if Config.carjackChance[tostring(GetWeapontypeGroup(weaponHash))] then
-                carjackChance = Config.carjackChance[tostring(GetWeapontypeGroup(weaponHash))]
+            if config.carjackChance[tostring(GetWeapontypeGroup(weaponHash))] then
+                carjackChance = config.carjackChance[tostring(GetWeapontypeGroup(weaponHash))]
             else
                 carjackChance = 0.5
             end
@@ -527,28 +528,28 @@ function CarjackVehicle(target)
             isCarjacking = false
             Wait(2000)
             AttemptPoliceAlert("carjack")
-            Wait(Config.delayBetweenCarjackings)
+            Wait(config.delayBetweenCarjackings)
             canCarjack = true
         end
     else
         MakePedFlee(target)
         isCarjacking = false
-        Wait(Config.delayBetweenCarjackings)
+        Wait(config.delayBetweenCarjackings)
         canCarjack = true
     end
 end
 
 function AttemptPoliceAlert(type)
     if not alertSend then
-        local chance = Config.policeAlertChance
+        local chance = config.policeAlertChance
         if GetClockHours() >= 1 and GetClockHours() <= 6 then
-            chance = Config.policeNightAlertChance
+            chance = config.policeNightAlertChance
         end
         if math.random() <= chance then
            TriggerServerEvent('police:server:policeAlert', Lang:t("info.vehicle_theft") .. type)
         end
         alertSend = true
-        SetTimeout(Config.alertCooldown, function()
+        SetTimeout(config.alertCooldown, function()
             alertSend = false
         end)
     end
