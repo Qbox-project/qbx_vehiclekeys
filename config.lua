@@ -33,7 +33,7 @@ Config = {
         [21] = 0.5, -- Trains
         [22] = 0.5, -- Open Wheel
     },
-    removeLockpickAdvanced = { -- Chance to remove advanced lockpick on fail by vehicle class
+    removeAdvancedLockpickChance = { -- Chance to remove advanced lockpick on fail by vehicle class
         [0] = 0.5, -- Compacts
         [1] = 0.5, -- Sedans
         [2] = 0.5, -- SUVs

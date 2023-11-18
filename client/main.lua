@@ -409,11 +409,11 @@ function LockpickFinishCallback(success)
     end
 
     if usingAdvanced then
-        if chance <= Config.removeLockpickAdvanced[GetVehicleClass(vehicle)] then
+        if chance <= Config.removeAdvancedLockpickChance[GetVehicleClass(vehicle)] then
             TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "advancedlockpick")
         end
     else
-        if chance <= Config.removeLockpickNormal[GetVehicleClass(vehicle)] then
+        if chance <= Config.removeNormalLockpickChance[GetVehicleClass(vehicle)] then
             TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "lockpick")
         end
     end
