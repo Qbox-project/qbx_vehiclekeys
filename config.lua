@@ -103,16 +103,16 @@ Config = {
     carjackingTimeInMs = 7500, -- Time it takes to successfully carjack in miliseconds
     delayBetweenCarjackingsInMs = 10000, -- Time before you can attempt another carjack in miliseconds
     carjackChance = { -- Probability of successful carjacking based on weapon used
-        [WeaponTypeGroups.Melee] = 0.0, -- melee
-        [WeaponTypeGroups.Handgun] = 0.5, -- handguns
-        [WeaponTypeGroups.SMG] = 0.75, -- SMG
-        [WeaponTypeGroups.Shotgun] = 0.90, -- shotgun
-        [WeaponTypeGroups.Rifle] = 0.90, -- assault
-        [WeaponTypeGroups.LMG] = 0.99, -- LMG
-        [WeaponTypeGroups.Sniper] = 0.99, -- sniper
-        [WeaponTypeGroups.Heavy] = 0.99, -- heavy
-        [WeaponTypeGroups.Throwable] = 0.0, -- throwable
-        [WeaponTypeGroups.Misc] = 0.0, -- misc
+        [WeaponTypeGroups.Melee] = 0.0,
+        [WeaponTypeGroups.Handgun] = 0.5,
+        [WeaponTypeGroups.SMG] = 0.75,
+        [WeaponTypeGroups.Shotgun] = 0.90,
+        [WeaponTypeGroups.Rifle] = 0.90,
+        [WeaponTypeGroups.LMG] = 0.99,
+        [WeaponTypeGroups.Sniper] = 0.99,
+        [WeaponTypeGroups.Heavy] = 0.99,
+        [WeaponTypeGroups.Throwable] = 0.0,
+        [WeaponTypeGroups.Misc] = 0.0,
     },
 
     -- Hotwire Settings
