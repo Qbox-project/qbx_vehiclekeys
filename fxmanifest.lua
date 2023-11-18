@@ -10,14 +10,13 @@ shared_scripts {
 	'@qbx_core/modules/utils.lua',
 	'@qbx_core/shared/locale.lua',
 	'locales/en.lua',
-	'locales/*.lua',
-	'config.lua',
-	'shared/functions.lua'
+	'locales/*.lua'
 }
 
 client_scripts {
 	'@qbx_core/modules/playerdata.lua',
 	'client/main.lua',
+	'config/client.lua'
 }
 
 server_script 'server/main.lua'
