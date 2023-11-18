@@ -1,4 +1,2 @@
 --- placeholder. Not yet implemented
-return {
-    
-}
+return {}
