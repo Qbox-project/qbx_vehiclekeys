@@ -12,6 +12,7 @@ shared_scripts {
 	'locales/en.lua',
 	'locales/*.lua',
 	'config.lua',
+	'shared/functions.lua'
 }
 
 client_scripts {
