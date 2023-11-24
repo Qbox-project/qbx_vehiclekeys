@@ -34,7 +34,7 @@ end
 
 -- Makes peds flee from vehicle when carjacked
 ---@param ped number List of peds to flee
-local function makePedFleeVehicle(ped)
+local function makePedFleeVehicle(ped, vehicle)
     TaskLeaveVehicle(ped, vehicle, 0)
     PlayPain(ped, 6, 0)
     Wait(1250)
@@ -216,7 +216,7 @@ local function giveKeys(receiver)
     if not targetVehicle then
         return
     end
-    if receiver and type(receiver) == number then -- Validate that id is a number
+    if receiver and type(receiver) == 'number' then -- Validate that id is a number
         giveKeysToId(receiver, targetVehicle)
         return
     end
@@ -365,7 +365,7 @@ local function processCarjack(occupants, vehicleNetId, target)
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         if success then
             for _, ped in ipairs(occupants) do
-                CreateThread(function() makePedFleeVehicle(ped) end)
+                CreateThread(function() makePedFleeVehicle(ped, vehicle) end)
             end
             return
         end
