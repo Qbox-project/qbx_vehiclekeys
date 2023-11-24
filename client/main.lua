@@ -365,7 +365,7 @@ local function processCarjack(occupants, vehicleNetId, target)
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         if success then
             for _, ped in ipairs(occupants) do
-                CreateThread(function() makePedFleeVehicle(ped, vehicle) end)
+                CreateThread(function() makePedFleeVehicle(ped, NetworkGetEntityFromNetworkId(vehicleNetId)) end)
             end
             return
         end
