@@ -479,11 +479,11 @@ local function handleHotwire()
     local vehicleNetId = NetworkGetNetworkIdFromEntity(cache.vehicle)
     local vehicleName = GetDisplayNameFromVehicleModel(GetEntityModel(cache.vehicle))
     local hasKey = hasKeys(GetPlate(cache.vehicle))
-    if GetPedInVehicleSeat(cache.vehicle, -1) == cache.ped and areKeysJobShared(vehicleName) and not hasKey and not lib.progressActive() then
+    if cache.seat == -1 and areKeysJobShared(vehicleName) and not hasKey and not lib.progressActive() then
         lib.callback('qbx_vehiclekeys:server:handleJobSharedVehicle', 3000, nil, vehicleNetId, vehicleName)
         return 1000
     end
-    if GetPedInVehicleSeat(cache.vehicle, -1) == cache.ped and not hasKey and not isVehicleAlwaysUnlocked(cache.vehicle) and not Entity(cache.vehicle).state.hotwireAttempted then
+    if cache.seat == -1 and not hasKey and not isVehicleAlwaysUnlocked(cache.vehicle) and not Entity(cache.vehicle).state.hotwireAttempted then
         local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
         DrawText3D(Lang:t('info.search_keys'), vehiclePos)
         SetVehicleEngineOn(cache.vehicle, false, false, true)
