@@ -1,17 +1,11 @@
 local config = require 'config.server'
 local sharedConfig = require 'config.shared'
 
------------------------
-----   Variables   ----
------------------------
 local vehicleList = {}
 local hotwireList = {}
 local carjackerList = {}
 local alertList = {}
 
------------------------
-----   Functions   ----
------------------------
 
 -- Server side check for if vehicle is a shared job vehicle and if keys should be granted automatically.
 -- Returns true if keys should be granted.
@@ -138,10 +132,6 @@ local function alertPolice(source, alertType)
     end)
 end
 
------------------------
-----   Commands    ----
------------------------
-
 -- Player give keys command. Takes id as optional parameter
 lib.addCommand('givekeys', {
     help = Lang:t('addcom.givekeys'),
@@ -209,13 +199,6 @@ lib.addCommand('removekeys', {
     end
     removeKeys(string.upper(args.plate), args.id)
 end)
-
-
------------------------
----- Server Events ----
------------------------
-
--- Callbacks
 
 
 -- Sets and Toggles vehicle locks. Validates server side key ownership.
@@ -406,8 +389,6 @@ lib.callback.register('qbx_vehiclekeys:server:getVehicleKeys', function(source)
     end
     return keysList
 end)
-
--- Net Events for compatability
 
 -- Backwards Compatibility ONLY -- Remove at some point --
 -- Gives keys to target plate for this caller.

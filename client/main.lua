@@ -1,18 +1,7 @@
------------------------
-----   Configuration   ----
------------------------
-
 local config = require 'config.client'
 local sharedConfig = require 'config.shared'
-
------------------------
-----   Variables   ----
------------------------
 local KeysList = {} -- Stores cache of keys for vehicle owner (reduces callbacks)
 
------------------------
-----    Exports    ----
------------------------
 
 -- Checks key list against local cache table
 -- Optimized for speed due to frequent checks
@@ -20,10 +9,6 @@ local function hasKeys(plate)
     return KeysList[plate]
 end
 exports('HasKeys', hasKeys)
-
------------------------
-----   Functions   ----
------------------------
 
 -- Makes peds flee from vehicle when carjacked
 ---@param ped number List of peds to flee
@@ -543,10 +528,6 @@ local function handleEnteringVehicle(enteringVehicle)
     return sleep
 end
 
------------------------
-----   Threads     ----
------------------------
-
 -- Main thread to handle entering, hotwiring, and carjacking.
 -- Wait time changes depending on condition to reduce thread utilization
 CreateThread(function()
@@ -570,10 +551,6 @@ CreateThread(function()
     end
 end)
 
------------------------
-----   Callbacks   ----
------------------------
-
 -- Callback from command to give keys to receiver
 ---@param receiver? number Optional server id to give keys to
 lib.callback.register('qbx_vehiclekeys:client:giveKeys', function(receiver)
@@ -596,10 +573,6 @@ end)
 lib.callback.register('qbx_vehiclekeys:client:getCurrentHour', function()
     return GetClockHours()
 end)
-
--------------------------------------
-----   Compatibility Exports     ----
--------------------------------------
 
 -- Lockpick net event used for compatibility
 RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
