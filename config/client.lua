@@ -5,4 +5,6 @@ return {
     -- Hotwire Settings
     minHotwireTime = 2000, -- Minimum hotwire time in ms
     maxHotwireTime = 4000, --  Maximum hotwire time in ms
+    toggleLocksKeybind = 'L',
+    toggleEngineKeybind = 'G',
 }

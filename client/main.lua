@@ -591,24 +591,6 @@ end)
 RegisterNetEvent('vehiclekeys:client:SetOwner', function(plate)
     lib.callback('qbx_vehiclekeys:server:acquireVehicleKeys', false, nil, plate)
 end)
--- Backwards Compatibility ONLY -- Remove at some point --
-
-
-----------------------------------
----- Key Mapping and Commands ----
-----------------------------------
-
--- Register togglelocks keybind
-RegisterKeyMapping('togglelocks', Lang:t('info.toggle_locks'), 'keyboard', 'L')
-RegisterCommand('togglelocks', function()
-    toggleVehicleLocks(getVehicle())
-end)
-
--- Register toggleengine keybind
-RegisterKeyMapping('engine', Lang:t('info.engine'), 'keyboard', 'G')
-RegisterCommand('engine', function()
-    toggleEngine()
-end)
 
 -- Handles state right when the player selects their character and location.
 -- Retrieves keys known to server and caches them locally
@@ -622,3 +604,20 @@ end)
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     KeysList = {}
 end)
+
+
+-- Register togglelocks keybind
+lib.addKeybind({
+    name = 'togglelocks',
+    description = Lang:t('info.toggle_locks'),
+    defaultKey = 'keyboard',
+    onPressed = toggleVehicleLocks(getVehicle())
+})
+
+-- Register toggleengine keybind
+lib.addKeybind({
+    name = 'engine',
+    description = Lang:t('info.engine'),
+    defaultKey = 'keyboard',
+    onPressed = toggleEngine
+})
