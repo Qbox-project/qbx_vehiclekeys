@@ -5,6 +5,8 @@ local KeysList = {} -- Stores cache of keys for vehicle owner (reduces callbacks
 
 -- Checks key list against local cache table
 -- Optimized for speed due to frequent checks
+---@param plate string Plate to search if client has keys
+---@return boolean
 local function hasKeys(plate)
     return KeysList[plate]
 end
