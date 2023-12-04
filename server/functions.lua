@@ -1,8 +1,9 @@
 --- Checks for the existence of a key.
 ---@param entity number The entity (vehicle) where we check for the existence of a key.
 ---@param citizenid string The CitizenID of the player whose key we check for.
+---@return boolean | nil
 function HasKey(entity, citizenid)
-    return Entity(entity).state.keys[citizenid]
+    return Entity(entity) and Entity(entity).state.keys[citizenid]
 end
 
 --- Adds a key to the selected vehicle entity and returns a success status.
