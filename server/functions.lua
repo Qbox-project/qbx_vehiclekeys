@@ -36,7 +36,19 @@ end
 ---@param citizenid string The CitizenID of the player whose key is being removed.
 ---@return boolean | nil `true` if the key was successfully removed, `nil` otherwise.
 function RemoveKey(entity, citizenid)
-    -- This function is not yet implemented
+    if not entity or type(entity) ~= 'number' or not citizenid or type(citizenid) ~= 'string' then
+        return
+    end
+
+    local ent = Entity(entity)
+    if not ent then return end
+
+    local keyholders = ent.state.keys
+    if keyholders and keyholders[citizenid] then
+        keyholders[citizenid] = nil
+        ent.state:set('keys', keyholders, true)
+        return true
+    end
 end
 
 --- Sets the door state of the vehicle.
