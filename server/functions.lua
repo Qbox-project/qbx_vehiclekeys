@@ -71,5 +71,17 @@ end
 ---@param entity number The entity (vehicle) for which the door state is being toggled.
 ---@return number | nil returns the new doorState of the vehicle
 function ToggleDoorState(entity)
-    -- This function is not yet implemented
+    if not entity or type(entity) ~= 'number' then
+        return
+    end
+
+    local ent = Entity(entity)
+    if not ent then return end
+    if ent.state.doorState and ent.state.doorState ~= 0 then
+        ent.state:set('doorState', 1, true)
+        return 1
+    else
+        ent.state:set('doorState', 0, true)
+        return 0
+    end
 end
