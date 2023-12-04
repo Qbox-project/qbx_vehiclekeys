@@ -56,7 +56,15 @@ end
 ---@param doorState number The door state number to update.
 ---@return boolean | nil `true` if the door state was successfully updated, `nil` otherwise.
 function SetDoorState(entity, doorState)
-    -- This function is not yet implemented
+    if not entity or type(entity) ~= 'number' or not doorState or type(doorState) ~= 'number' then
+        return
+    end
+
+    local ent = Entity(entity)
+    if not ent then return end
+
+    ent.state:set('doorState', doorState, true)
+    return true
 end
 
 --- Toggles the door state of the vehicle between open and closed.
