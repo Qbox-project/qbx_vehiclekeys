@@ -1,22 +1,27 @@
 fx_version 'cerulean'
 game 'gta5'
-lua54 'yes'
-description 'https://github.com/Qbox-project/qbx-vehiclekeys'
+
+description 'QBX_VehicleKeys'
+repository 'https://github.com/Qbox-project/qbx_vehiclekeys'
 version '1.0.0'
 
 shared_scripts {
 	'@ox_lib/init.lua',
-	'@qbx_core/import.lua',
+	'@qbx_core/modules/utils.lua',
 	'@qbx_core/shared/locale.lua',
 	'locales/en.lua',
 	'locales/*.lua',
-	'config.lua',
-	'shared/functions.lua',
+  'shared/functions.lua'
 }
 
 client_scripts {
+  '@qbx_core/modules/playerdata.lua',
 	'client/main.lua',
 	'client/clientFunctions.lua'
+}
+
+files {
+	'config/client.lua'
 }
 
 server_scripts {
@@ -25,7 +30,5 @@ server_scripts {
 	'server/serverFunctions.lua'
 }
 
-modules {
-	'qbx_core:playerdata',
-	'qbx_core:utils'
-}
+lua54 'yes'
+use_experimental_fxv2_oal 'yes'
