@@ -11,13 +11,13 @@ shared_scripts {
 	'@qbx_core/shared/locale.lua',
 	'locales/en.lua',
 	'locales/*.lua',
-  'shared/functions.lua'
+  	'shared/functions.lua'
 }
 
 client_scripts {
   '@qbx_core/modules/playerdata.lua',
 	'client/main.lua',
-	'client/clientFunctions.lua'
+	'client/functions.lua'
 }
 
 files {
@@ -27,7 +27,7 @@ files {
 server_scripts {
 	'server/main.lua',
 	'server/commands.lua',
-	'server/serverFunctions.lua'
+	'server/functions.lua'
 }
 
 lua54 'yes'

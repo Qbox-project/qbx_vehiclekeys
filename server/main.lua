@@ -89,10 +89,6 @@ function HasKeys(id, plate)
     return false
 end
 
---- ##########################
---- ### SERVER-ONLY EVENTS ###
---- ##########################
-
 --- Gives a key to an entity based on the player's CitizenID.
 ---@param id integer The player's ID.
 ---@param netId number The network ID of the entity.
@@ -130,10 +126,6 @@ RegisterNetEvent('vehiclekeys:server:SetDoorState', function(netId, doorState)
     end
 end)
 exports('SetDoorState', SetDoorState)
-
---- #############################
---- ### CLIENT-SIDE CALLBACKS ###
---- #############################
 
 --- Gives a key to an entity based on the target player's CitizenID but only if the owner already has a key.
 ---@param source number ID of the player
