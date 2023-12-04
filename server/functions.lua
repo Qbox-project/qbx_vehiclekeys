@@ -11,7 +11,24 @@ end
 ---@param doorState number | nil -- Sets the doorState of the vehicle if present
 ---@return boolean | nil `true` if the key was successfully added, `nil` otherwise.
 function GiveKey(entity, citizenid, doorState)
-    -- This function is not yet implemented
+    if not entity or type(entity) ~= 'number' or not citizenid or type(citizenid) ~= 'string' then
+        return
+    end
+
+    local ent = Entity(entity)
+    if not ent then return end
+
+    if doorState then
+        ent.state:set('doorState', doorState, true)
+    end
+
+    local keyholders = ent.state.keys or {}
+
+    if not keyholders[citizenid] then
+        keyholders[citizenid] = true
+        ent.state:set('keys', keyholders, true)
+        return true
+    end
 end
 
 --- Removes a key from the selected vehicle entity and returns a success status.
