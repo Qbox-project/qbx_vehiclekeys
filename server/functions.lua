@@ -57,9 +57,7 @@ end
 ---@param doorState number The door state number to update.
 ---@return boolean | nil `true` if the door state was successfully updated, `nil` otherwise.
 function SetDoorState(entity, doorState)
-    if not entity or type(entity) ~= 'number' or not doorState or type(doorState) ~= 'number' then
-        return
-    end
+    if not entity or type(entity) ~= 'number' or not doorState or type(doorState) ~= 'number' then return end
 
     local ent = Entity(entity)
     if not ent then return end
@@ -72,9 +70,7 @@ end
 ---@param entity number The entity (vehicle) for which the door state is being toggled.
 ---@return number | nil returns the new doorState of the vehicle
 function ToggleDoorState(entity)
-    if not entity or type(entity) ~= 'number' then
-        return
-    end
+    if not entity or type(entity) ~= 'number' then return end
 
     local ent = Entity(entity)
     if not ent then return end
