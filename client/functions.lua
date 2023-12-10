@@ -1,8 +1,11 @@
 --- Checks if the current player has a key for the specified vehicle.
 ---@param vehicle number The entity number of the vehicle to check for a key.
----@return boolean True if the player has a key for the vehicle, false otherwise.
+---@return boolean | nil if the player has a key for the vehicle, false otherwise.
 function HasKey(vehicle)
-    return Entity(vehicle).state.keys[QBX.PlayerData.citizenid]
+    if not vehicle or type(vehicle) ~= 'number' then return end
+    local ent = Entity(vehicle)
+    if not ent or not ent.state.keys then return end
+    return ent.state.keys[QBX.PlayerData.citizenid]
 end
 
 --- Attempt to Give a key to a target player for the specified vehicle.
