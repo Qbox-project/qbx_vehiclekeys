@@ -89,27 +89,40 @@ function HasKeys(id, plate)
     return false
 end
 
+---@param callerId number Expected to be -1
+---@param eventName string
+---@return boolean | nil
+local function isProtectedEventExploited(callerId, eventName)
+    if callerId ~= -1 then
+        local message = string.format('^1[Exploit] Invalid Event Called by Player ID: [%s] (Event: %s)', tostring(callerId), eventName)
+        DropPlayer(callerId, message)
+        print(message)
+        return true
+    end
+end
+
 --- Gives a key to an entity based on the player's CitizenID.
+--- This event is expected to be called only by the server.
+---@param source number Must be -1
 ---@param id integer The player's ID.
 ---@param netId number The network ID of the entity.
 ---@param doorState number | nil Sets the door state if given
 RegisterNetEvent('qb-vehiclekeys:server:GiveKey', function(id, netId, doorState)
-    if source == -1 then
-        -- This event is not yet implemented
-    else
-        -- drop player
+    if not id or not netId then return end
+    if not isProtectedEventExploited(source, 'qb-vehiclekeys:server:GiveKey') then
+        GiveKey(id, NetworkGetEntityFromNetworkId(netId), doorState)
     end
 end)
 exports('GiveKey', GiveKey)
 
 --- Removes a key from an entity based on the player's CitizenID.
+--- This event is expected to be called only by the server.
 ---@param id integer The player's ID.
 ---@param netId number The network ID of the entity.
-RegisterNetEvent('vehiclekeys:server:RemoveKey', function(id, netId)
-    if source == -1 then
-        -- This event is not yet implemented
-    else
-        -- drop player
+RegisterNetEvent('qb-vehiclekeys:server:RemoveKey', function(id, netId)
+    if not id or not netId then return end
+    if not isProtectedEventExploited(source, 'qb-vehiclekeys:server:RemoveKey') then
+        RemoveKey(id, NetworkGetEntityFromNetworkId(netId))
     end
 end)
 exports('RemoveKey', RemoveKey)
@@ -118,11 +131,10 @@ exports('RemoveKey', RemoveKey)
 --- This event is expected to be called only by the server.
 ---@param netId number The network ID of the entity.
 ---@param doorState number | nil Sets the door state if given
-RegisterNetEvent('vehiclekeys:server:SetDoorState', function(netId, doorState)
-    if source == -1 then
-        -- This event is not yet implemented
-    else
-        -- drop player
+RegisterNetEvent('qb-vehiclekeys:server:SetDoorState', function(netId, doorState)
+    if not id or not doorState then return end
+    if not isProtectedEventExploited(source, 'qb-vehiclekeys:server:SetDoorState') then
+        SetDoorState(NetworkGetEntityFromNetworkId(netId), doorState)
     end
 end)
 exports('SetDoorState', SetDoorState)
