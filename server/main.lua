@@ -107,7 +107,7 @@ end
 ---@param id integer The player's ID.
 ---@param netId number The network ID of the entity.
 ---@param doorState number | nil Sets the door state if given
-RegisterNetEvent('qb-vehiclekeys:server:GiveKey', function(id, netId, doorState)
+RegisterNetEvent('qbx-vehiclekeys:server:GiveKey', function(id, netId, doorState)
     if not id or not netId then return end
     if not isProtectedEventExploited(source, 'qb-vehiclekeys:server:GiveKey') then
         GiveKey(id, NetworkGetEntityFromNetworkId(netId), doorState)
@@ -119,7 +119,7 @@ exports('GiveKey', GiveKey)
 --- This event is expected to be called only by the server.
 ---@param id integer The player's ID.
 ---@param netId number The network ID of the entity.
-RegisterNetEvent('qb-vehiclekeys:server:RemoveKey', function(id, netId)
+RegisterNetEvent('qbx-vehiclekeys:server:RemoveKey', function(id, netId)
     if not id or not netId then return end
     if not isProtectedEventExploited(source, 'qb-vehiclekeys:server:RemoveKey') then
         RemoveKey(id, NetworkGetEntityFromNetworkId(netId))
@@ -131,7 +131,7 @@ exports('RemoveKey', RemoveKey)
 --- This event is expected to be called only by the server.
 ---@param netId number The network ID of the entity.
 ---@param doorState number | nil Sets the door state if given
-RegisterNetEvent('qb-vehiclekeys:server:SetDoorState', function(netId, doorState)
+RegisterNetEvent('qbx-vehiclekeys:server:SetDoorState', function(netId, doorState)
     if not id or not doorState then return end
     if not isProtectedEventExploited(source, 'qb-vehiclekeys:server:SetDoorState') then
         SetDoorState(NetworkGetEntityFromNetworkId(netId), doorState)
@@ -144,13 +144,14 @@ exports('SetDoorState', SetDoorState)
 ---@param netId number The network ID of the entity.
 ---@param targetPlayerId number ID of the target player who receives the key
 ---@return boolean | nil
-lib.callback.register('qb-vehiclekeys:server:GiveKey', function(source, netId, targetPlayerId)
+lib.callback.register('qbx-vehiclekeys:server:GiveKey', function(source, netId, targetPlayerId)
     if not source or not netId or not targetPlayerId then return end
     local vehicle = NetworkGetEntityFromNetworkId(netId)
     local targetPlayerCitizenid = exports.qbx_core:GetPlayer(targetPlayerId).PlayerData.citizenid
     if HasKey(vehicle, exports.qbx_core:GetPlayer(source).PlayerData.citizenid) and not HasKey(vehicle, targetPlayerCitizenid) then
         return GiveKey(vehicle, targetPlayerCitizenid)
     end
+    exports.qbx_core:Notify(source, Lang:t("notify.no_keys"))
 end)
 
 --- Removes a key from an entity based on the target player's CitizenID but only if the owner has a key.
@@ -158,23 +159,25 @@ end)
 ---@param netId number The network ID of the entity.
 ---@param targetPlayerId number ID of the target player who receives the key
 ---@return boolean | nil
-lib.callback.register('qb-vehiclekeys:server:RemoveKey', function(source, netId, targetPlayerId)
+lib.callback.register('qbx-vehiclekeys:server:RemoveKey', function(source, netId, targetPlayerId)
     if not source or not netId or not targetPlayerId then return end
     local vehicle = NetworkGetEntityFromNetworkId(netId)
     local targetPlayerCitizenid = exports.qbx_core:GetPlayer(targetPlayerId).PlayerData.citizenid
     if HasKey(vehicle, exports.qbx_core:GetPlayer(source).PlayerData.citizenid) and not HasKey(vehicle, targetPlayerCitizenid) then
         return RemoveKey(vehicle, targetPlayerCitizenid)
     end
+    exports.qbx_core:Notify(source, Lang:t("notify.no_keys"))
 end)
 
 --- Toggles the door state of the vehicle between open and closed.
 ---@param source number ID of the player
 ---@param netId number The network ID of the entity
 ---@return number | nil -- Returns the current Door State
-lib.callback.register('qb-vehiclekeys:server:ToggleDoorState', function(source, netId)
+lib.callback.register('qbx-vehiclekeys:server:ToggleDoorState', function(source, netId)
     if not source or not netId then return end
     local vehicle = NetworkGetEntityFromNetworkId(netId)
     if HasKey(vehicle, exports.qbx_core:GetPlayer(source).PlayerData.citizenid) then
         return ToggleDoorState(vehicle)
     end
+    exports.qbx_core:Notify(source, Lang:t("notify.no_keys"))
 end)
