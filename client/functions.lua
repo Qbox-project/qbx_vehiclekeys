@@ -1,6 +1,6 @@
 --- Checks if the current player has a key for the specified vehicle.
 ---@param vehicle number The entity number of the vehicle to check for a key.
----@return boolean | nil if the player has a key for the vehicle, false otherwise.
+---@return boolean | nil if the player has a key for the vehicle, nil otherwise.
 function HasKey(vehicle)
     if not vehicle or type(vehicle) ~= 'number' then return end
     local ent = Entity(vehicle)

@@ -1,9 +1,12 @@
 --- Checks for the existence of a key.
 ---@param entity number The entity (vehicle) where we check for the existence of a key.
 ---@param citizenid string The CitizenID of the player whose key we check for.
----@return boolean | nil
+---@return boolean | nil if the player has a key for the vehicle, nil otherwise.
 function HasKey(entity, citizenid)
-    return Entity(entity) and Entity(entity).state.keys[citizenid]
+    if not entity or type(entity) ~= 'number' or not citizenid or type(citizenid) ~= 'string' then return end
+    local ent = Entity(entity)
+    if not ent or not ent.state.keys then return end
+    return ent.state.keys[citizenid]
 end
 
 --- Adds a key to the selected vehicle entity and returns a success status.
@@ -12,9 +15,7 @@ end
 ---@param doorState number | nil -- Sets the doorState of the vehicle if present
 ---@return boolean | nil `true` if the key was successfully added, `nil` otherwise.
 function GiveKey(entity, citizenid, doorState)
-    if not entity or type(entity) ~= 'number' or not citizenid or type(citizenid) ~= 'string' then
-        return
-    end
+    if not entity or type(entity) ~= 'number' or not citizenid or type(citizenid) ~= 'string' then return end
 
     local ent = Entity(entity)
     if not ent then return end
