@@ -8,7 +8,7 @@ local Translations = {
         failed_lockedpick = 'Nedaří se vám najít klíče a jste zklamaní.',
         gave_keys = 'Předáš klíče.',
         keys_taken = 'Dostanete klíčky od vozidla!',
-        fpid = 'Vyplňte ID hráče a SPZ',
+        fpid = 'Vyplňte ID hráče',
         carjack_failed = 'Krádež auta se nezdařila!',
     },
     progress = {
@@ -29,8 +29,6 @@ local Translations = {
         addkeys = 'Přidá někomu klíče od vozidla.',
         addkeys_id = 'ID',
         addkeys_id_help = 'ID hráče',
-        addkeys_plate = 'SPZ',
-        addkeys_plate_help = 'SPZ',
         remove_keys = 'Odebrat někomu klíče od vozidla.',
         remove_keys_id = 'id',
         remove_keys_id_help = 'ID hráče',

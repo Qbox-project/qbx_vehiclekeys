@@ -44,6 +44,7 @@ return {
     debug = true, -- Set to true for development purposes only. Used for zones, and essential prints. Will be removed upon release
 
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
+    useRaycastToFindVehicle = true, -- If true then GetVehicle function will use raycast to find your vehicle, in this case you have to look at the vehicle. If set to false oxlib:getClosestVehicle will look for it.
 
     -- NPC Vehicle Lock States
     lockNPCDrivenCars = true, -- Lock state for NPC cars being driven by NPCs [true = locked, false = unlocked]

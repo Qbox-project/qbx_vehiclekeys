@@ -8,7 +8,7 @@ local Translations = {
         failed_lockedpick = 'Te ei leia võtmeid ja olete pettunud.',
         gave_keys = 'Annad võtmed üle.',
         keys_taken = 'Saate auto võtmed!',
-        fpid = 'Täitke mängija ID ja plaadi argumendid',
+        fpid = 'Täitke mängija ID',
         carjack_failed = 'Autovargamine ebaõnnestus!',
     },
     progress = {
@@ -29,8 +29,6 @@ local Translations = {
         addkeys = 'Lisab kellegi jaoks sõidukile võtmed.',
         addkeys_id = 'id',
         addkeys_id_help = 'Mängija ID',
-        addkeys_plate = 'Numbrimärk',
-        addkeys_plate_help = 'Numbrimärk',
         remove_keys = 'Eemaldage kellegi jaoks sõiduki võtmed.',
         remove_keys_id = 'id',
         remove_keys_id_help = 'Mängija ID',

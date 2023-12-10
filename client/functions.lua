@@ -1,3 +1,5 @@
+local config = require 'config.client'
+
 --- Checks if the current player has a key for the specified vehicle.
 ---@param vehicle number The entity number of the vehicle to check for a key.
 ---@return boolean True if the player has a key for the vehicle, false otherwise.
@@ -28,3 +30,40 @@ function ToggleVehicleDoor(vehicle)
     -- Will call the corresponding callback
 end
 
+function GetVehicleInDirection(coordFromOffset, coordToOffset)
+    local coordFrom = GetOffsetFromEntityInWorldCoords(cache.ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
+    local coordTo = GetOffsetFromEntityInWorldCoords(cache.ped, coordToOffset.x, coordToOffset.y, coordToOffset.z)
+    local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, cache.ped, 0)
+    local _, _, _, _, vehicle = GetShapeTestResult(rayHandle)
+    return vehicle
+end
+
+-- If in vehicle returns that, otherwise tries 3 different raycasts to get the vehicle they are facing.
+-- Raycasts picture: https://i.imgur.com/FRED0kV.png
+---@return number | nil
+function GetVehicle()
+    if IsPedInAnyVehicle(cache.ped) then
+        return GetVehiclePedIsIn(cache.ped)
+    end
+
+    local vehicle = 0
+
+    if config.useRaycastToFindVehicle then
+        local RaycastOffsetTable = {
+            { ['fromOffset'] = vector3(0.0, 0.0, 0.0), ['toOffset'] = vector3(0.0, 20.0, -10.0) }, -- Waist to ground 45 degree angle
+            { ['fromOffset'] = vector3(0.0, 0.0, 0.7), ['toOffset'] = vector3(0.0, 10.0, -10.0) }, -- Head to ground 30 degree angle
+            { ['fromOffset'] = vector3(0.0, 0.0, 0.7), ['toOffset'] = vector3(0.0, 10.0, -20.0) }, -- Head to ground 15 degree angle
+        }
+
+        local count = 0
+        while vehicle == 0 and count < #RaycastOffsetTable do
+            count = count + 1
+            vehicle = GetVehicleInDirection(RaycastOffsetTable[count]['fromOffset'], RaycastOffsetTable[count]['toOffset'])
+        end
+
+        if not IsEntityAVehicle(vehicle) then vehicle = nil end
+        return vehicle
+    else
+        return lib.getClosestVehicle(GetEntityCoords(cache.ped), 10.0, true)
+    end
+end

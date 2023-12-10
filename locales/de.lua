@@ -8,7 +8,7 @@ local Translations = {
         failed_lockedpick = 'Du kannst keine Schlüssel finden und bist frustriert.',
         gave_keys = 'Du gibst die Schlüssel ab.',
         keys_taken = 'Du erhälst die Schlüssel für das Fahrzeug!',
-        fpid = 'Gebe die Bürger-ID und das Kennzeichen an.',
+        fpid = 'Füllen Sie die Spieler-ID aus.',
         carjack_failed = 'Knacken des Autos ist fehlgeschlagen!',
     },
     progress = {
@@ -29,8 +29,6 @@ local Translations = {
         addkeys = 'Fügt Schlüssel zu einem Fahrzeug für jemanden hinzu.',
         addkeys_id = 'id',
         addkeys_id_help = 'Bürger-ID',
-        addkeys_plate = 'kennzeichen',
-        addkeys_plate_help = 'Kennzeichen',
         remove_keys = 'Jemandem die Schlüssel eines Fahrzeugs abnehmen.',
         remove_keys_id = 'id',
         remove_keys_id_help = 'Bürger-ID',
