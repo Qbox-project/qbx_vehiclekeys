@@ -11,14 +11,10 @@ lib.addCommand('givekeys', {
     restricted = false,
 }, function (source, args)
     local src = source
-    if not args.id then
-        exports.qbx_core:Notify(src, Lang:t("notify.fpid"))
-        return
-    end
     lib.callback('qbx-vehiclekeys:GetVehicle', function(netId)
         local vehicle = NetworkGetEntityFromNetworkId(netId)
         if HasKey(vehicle, exports.qbx_core:GetPlayer(source).PlayerData.citizenid) then
-            if GiveKey(args.id, vehicle) then
+            if GiveKey(args.id, vehicle) then -- TO DO!!!!!!!!!! -> Get the closest player if there is no id
                 exports.qbx_core:Notify(src, Lang:t("notify.gave_keys"))
                 exports.qbx_core:Notify(args.id, Lang:t("notify.keys_taken"))
             end
