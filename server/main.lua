@@ -109,7 +109,7 @@ end
 ---@param doorState number | nil Sets the door state if given
 RegisterNetEvent('qbx-vehiclekeys:server:GiveKey', function(id, netId, doorState)
     if not id or not netId then return end
-    if not isProtectedEventExploited(source, 'qb-vehiclekeys:server:GiveKey') then
+    if not isProtectedEventExploited(source, 'qbx-vehiclekeys:server:GiveKey') then
         GiveKey(id, NetworkGetEntityFromNetworkId(netId), doorState)
     end
 end)
@@ -121,7 +121,7 @@ exports('GiveKey', GiveKey)
 ---@param netId number The network ID of the entity.
 RegisterNetEvent('qbx-vehiclekeys:server:RemoveKey', function(id, netId)
     if not id or not netId then return end
-    if not isProtectedEventExploited(source, 'qb-vehiclekeys:server:RemoveKey') then
+    if not isProtectedEventExploited(source, 'qbx-vehiclekeys:server:RemoveKey') then
         RemoveKey(id, NetworkGetEntityFromNetworkId(netId))
     end
 end)
@@ -133,7 +133,7 @@ exports('RemoveKey', RemoveKey)
 ---@param doorState number | nil Sets the door state if given
 RegisterNetEvent('qbx-vehiclekeys:server:SetDoorState', function(netId, doorState)
     if not id or not doorState then return end
-    if not isProtectedEventExploited(source, 'qb-vehiclekeys:server:SetDoorState') then
+    if not isProtectedEventExploited(source, 'qbx-vehiclekeys:server:SetDoorState') then
         SetDoorState(NetworkGetEntityFromNetworkId(netId), doorState)
     end
 end)
