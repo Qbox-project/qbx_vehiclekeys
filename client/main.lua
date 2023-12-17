@@ -531,9 +531,16 @@ function MakePedFlee(ped)
     TaskReactAndFleePed(ped, cache.ped)
 end
 
-lib.callback.register('qbx-vehiclekeys:GetClosestVehicleNetId', function()
+lib.callback.register('qbx-vehiclekeys:client:GetClosestVehicleNetId', function()
     local vehicle = GetVehicle()
     if vehicle then
         return NetworkGetNetworkIdFromEntity(vehicle)
+    end
+end)
+
+lib.callback.register('qbx-vehiclekeys:client:GetClosestPlayer', function()
+    local playerId = GetClosestPlayer(GetEntityCoords(cache.ped), 10.0)
+    if playerId then
+        return playerId
     end
 end)

@@ -11,10 +11,19 @@ lib.addCommand('givekeys', {
     restricted = false,
 }, function (source, args)
     local src = source
-    lib.callback('qbx-vehiclekeys:GetVehicle', function(netId)
+    lib.callback('qbx-vehiclekeys:client:GetVehicle', function(netId)
+        if not netId then return end
         local vehicle = NetworkGetEntityFromNetworkId(netId)
         if HasKey(vehicle, exports.qbx_core:GetPlayer(source).PlayerData.citizenid) then
-            if GiveKey(args.id, vehicle) then -- TO DO!!!!!!!!!! -> Get the closest player if there is no id
+            if not args.id then
+                args.id = lib.callback.await('qbx-vehiclekeys:client:GetClosestPlayer')
+                if not args.id then
+                    exports.qbx_core:Notify(src, Lang:t("notify.not_near"))
+                    return
+                end
+            end
+
+            if GiveKey(args.id, vehicle) then
                 exports.qbx_core:Notify(src, Lang:t("notify.gave_keys"))
                 exports.qbx_core:Notify(args.id, Lang:t("notify.keys_taken"))
             end
@@ -41,7 +50,8 @@ lib.addCommand('addkeys', {
         exports.qbx_core:Notify(src, Lang:t("notify.fpid"))
         return
     end
-    lib.callback('qbx-vehiclekeys:GetVehicle', function(netId)
+    lib.callback('qbx-vehiclekeys:client:GetVehicle', function(netId)
+        if not netId then return end
         if GiveKey(args.id, NetworkGetEntityFromNetworkId(netId)) then
             exports.qbx_core:Notify(src, Lang:t("notify.gave_keys"))
             exports.qbx_core:Notify(args.id, Lang:t("notify.keys_taken"))
@@ -72,7 +82,8 @@ lib.addCommand('removekeys', {
         exports.qbx_core:Notify(src, Lang:t("notify.fpid"))
         return
     end
-    lib.callback('qbx-vehiclekeys:GetVehicle', function(netId)
+    lib.callback('qbx-vehiclekeys:client:GetVehicle', function(netId)
+        if not netId then return end
         if RemoveKey(args.id, NetworkGetEntityFromNetworkId(netId)) then
             --- notify to admin
             --- notify to player ??
