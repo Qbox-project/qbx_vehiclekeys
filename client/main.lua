@@ -55,7 +55,7 @@ CreateThread(function()
                                 isTakingKeys = false
                             end
                         end
-                    elseif config.lockNPCDrivingCars then
+                    elseif config.lockNPCDrivenCars then
                         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 2)
                     else
                         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 1)
