@@ -11,7 +11,26 @@ lib.addCommand('givekeys', {
     restricted = false,
 }, function (source, args)
     local src = source
-    TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', src, args.id)
+    lib.callback('qbx-vehiclekeys:client:GetVehicle', function(netId)
+        if not netId then return end
+        local vehicle = NetworkGetEntityFromNetworkId(netId)
+        if HasKey(vehicle, exports.qbx_core:GetPlayer(source).PlayerData.citizenid) then
+            if not args.id then
+                args.id = lib.callback.await('qbx-vehiclekeys:client:GetClosestPlayer')
+                if not args.id then
+                    exports.qbx_core:Notify(src, Lang:t("notify.not_near"))
+                    return
+                end
+            end
+
+            if GiveKey(args.id, vehicle) then
+                exports.qbx_core:Notify(src, Lang:t("notify.gave_keys"))
+                exports.qbx_core:Notify(args.id, Lang:t("notify.keys_taken"))
+            end
+        else
+            exports.qbx_core:Notify(src, Lang:t("notify.no_keys"))
+        end
+    end)
 end)
 
 lib.addCommand('addkeys', {
@@ -22,22 +41,22 @@ lib.addCommand('addkeys', {
             type = 'number',
             help = Lang:t("addcom.addkeys_id_help"),
             optional = true
-        },
-        {
-            name = 'plate',
-            type = 'string',
-            help = Lang:t("addcom.addkeys_plate_help"),
-            optional = true
-        },
+        }
     },
     restricted = 'group.admin',
 }, function (source, args)
     local src = source
-    if not args.id or not args.plate then
+    if not args.id then
         exports.qbx_core:Notify(src, Lang:t("notify.fpid"))
         return
     end
-    GiveKeys(args.id, args.plate)
+    lib.callback('qbx-vehiclekeys:client:GetVehicle', function(netId)
+        if not netId then return end
+        if GiveKey(args.id, NetworkGetEntityFromNetworkId(netId)) then
+            exports.qbx_core:Notify(src, Lang:t("notify.gave_keys"))
+            exports.qbx_core:Notify(args.id, Lang:t("notify.keys_taken"))
+        end
+    end)
 end)
 
 lib.addCommand('removekeys', {
@@ -59,9 +78,15 @@ lib.addCommand('removekeys', {
     restricted = 'group.admin',
 }, function (source, args)
     local src = source
-    if not args.id or not args.plate then
+    if not args.id then
         exports.qbx_core:Notify(src, Lang:t("notify.fpid"))
         return
     end
-    RemoveKeys(args.id, args.plate)
+    lib.callback('qbx-vehiclekeys:client:GetVehicle', function(netId)
+        if not netId then return end
+        if RemoveKey(args.id, NetworkGetEntityFromNetworkId(netId)) then
+            --- notify to admin
+            --- notify to player ??
+        end
+    end)
 end)

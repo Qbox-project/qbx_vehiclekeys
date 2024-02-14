@@ -8,7 +8,7 @@ local Translations = {
         failed_lockedpick = 'No logras encontrar las llaves y te frustras',
         gave_keys = 'Has entregado las llaves',
         keys_taken = 'Has recibido las llaves del vehículo',
-        fpid = 'Llena los argumentos de ID y placa del jugador',
+        fpid = 'Rellene el ID de jugador',
         carjack_failed = '¡Robo de carro falló!',
     },
     progress = {
@@ -29,8 +29,6 @@ local Translations = {
         addkeys = 'Agrega llaves a un vehículo para alguien.',
         addkeys_id = 'id',
         addkeys_id_help = 'ID de jugador',
-        addkeys_plate = 'placa',
-        addkeys_plate_help = 'Placa',
         remove_keys = 'Quitar llaves de un vehículo a alguien.',
         remove_keys_id = 'id',
         remove_keys_id_help = 'ID de jugador',

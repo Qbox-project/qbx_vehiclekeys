@@ -8,7 +8,7 @@ local Translations = {
         failed_lockedpick = 'You fail to find the keys and get frustrated.',
         gave_keys = 'You hand over the keys.',
         keys_taken = 'You get keys to the vehicle!',
-        fpid = 'Fill out the player ID and Plate arguments',
+        fpid = 'Fill out the player ID',
         carjack_failed = 'Carjacking failed!',
     },
     progress = {
@@ -29,8 +29,6 @@ local Translations = {
         addkeys = 'Adds keys to a vehicle for someone.',
         addkeys_id = 'id',
         addkeys_id_help = 'Player ID',
-        addkeys_plate = 'plate',
-        addkeys_plate_help = 'Plate',
         remove_keys = 'Remove keys to a vehicle for someone.',
         remove_keys_id = 'id',
         remove_keys_id_help = 'Player ID',

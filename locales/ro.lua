@@ -12,7 +12,7 @@ local Translations = {
         failed_lockedpick = 'Nu ai putut clona cheile masinii si te stresezi.',
         gave_keys = 'Ai dat cheile vehiculului.',
         keys_taken = 'Ai primit cheile vehiculului!',
-        fpid = 'Trebuie sa introduci ID-ul jucatorului si numarul de inmatriculare',
+        fpid = 'Completați ID-ul jucătorului',
         carjack_failed = 'Furtul de mașină a eșuat',
     },
     progress = {
@@ -33,8 +33,6 @@ local Translations = {
         addkeys = 'Adaugi un set de chei al unui vehicul pentru o alta persoana.',
         addkeys_id = 'ID',
         addkeys_id_help = 'ID-ul jucatorului',
-        addkeys_plate = 'numar',
-        addkeys_plate_help = 'Numarul de inmatriculare al vehiculului',
         remove_keys = 'Anulezi setul de chei aditional, pentru o persoana.',
         remove_keys_id = 'ID',
         remove_keys_id_help = 'ID-ul jucatorului',
