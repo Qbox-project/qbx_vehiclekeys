@@ -1,0 +1,40 @@
+{
+  "addcom": {
+    "addkeys": "Fügt Schlüssel zu einem Fahrzeug für jemanden hinzu.",
+    "addkeys_id": "id",
+    "addkeys_id_help": "Bürger-ID",
+    "addkeys_plate": "kennzeichen",
+    "addkeys_plate_help": "Kennzeichen",
+    "givekeys": "Übergebe die Schlüssel an jemanden. Wenn keine Bürger-ID angegeben, geht er an die nächstgelegene Person oder an alle Personen im Fahrzeug.",
+    "givekeys_id": "id",
+    "givekeys_id_help": "Bürger-ID",
+    "remove_keys": "Jemandem die Schlüssel eines Fahrzeugs abnehmen.",
+    "remove_keys_id": "id",
+    "remove_keys_id_help": "Bürger-ID",
+    "remove_keys_plate": "kennzeichen",
+    "remove_keys_plate_help": "Kennzeichen"
+  },
+  "info": {
+    "engine": "Motor ein-/ausschalten",
+    "skeys": "~g~[H]~w~ - Nach Schlüssel suchen",
+    "toggle_locks": "Fahrzeug auf-/zuschließen",
+    "vehicle_theft": "Fahrzeugdiebstahl im Gange. Typ: "
+  },
+  "notify": {
+    "carjack_failed": "Knacken des Autos ist fehlgeschlagen!",
+    "failed_lockedpick": "Du kannst keine Schlüssel finden und bist frustriert.",
+    "fpid": "Gebe die Bürger-ID und das Kennzeichen an.",
+    "gave_keys": "Du gibst die Schlüssel ab.",
+    "keys_taken": "Du erhälst die Schlüssel für das Fahrzeug!",
+    "no_keys": "Du hast keine Schlüssel für das Fahrzeug!",
+    "not_near": "Es ist niemand in der Nähe, der den Schlüssel bekommen könnte!",
+    "vehicle_locked": "Fahrzeug verriegelt!",
+    "vehicle_lockedpick": "Du hast es geschafft, das Türschloss zu knacken!",
+    "vehicle_unlocked": "Fahrzeug entriegelt."
+  },
+  "progress": {
+    "attempting_carjack": "Versuchter Autodiebstahl...",
+    "searching_keys": "Suche nach Fahrzeugschlüssel...",
+    "takekeys": "Fahrzeugschlüssel abnehmen..."
+  }
+}
