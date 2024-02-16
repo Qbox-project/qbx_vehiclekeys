@@ -17,7 +17,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     local giver = source
 
     if HasKeys(giver, plate) then
-        exports.qbx_core:Notify(giver, Lang:t("notify.gave_keys"))
+        exports.qbx_core:Notify(giver, locale("notify.gave_keys"))
         if type(receiver) == 'table' then
             for _,r in ipairs(receiver) do
                 GiveKeys(receiver[r], plate)
@@ -26,7 +26,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
             GiveKeys(receiver, plate)
         end
     else
-        exports.qbx_core:Notify(giver, Lang:t("notify.no_keys"))
+        exports.qbx_core:Notify(giver, locale("notify.no_keys"))
     end
 end)
 
@@ -66,7 +66,7 @@ function GiveKeys(id, plate)
     if not vehicleList[plate] then vehicleList[plate] = {} end
     vehicleList[plate][citizenid] = true
 
-    exports.qbx_core:Notify(id, Lang:t('notify.keys_taken'))
+    exports.qbx_core:Notify(id, locale('notify.keys_taken'))
     TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
 end
 exports('GiveKeys', GiveKeys)

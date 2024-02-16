@@ -24,7 +24,7 @@ CreateThread(function()
             local carIsImmune = false
             if entering ~= 0 and not isBlacklistedVehicle(entering) then
                 sleep = 2000
-                local plate = GetPlate(entering)
+                local plate = qbx.getVehiclePlate(entering)
 
                 local driver = GetPedInVehicleSeat(entering, -1)
                 for _, veh in ipairs(config.immuneVehicles) do
@@ -41,7 +41,7 @@ CreateThread(function()
                             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 1)
                             if lib.progressCircle({
                                 duration = 2500,
-                                label = Lang:t("progress.takekeys"),
+                                label = locale("progress.takekeys"),
                                 position = 'bottom',
                                 useWhileDead = false,
                                 canCancel = true,
@@ -82,13 +82,13 @@ CreateThread(function()
             -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
             if cache.vehicle and not isHotwiring then
                 sleep = 1000
-                local plate = GetPlate(cache.vehicle)
+                local plate = qbx.getVehiclePlate(cache.vehicle)
 
                 if GetPedInVehicleSeat(cache.vehicle, -1) == cache.ped and not HasKeys(plate) and not isBlacklistedVehicle(cache.vehicle) and not AreKeysJobShared(cache.vehicle) then
                     sleep = 0
 
                     local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
-                    DrawText3D(Lang:t('info.search_keys'), vehiclePos)
+                    qbx.drawText3d({ text = locale('info.search_keys'), coords = vehiclePos })
                     SetVehicleEngineOn(cache.vehicle, false, false, true)
 
                     if IsControlJustPressed(0, 74) then
@@ -101,7 +101,7 @@ CreateThread(function()
                 local aiming, target = GetEntityPlayerIsFreeAimingAt(cache.playerId)
                 if aiming and (target ~= nil and target ~= 0) then
                     if DoesEntityExist(target) and IsPedInAnyVehicle(target, false) and not IsEntityDead(target) and not IsPedAPlayer(target) then
-                        local targetveh = GetVehiclePedIsIn(target)
+                        local targetveh = GetVehiclePedIsIn(target, false)
                         for _, veh in ipairs(config.immuneVehicles) do
                             if GetEntityModel(targetveh) == joaat(veh) then
                                 carIsImmune = true
@@ -138,18 +138,18 @@ end
 ---- Client Events ----
 -----------------------
 
-RegisterKeyMapping('togglelocks', Lang:t("info.toggle_locks"), 'keyboard', 'L')
+RegisterKeyMapping('togglelocks', locale("info.toggle_locks"), 'keyboard', 'L')
 RegisterCommand('togglelocks', function()
     ToggleVehicleLocks(GetVehicle())
 end)
 
-RegisterKeyMapping('engine', Lang:t("info.engine"), 'keyboard', 'G')
+RegisterKeyMapping('engine', locale("info.engine"), 'keyboard', 'G')
 RegisterCommand('engine', function()
     TriggerEvent("qb-vehiclekeys:client:ToggleEngine")
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)
-	if resourceName == GetCurrentResourceName() and QBX.PlayerData ~= {} then
+	if resourceName == cache.resource and QBX.PlayerData ~= {} then
 		GetKeys()
 	end
 end)
@@ -168,7 +168,7 @@ RegisterNetEvent('qb-vehiclekeys:client:AddKeys', function(plate)
     KeysList[plate] = true
 
     if cache.vehicle then
-        local vehicleplate = GetPlate(cache.vehicle)
+        local vehicleplate = qbx.getVehiclePlate(cache.vehicle)
 
         if plate == vehicleplate then
             SetVehicleEngineOn(cache.vehicle, false, false, false)
@@ -181,9 +181,9 @@ RegisterNetEvent('qb-vehiclekeys:client:RemoveKeys', function(plate)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:client:ToggleEngine', function()
-    local engineOn = GetIsVehicleEngineRunning(GetVehiclePedIsIn(cache.ped))
-    local vehicle = GetVehiclePedIsIn(cache.ped, true)
-    if HasKeys(GetPlate(vehicle)) then
+    local vehicle = cache.vehicle
+    if vehicle and HasKeys(qbx.getVehiclePlate(vehicle)) then
+        local engineOn = GetIsVehicleEngineRunning(vehicle)
         if engineOn then
             SetVehicleEngineOn(vehicle, false, false, true)
         else
@@ -196,7 +196,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
     local targetVehicle = GetVehicle()
 
     if targetVehicle then
-        local targetPlate = GetPlate(targetVehicle)
+        local targetPlate = qbx.getVehiclePlate(targetVehicle)
         if HasKeys(targetPlate) then
             if id and type(id) == "number" then -- Give keys to specific ID
                 GiveKeys(id, targetPlate)
@@ -207,11 +207,12 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
                         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', GetPlayerServerId(NetworkGetPlayerIndexFromPed(otherOccupants[p])), targetPlate)
                     end
                 else -- Give keys to closest player
-                    GiveKeys(GetPlayerServerId(GetClosestPlayer()), targetPlate)
+                    local playerId, _, _ = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
+                    GiveKeys(playerId, targetPlate)
                 end
             end
         else
-            exports.qbx_core:Notify(Lang:t("notify.no_keys"), 'error')
+            exports.qbx_core:Notify(locale("notify.no_keys"), 'error')
         end
     end
 end)
@@ -235,7 +236,7 @@ function GiveKeys(id, plate)
     if distance < 1.5 and distance > 0.0 then
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
     else
-        exports.qbx_core:Notify(Lang:t("notify.not_near"), 'error')
+        exports.qbx_core:Notify(locale("notify.not_near"), 'error')
     end
 end
 
@@ -261,7 +262,7 @@ end
 -- If in vehicle returns that, otherwise tries 3 different raycasts to get the vehicle they are facing.
 -- Raycasts picture: https://i.imgur.com/FRED0kV.png
 function GetVehicle()
-    local vehicle = GetVehiclePedIsIn(cache.ped)
+    local vehicle = cache.vehicle
 
     local RaycastOffsetTable = {
         { ['fromOffset'] = vector3(0.0, 0.0, 0.0), ['toOffset'] = vector3(0.0, 20.0, -10.0) }, -- Waist to ground 45 degree angle
@@ -270,7 +271,7 @@ function GetVehicle()
     }
 
     local count = 0
-    while vehicle == 0 and count < #RaycastOffsetTable do
+    while not vehicle and count < #RaycastOffsetTable do
         count = count + 1
         vehicle = GetVehicleInDirection(RaycastOffsetTable[count]['fromOffset'], RaycastOffsetTable[count]['toOffset'])
     end
@@ -301,7 +302,7 @@ end
 function ToggleVehicleLocks(veh)
     if veh then
         if not isBlacklistedVehicle(veh) then
-            if HasKeys(GetPlate(veh)) or AreKeysJobShared(veh) then
+            if HasKeys(qbx.getVehiclePlate(veh)) or AreKeysJobShared(veh) then
                 local vehLockStatus = GetVehicleDoorLockStatus(veh)
 
                 lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
@@ -311,10 +312,10 @@ function ToggleVehicleLocks(veh)
                 NetworkRequestControlOfEntity(veh)
                 if vehLockStatus == 1 then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
-                    exports.qbx_core:Notify(Lang:t("notify.vehicle_locked"), 'inform')
+                    exports.qbx_core:Notify(locale("notify.vehicle_locked"), 'inform')
                 else
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
-                    exports.qbx_core:Notify(Lang:t("notify.vehicle_unlocked"), 'inform')
+                    exports.qbx_core:Notify(locale("notify.vehicle_unlocked"), 'inform')
                 end
 
                 SetVehicleLights(veh, 2)
@@ -325,7 +326,7 @@ function ToggleVehicleLocks(veh)
                 Wait(300)
                 ClearPedTasks(cache.ped)
             else
-                exports.qbx_core:Notify(Lang:t("notify.no_keys"), 'error')
+                exports.qbx_core:Notify(locale("notify.no_keys"), 'error')
             end
         else
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
@@ -369,16 +370,16 @@ end
 
 function LockpickDoor(isAdvanced)
     local pos = GetEntityCoords(cache.ped)
-    local vehicle = GetClosestVehicle()
+    local vehicle = lib.getClosestVehicle(pos, 2, false)
 
-    if vehicle == nil or vehicle == 0 then return end
-    if HasKeys(GetPlate(vehicle)) then return end
+    if not vehicle then return end
+    if HasKeys(qbx.getVehiclePlate(vehicle)) then return end
     if #(pos - GetEntityCoords(vehicle)) > 2.5 then return end
     if GetVehicleDoorLockStatus(vehicle) <= 0 then return end
 
     usingAdvanced = isAdvanced
     lib.requestAnimDict('veh@break_in@0h@p_m_one@')
-    TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, 0, 0, 0)
+    TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false)
     local success = lib.skillCheck({'easy', 'easy', {areaSize = 60, speedMultiplier = 1}, 'medium'}, {'1', '2', '3', '4'})
     if success then
         LockpickFinishCallback(success)
@@ -390,17 +391,18 @@ function LockpickDoor(isAdvanced)
   end
 
 function LockpickFinishCallback(success)
-    local vehicle = GetClosestVehicle()
+    local vehicle = lib.getClosestVehicle(GetEntityCoords(cache.ped), 2, true)
+    if not vehicle then return end
 
     local chance = math.random()
     if success then
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         lastPickedVehicle = vehicle
 
-        if GetPedInVehicleSeat(vehicle, -1) == cache.ped then
-            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', GetPlate(vehicle))
+        if cache.seat == -1 then
+            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', qbx.getVehiclePlate(vehicle))
         else
-            exports.qbx_core:Notify(Lang:t("notify.vehicle_lockedpick"), 'success')
+            exports.qbx_core:Notify(locale("notify.vehicle_lockedpick"), 'success')
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
         end
 
@@ -428,7 +430,7 @@ function Hotwire(vehicle, plate)
     SetVehicleAlarmTimeLeft(vehicle, hotwireTime)
     if lib.progressCircle({
         duration = hotwireTime,
-        label = Lang:t("progress.searching_keys"),
+        label = locale("progress.searching_keys"),
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
@@ -447,7 +449,7 @@ function Hotwire(vehicle, plate)
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-            exports.qbx_core:Notify(Lang:t("notify.failed_lockedpick"), 'error')
+            exports.qbx_core:Notify(locale("notify.failed_lockedpick"), 'error')
         end
         Wait(config.timeBetweenHotwires)
         isHotwiring = false
@@ -480,16 +482,16 @@ function CarjackVehicle(target)
     CreateThread(function()
         while isCarjacking do
             local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(target))
-            if IsPedDeadOrDying(target) or distance > 7.5 then
+            if IsPedDeadOrDying(target, false) or distance > 7.5 then
                 lib.cancelProgress()
             end
             Wait(100)
         end
     end)
-    
+
     if lib.progressCircle({
         duration = config.carjackingTime,
-        label = Lang:t("progress.attempting_carjack"),
+        label = locale("progress.attempting_carjack"),
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
@@ -506,7 +508,7 @@ function CarjackVehicle(target)
                 carjackChance = 0.5
             end
             if math.random() <= carjackChance then
-                local plate = GetPlate(vehicle)
+                local plate = qbx.getVehiclePlate(vehicle)
                     for p=1,#occupants do
                         local ped = occupants[p]
                         CreateThread(function()
@@ -521,7 +523,7 @@ function CarjackVehicle(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
-                exports.qbx_core:Notify(Lang:t("notify.carjack_failed"), 'error')
+                exports.qbx_core:Notify(locale("notify.carjack_failed"), 'error')
                 MakePedFlee(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             end
@@ -546,7 +548,7 @@ function AttemptPoliceAlert(type)
             chance = config.policeNightAlertChance
         end
         if math.random() <= chance then
-           TriggerServerEvent('police:server:policeAlert', Lang:t("info.vehicle_theft") .. type)
+           TriggerServerEvent('police:server:policeAlert', locale("info.vehicle_theft") .. type)
         end
         alertSend = true
         SetTimeout(config.alertCooldown, function()
@@ -556,6 +558,6 @@ function AttemptPoliceAlert(type)
 end
 
 function MakePedFlee(ped)
-    SetPedFleeAttributes(ped, 0, 0)
+    SetPedFleeAttributes(ped, 0, false)
     TaskReactAndFleePed(ped, cache.ped)
 end
