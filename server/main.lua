@@ -89,27 +89,40 @@ function HasKeys(id, plate)
     return false
 end
 
+---@param callerId number Expected to be -1
+---@param eventName string
+---@return boolean | nil
+local function isProtectedEventExploited(callerId, eventName)
+    if callerId ~= -1 then
+        local message = string.format('^1[Exploit] Invalid Event Called by Player ID: [%s] (Event: %s)', tostring(callerId), eventName)
+        DropPlayer(callerId, message)
+        print(message)
+        return true
+    end
+end
+
 --- Gives a key to an entity based on the player's CitizenID.
+--- This event is expected to be called only by the server.
+---@param source number Must be -1
 ---@param id integer The player's ID.
 ---@param netId number The network ID of the entity.
 ---@param doorState number | nil Sets the door state if given
-RegisterNetEvent('qb-vehiclekeys:server:GiveKey', function(id, netId, doorState)
-    if source == -1 then
-        -- This event is not yet implemented
-    else
-        -- drop player
+RegisterNetEvent('qbx-vehiclekeys:server:GiveKey', function(id, netId, doorState)
+    if not id or not netId then return end
+    if not isProtectedEventExploited(source, 'qbx-vehiclekeys:server:GiveKey') then
+        GiveKey(id, NetworkGetEntityFromNetworkId(netId), doorState)
     end
 end)
 exports('GiveKey', GiveKey)
 
 --- Removes a key from an entity based on the player's CitizenID.
+--- This event is expected to be called only by the server.
 ---@param id integer The player's ID.
 ---@param netId number The network ID of the entity.
-RegisterNetEvent('vehiclekeys:server:RemoveKey', function(id, netId)
-    if source == -1 then
-        -- This event is not yet implemented
-    else
-        -- drop player
+RegisterNetEvent('qbx-vehiclekeys:server:RemoveKey', function(id, netId)
+    if not id or not netId then return end
+    if not isProtectedEventExploited(source, 'qbx-vehiclekeys:server:RemoveKey') then
+        RemoveKey(id, NetworkGetEntityFromNetworkId(netId))
     end
 end)
 exports('RemoveKey', RemoveKey)
@@ -118,11 +131,10 @@ exports('RemoveKey', RemoveKey)
 --- This event is expected to be called only by the server.
 ---@param netId number The network ID of the entity.
 ---@param doorState number | nil Sets the door state if given
-RegisterNetEvent('vehiclekeys:server:SetDoorState', function(netId, doorState)
-    if source == -1 then
-        -- This event is not yet implemented
-    else
-        -- drop player
+RegisterNetEvent('qbx-vehiclekeys:server:SetDoorState', function(netId, doorState)
+    if not id or not doorState then return end
+    if not isProtectedEventExploited(source, 'qbx-vehiclekeys:server:SetDoorState') then
+        SetDoorState(NetworkGetEntityFromNetworkId(netId), doorState)
     end
 end)
 exports('SetDoorState', SetDoorState)
@@ -132,9 +144,14 @@ exports('SetDoorState', SetDoorState)
 ---@param netId number The network ID of the entity.
 ---@param targetPlayerId number ID of the target player who receives the key
 ---@return boolean | nil
-lib.callback.register('vehiclekeys:server:GiveKey', function(source, netId, targetPlayerId)
+lib.callback.register('qbx-vehiclekeys:server:GiveKey', function(source, netId, targetPlayerId)
     if not source or not netId or not targetPlayerId then return end
-    -- This callback is not yet implemented
+    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    local targetPlayerCitizenid = exports.qbx_core:GetPlayer(targetPlayerId).PlayerData.citizenid
+    if HasKey(vehicle, exports.qbx_core:GetPlayer(source).PlayerData.citizenid) and not HasKey(vehicle, targetPlayerCitizenid) then
+        return GiveKey(vehicle, targetPlayerCitizenid)
+    end
+    exports.qbx_core:Notify(source, Lang:t("notify.no_keys"))
 end)
 
 --- Removes a key from an entity based on the target player's CitizenID but only if the owner has a key.
@@ -142,16 +159,25 @@ end)
 ---@param netId number The network ID of the entity.
 ---@param targetPlayerId number ID of the target player who receives the key
 ---@return boolean | nil
-lib.callback.register('vehiclekeys:server:RemoveKey', function(source, netId, targetPlayerId)
+lib.callback.register('qbx-vehiclekeys:server:RemoveKey', function(source, netId, targetPlayerId)
     if not source or not netId or not targetPlayerId then return end
-    -- This callback is not yet implemented
+    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    local targetPlayerCitizenid = exports.qbx_core:GetPlayer(targetPlayerId).PlayerData.citizenid
+    if HasKey(vehicle, exports.qbx_core:GetPlayer(source).PlayerData.citizenid) and not HasKey(vehicle, targetPlayerCitizenid) then
+        return RemoveKey(vehicle, targetPlayerCitizenid)
+    end
+    exports.qbx_core:Notify(source, Lang:t("notify.no_keys"))
 end)
 
 --- Toggles the door state of the vehicle between open and closed.
 ---@param source number ID of the player
 ---@param netId number The network ID of the entity
 ---@return number | nil -- Returns the current Door State
-lib.callback.register('vehiclekeys:server:ToggleDoorState', function(source, netId)
+lib.callback.register('qbx-vehiclekeys:server:ToggleDoorState', function(source, netId)
     if not source or not netId then return end
-    -- This callback is not yet implemented
+    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    if HasKey(vehicle, exports.qbx_core:GetPlayer(source).PlayerData.citizenid) then
+        return ToggleDoorState(vehicle)
+    end
+    exports.qbx_core:Notify(source, Lang:t("notify.no_keys"))
 end)
