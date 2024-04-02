@@ -20,6 +20,7 @@ CreateThread(function()
         if LocalPlayer.state.isLoggedIn then
             sleep = 100
 
+
             local entering = GetVehiclePedIsTryingToEnter(cache.ped)
             local carIsImmune = false
             if entering ~= 0 and not isBlacklistedVehicle(entering) then
@@ -97,7 +98,7 @@ CreateThread(function()
                 end
             end
 
-            if config.carJackEnable and canCarjack then
+            if config.carjackEnable and canCarjack then
                 local aiming, target = GetEntityPlayerIsFreeAimingAt(cache.playerId)
                 if aiming and (target ~= nil and target ~= 0) then
                     if DoesEntityExist(target) and IsPedInAnyVehicle(target, false) and not IsEntityDead(target) and not IsPedAPlayer(target) then
@@ -464,7 +465,7 @@ function Hotwire(vehicle, plate)
 end
 
 function CarjackVehicle(target)
-    if not config.carJackEnable then return end
+    if not config.carjackEnable then return end
     isCarjacking = true
     canCarjack = false
     lib.requestAnimDict('mp_am_hold_up')
@@ -490,7 +491,7 @@ function CarjackVehicle(target)
     end)
 
     if lib.progressCircle({
-        duration = config.carjackingTime,
+        duration = config.carjackingTimeInMs,
         label = locale("progress.attempting_carjack"),
         position = 'bottom',
         useWhileDead = false,
@@ -530,13 +531,13 @@ function CarjackVehicle(target)
             isCarjacking = false
             Wait(2000)
             AttemptPoliceAlert("carjack")
-            Wait(config.delayBetweenCarjackings)
+            Wait(config.delayBetweenCarjackingsInMs)
             canCarjack = true
         end
     else
         MakePedFlee(target)
         isCarjacking = false
-        Wait(config.delayBetweenCarjackings)
+        Wait(config.delayBetweenCarjackingsInMs)
         canCarjack = true
     end
 end
