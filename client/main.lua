@@ -141,7 +141,7 @@ end
 
 RegisterKeyMapping('togglelocks', locale("info.toggle_locks"), 'keyboard', 'L')
 RegisterCommand('togglelocks', function()
-    ToggleVehicleLocks(GetVehicle())
+    SetVehicleDoorLock(GetVehicle(), nil, true)
 end)
 
 RegisterKeyMapping('engine', locale("info.engine"), 'keyboard', 'G')
@@ -300,25 +300,33 @@ function AreKeysJobShared(veh)
     return false
 end
 
-function ToggleVehicleLocks(veh)
+function SetVehicleDoorLock(veh, state, anim)
     if veh then
         if not isBlacklistedVehicle(veh) then
             if HasKeys(qbx.getVehiclePlate(veh)) or AreKeysJobShared(veh) then
                 local vehLockStatus = GetVehicleDoorLockStatus(veh)
 
-                lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
-                TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
-
-                TriggerServerEvent("InteractSound_SV:PlayWithinDistance", 5, "lock", 0.3)
-                NetworkRequestControlOfEntity(veh)
-                if vehLockStatus == 1 then
-                    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
-                    exports.qbx_core:Notify(locale("notify.vehicle_locked"), 'inform')
-                else
-                    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
-                    exports.qbx_core:Notify(locale("notify.vehicle_unlocked"), 'inform')
+                if anim then
+                    lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
+                    TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
                 end
 
+                TriggerServerEvent("InteractSound_SV:PlayWithinDistance", 5, "lock", 0.3)
+
+                NetworkRequestControlOfEntity(veh)
+                if state then
+                    state = state == true and 2 or 1
+                    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), state)
+                    exports.qbx_core:Notify(state == 2 and locale("notify.vehicle_locked") or locale("notify.vehicle_unlocked"), 'inform')
+                else
+                    if vehLockStatus == 1 then
+                        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
+                        exports.qbx_core:Notify(locale("notify.vehicle_locked"), 'inform')
+                    else
+                        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
+                        exports.qbx_core:Notify(locale("notify.vehicle_unlocked"), 'inform')
+                    end
+                end
                 SetVehicleLights(veh, 2)
                 Wait(250)
                 SetVehicleLights(veh, 1)
@@ -334,6 +342,7 @@ function ToggleVehicleLocks(veh)
         end
     end
 end
+exports("SetVehicleDoorLock", SetVehicleDoorLock)
 
 function GetOtherPlayersInVehicle(vehicle)
     local otherPeds = {}
@@ -378,10 +387,21 @@ function LockpickDoor(isAdvanced)
     if #(pos - GetEntityCoords(vehicle)) > 2.5 then return end
     if GetVehicleDoorLockStatus(vehicle) <= 0 then return end
 
+    SetVehicleAlarm(vehicle, true)
+    SetVehicleAlarmTimeLeft(vehicle, 2)
+
     usingAdvanced = isAdvanced
     lib.requestAnimDict('veh@break_in@0h@p_m_one@')
     TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false)
     local success = lib.skillCheck({'easy', 'easy', {areaSize = 60, speedMultiplier = 1}, 'medium'}, {'1', '2', '3', '4'})
+    SetTimeout(10000, function()
+        if not DoesEntityExist(vehicle) then return end
+        if not IsEntityAVehicle(vehicle) then return end
+        if isCarjacking then return end
+        if IsVehicleAlarmActivated(vehicle) then
+            SetVehicleAlarm(vehicle, false)
+        end
+    end)
     if success then
         LockpickFinishCallback(success)
     else
@@ -426,9 +446,17 @@ end
 function Hotwire(vehicle, plate)
     local hotwireTime = math.random(config.minHotwireTime, config.maxHotwireTime)
     isHotwiring = true
-
     SetVehicleAlarm(vehicle, true)
-    SetVehicleAlarmTimeLeft(vehicle, hotwireTime)
+    SetVehicleAlarmTimeLeft(vehicle, 2)
+
+    SetTimeout(hotwireTime * 2, function()
+        if not DoesEntityExist(vehicle) then return end
+        if not IsEntityAVehicle(vehicle) then return end
+        if isHotwiring then return end
+        if IsVehicleAlarmActivated(vehicle) then
+            SetVehicleAlarm(vehicle, false)
+        end
+    end)
     if lib.progressCircle({
         duration = hotwireTime,
         label = locale("progress.searching_keys"),
