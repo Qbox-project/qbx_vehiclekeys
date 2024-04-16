@@ -1,6 +1,13 @@
+local config = require 'config.client'
+local functions = require 'shared.functions'
+local getHash, isCloseToCoords in functions
+
+local alertSend = false
+local public = {}
+
 --- Checks if the current player has a key for the specified vehicle.
 ---@param vehicle number The entity number of the vehicle to check for a key.
----@return boolean | nil if the player has a key for the vehicle, nil otherwise.
+---@return boolean? `true` if the player has a key for the vehicle, nil otherwise.
 function HasKey(vehicle)
     if not vehicle or type(vehicle) ~= 'number' then return end
     local ent = Entity(vehicle)
@@ -31,3 +38,152 @@ function ToggleVehicleDoor(vehicle)
     -- Will call the corresponding callback
 end
 
+--- Checking weapon on the blacklist.
+--- @return boolean? `true` if the vehicle is blacklisted, nil otherwise.
+function public.isBlacklistedWeapon()
+    local weapon = GetSelectedPedWeapon(cache.ped)
+
+    for _, v in pairs(config.noCarjackWeapons) do
+        if weapon == getHash(v) then return true end
+    end
+end
+
+--- Checking vehicle on the blacklist.
+--- @param vehicle number The entity number of the vehicle.
+--- @return boolean? `true` if the vehicle is blacklisted, nil otherwise.
+function public.isBlacklistedVehicle(vehicle)
+    if Entity(vehicle).state.ignoreLocks or GetVehicleClass(vehicle) == 13 then return true end
+
+    local vehicleHash = GetEntityModel(vehicle)
+    for _, v in ipairs(config.noLockVehicles) do
+        if vehicleHash == getHash(v) then return true end
+    end
+end
+
+function public.attemptPoliceAlert(type)
+    if not alertSend then
+        local chance = config.policeAlertChance
+        if GetClockHours() >= 1 and GetClockHours() <= 6 then
+            chance = config.policeNightAlertChance
+        end
+        if math.random() <= chance then
+            TriggerServerEvent('police:server:policeAlert', locale("info.vehicle_theft") .. type)
+        end
+        alertSend = true
+        SetTimeout(config.alertCooldown, function()
+            alertSend = false
+        end)
+    end
+end
+
+--- Gets bone coords
+--- @param vehicle number The entity number of the vehicle.
+--- @param boneName string The entity bone name.
+--- @return vector3 Bone coords if exists, entity coords otherwise.
+local function getBoneCoords(vehicle, boneName)
+    local boneIndex = GetEntityBoneIndexByName(vehicle, boneName)
+
+    if boneIndex ~= -1 then
+        return GetWorldPositionOfEntityBone(vehicle, boneIndex)
+    else
+        return GetEntityCoords(vehicle)
+    end
+end
+
+--- Checking whether the character is close enough to the vehicle driver door.
+--- @param vehicle number The entity number of the vehicle.
+--- @param maxDistance number The max distance to check.
+--- @return boolean? `true` if the ped is out of a vehicle and in the range of the opened vehicle, nil otherwise.
+local function isVehicleInRange(vehicle, maxDistance)
+    local vehicles = GetGamePool('CVehicle')
+    local pedCoords = GetEntityCoords(cache.ped)
+
+    for _, v in ipairs(vehicles) do
+        if not cache.vehicle or v ~= cache.vehicle then
+            if vehicle == v then
+                local doorCoords = getBoneCoords(vehicle, 'door_dside_f')
+                if isCloseToCoords(doorCoords, pedCoords, maxDistance) then return true end
+            end
+        end
+    end
+end
+
+--- The function will be execuded when the opening of the lock succeeds.
+--- @param vehicle number The entity number of the vehicle.
+--- @param plate string The plate number of the vehicle.
+local function lockpickSuccessCallback(vehicle, plate)
+    TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+
+    if cache.seat == -1 then
+        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+    else
+        exports.qbx_core:Notify(locale("notify.vehicle_lockedpick"), 'success')
+        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
+        Entity(vehicle).state.isOpen = true
+    end
+end
+
+--- Operations done after the LockpickDoor quickevent done.
+--- @param vehicle number The entity number of the vehicle.
+--- @param plate string The plate number of the vehicle.
+--- @param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used.
+--- @param maxDistance number The max distance to check.
+--- @param isSuccess boolean? Determines whether the lock has been successfully opened.
+local function lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistance, isSuccess)
+    if not isVehicleInRange(vehicle, maxDistance) then return end -- the action will be aborted if the opened vehicle is too far.
+    if isSuccess then
+        lockpickSuccessCallback(vehicle, plate)
+    else -- if player fails quickevent
+        public.attemptPoliceAlert('carjack')
+        TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+        exports.qbx_core:Notify('You failed to lockpick.', 'error')
+    end
+
+    local chance = math.random()
+    if isAdvancedLockedpick then -- there is no benefit to using an advanced tool at this moment.
+        if chance <= config.removeAdvancedLockpickChance[GetVehicleClass(vehicle)] then
+            TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "advancedlockpick")
+        end
+    else
+        if chance <= config.removeNormalLockpickChance[GetVehicleClass(vehicle)] then
+            TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "lockpick")
+        end
+    end
+end
+
+--- Lockpicking quickevent.
+--- @param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
+function public.lockpickDoor(isAdvancedLockedpick)
+    local maxDistance = 2
+    local pedCoords = GetEntityCoords(cache.ped)
+    local vehicle = lib.getClosestVehicle(pedCoords, 4, false)
+
+    if not vehicle then return end
+
+    local plate = qbx.getVehiclePlate(vehicle)
+    local isDriverSeatFree = IsVehicleSeatFree(vehicle, -1)
+    local doorCoords = getBoneCoords(vehicle, 'door_dside_f')
+
+    --- player may attempt to open the lock if:
+    if not vehicle
+        or not plate
+        or not isDriverSeatFree                                               -- no one in the driver's seat
+        or Entity(vehicle).state.isOpen                                       -- the lock is locked
+        or not isCloseToCoords(doorCoords, pedCoords, maxDistance)            -- the player's ped is close enough to the driver's door
+        or GetVehicleDoorLockStatus(vehicle) < 2                              -- the vehicle is locked
+        or lib.callback.await('qbx_vehiclekeys:server:hasKeys', false, plate) -- player does not have keys to the vehicle
+    then
+        return
+    end
+
+    --- lock opening animation
+    lib.requestAnimDict('veh@break_in@0h@p_m_one@')
+    TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false)
+
+    local isSuccess = lib.skillCheck({ 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' },
+        { '1', '2', '3', '4' })
+
+    lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistance, isSuccess)
+end
+
+return public

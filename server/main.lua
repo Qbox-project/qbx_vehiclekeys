@@ -11,6 +11,15 @@ local vehicleList = {}
 ---- Server Events ----
 -----------------------
 
+--- Checking if the player has the vehicle keys
+--- @param source number ID of the player
+--- @param plate string the vehicle plate value
+--- @return boolean? `true` if the player has the vehicle keys, nil otherwise.
+lib.callback.register('qbx_vehiclekeys:server:hasKeys', function(source, plate)
+    local citizenid = exports.qbx_core:GetPlayer(source).PlayerData.citizenid
+    if vehicleList[plate] and vehicleList[plate][citizenid] then return true end
+end)
+
 -- Event to give keys. receiver can either be a single id, or a table of ids.
 -- Must already have keys to the vehicle, trigger the event from the server, or pass forcegive paramter as true.
 RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, plate)
@@ -131,7 +140,7 @@ exports('SetDoorState', SetDoorState)
 ---@param source number ID of the player
 ---@param netId number The network ID of the entity.
 ---@param targetPlayerId number ID of the target player who receives the key
----@return boolean | nil
+---@return boolean?
 lib.callback.register('vehiclekeys:server:GiveKey', function(source, netId, targetPlayerId)
     if not source or not netId or not targetPlayerId then return end
     -- This callback is not yet implemented
@@ -141,7 +150,7 @@ end)
 ---@param source number ID of the player
 ---@param netId number The network ID of the entity.
 ---@param targetPlayerId number ID of the target player who receives the key
----@return boolean | nil
+---@return boolean?
 lib.callback.register('vehiclekeys:server:RemoveKey', function(source, netId, targetPlayerId)
     if not source or not netId or not targetPlayerId then return end
     -- This callback is not yet implemented
