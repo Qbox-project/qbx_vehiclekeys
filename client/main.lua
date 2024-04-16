@@ -459,7 +459,7 @@ RegisterNetEvent('qb-vehiclekeys:client:ToggleEngine', function()
     end
 end)
 
-RegisterNetEvent('qb-vehiclekeys:client:giveKeys', function(id)
+RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
     local targetVehicle = getVehicle()
 
     if targetVehicle then
