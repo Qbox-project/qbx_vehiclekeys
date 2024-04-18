@@ -151,6 +151,7 @@ local function lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistanc
     end
 end
 
+local lockpickingSemaphore = 0
 --- Lockpicking quickevent.
 --- @param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
 function public.lockpickDoor(isAdvancedLockedpick)
@@ -176,14 +177,22 @@ function public.lockpickDoor(isAdvancedLockedpick)
         return
     end
 
-    --- lock opening animation
-    lib.requestAnimDict('veh@break_in@0h@p_m_one@')
-    TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false)
+    lockpickingSemaphore = lockpickingSemaphore + 1 -- semaphore
+    if lockpickingSemaphore > 1 then return end
+    Wait(0)
 
-    local isSuccess = lib.skillCheck({ 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' },
-        { '1', '2', '3', '4' })
+    CreateThread(function()
+        --- lock opening animation
+        lib.requestAnimDict('veh@break_in@0h@p_m_one@')
+        TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false)
 
-    lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistance, isSuccess)
+        local isSuccess = lib.skillCheck({ 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' },
+            { '1', '2', '3', '4' })
+
+        lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistance, isSuccess)
+    end)
+
+    lockpickingSemaphore = 0
 end
 
 return public
