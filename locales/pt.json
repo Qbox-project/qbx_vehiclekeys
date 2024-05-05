@@ -1,0 +1,40 @@
+{
+  "addcom": {
+    "addkeys": "Adiciona chaves a um veículo para alguém.",
+    "addkeys_id": "id",
+    "addkeys_id_help": "ID do Jogador",
+    "addkeys_plate": "placa",
+    "addkeys_plate_help": "Placa",
+    "givekeys": "Entrega as chaves a alguém. Se não houver ID, dá à pessoa mais próxima ou a todos no veículo.",
+    "givekeys_id": "id",
+    "givekeys_id_help": "ID do Jogador",
+    "remove_keys": "Remove chaves de um veículo para alguém.",
+    "remove_keys_id": "id",
+    "remove_keys_id_help": "ID do Jogador",
+    "remove_keys_plate": "placa",
+    "remove_keys_plate_help": "Placa"
+  },
+  "info": {
+    "engine": "Ativar/Desativar Motor",
+    "search_keys": "~g~[H]~w~ - Procurar por Chaves",
+    "toggle_locks": "Alternar Fechaduras do Veículo",
+    "vehicle_theft": "Roubo de veículo em andamento. Tipo: "
+  },
+  "notify": {
+    "carjack_failed": "Falha no assalto ao veículo!",
+    "failed_lockedpick": "Falhas em encontrar as chaves e ficas frustrado.",
+    "fpid": "Preenche os argumentos do ID do jogador e da placa",
+    "gave_keys": "Entregaste as chaves.",
+    "keys_taken": "Recebeste as chaves do veículo!",
+    "no_keys": "Não tens as chaves deste veículo.",
+    "not_near": "Não há ninguém por perto para entregar as chaves",
+    "vehicle_locked": "Veículo trancado!",
+    "vehicle_lockedpick": "Conseguiste abrir a fechadura da porta!",
+    "vehicle_unlocked": "Veículo destrancado!"
+  },
+  "progress": {
+    "attempting_carjack": "Tentativa de assalto ao veículo...",
+    "searching_keys": "Procurando pelas chaves do carro...",
+    "takekeys": "Tirando as chaves do corpo..."
+  }
+}
