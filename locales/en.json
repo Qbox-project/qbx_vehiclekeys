@@ -22,7 +22,8 @@
   },
   "notify": {
     "carjack_failed": "Carjacking failed!",
-    "failed_lockedpick": "You fail to find the keys and get frustrated.",
+    "failed_lockedpick": "You failed to lockpick.",
+    "failed_keys": "You fail to find the keys and get frustrated.",
     "fpid": "Fill out the player ID and Plate arguments",
     "gave_keys": "You hand over the keys.",
     "keys_taken": "You get keys to the vehicle!",

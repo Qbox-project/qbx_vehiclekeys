@@ -1,24 +1,12 @@
 -----------------------
 ----   Variables   ----
 -----------------------
-local vehicleList = {}
 
------------------------
-----   Threads     ----
------------------------
+local keysList = {}
 
 -----------------------
 ---- Server Events ----
 -----------------------
-
---- Checking if the player has the vehicle keys
---- @param source number ID of the player
---- @param plate string the vehicle plate value
---- @return boolean? `true` if the player has the vehicle keys, nil otherwise.
-lib.callback.register('qbx_vehiclekeys:server:hasKeys', function(source, plate)
-    local citizenid = exports.qbx_core:GetPlayer(source).PlayerData.citizenid
-    if vehicleList[plate] and vehicleList[plate][citizenid] then return true end
-end)
 
 -- Event to give keys. receiver can either be a single id, or a table of ids.
 -- Must already have keys to the vehicle, trigger the event from the server, or pass forcegive paramter as true.
@@ -28,7 +16,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     if HasKeys(giver, plate) then
         exports.qbx_core:Notify(giver, locale("notify.gave_keys"))
         if type(receiver) == 'table' then
-            for _,r in ipairs(receiver) do
+            for r in receiver do
                 GiveKeys(receiver[r], plate)
             end
         else
@@ -40,13 +28,10 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(plate)
-    local src = source
-    GiveKeys(src, plate)
+    GiveKeys(source, plate)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
-    local player = exports.qbx_core:GetPlayer(source)
-    if not player then return end
     if not (itemName == "lockpick" or itemName == "advancedlockpick") then return end
     exports.ox_inventory:RemoveItem(source, itemName, 1)
 end)
@@ -55,47 +40,74 @@ RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, sta
     SetVehicleDoorsLocked(NetworkGetEntityFromNetworkId(vehNetId), state)
 end)
 
-lib.callback.register('qbx-vehiclekeys:server:getVehicleKeys', function(source)
-    local citizenid = exports.qbx_core:GetPlayer(source).PlayerData.citizenid
-    local keysList = {}
-    for plate, citizenids in pairs (vehicleList) do
-        if citizenids[citizenid] then
-            keysList[plate] = true
-        end
-    end
-    return keysList
+local function getCitizenId(source)
+    local player = exports.qbx_core:GetPlayer(source)
+
+    if not player then return end
+    local citizenid = player.PlayerData.citizenid
+
+    return citizenid
+end
+
+RegisterNetEvent('qbx-vehiclekeys:server:setPlayerKeys', function()
+    local src = source
+    local citizenid = getCitizenId(src)
+    Player(src).state.keysList = keysList[citizenid]
 end)
 
 -----------------------
 ----   Functions   ----
 -----------------------
-function GiveKeys(id, plate)
-    local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
 
-    if not vehicleList[plate] then vehicleList[plate] = {} end
-    vehicleList[plate][citizenid] = true
+-- local function isVehicleVisibleByServer(plate)
+--     local vehicles = GetAllVehicles()
+--     if type(vehicles) == "table" then
+--         for _, vehicle in ipairs(vehicles) do
+--             local p = GetVehicleNumberPlateText(vehicle)
+--             if p == plate then
+--                 Wait(500)
+--                 if GetEntityPopulationType(vehicle) == 7 then
+--                     return true
+--                 end
+--             end
+--         end
+--     end
+-- end
 
-    exports.qbx_core:Notify(id, locale('notify.keys_taken'))
-    TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
+function GiveKeys(source, plate)
+    local keys = Player(source).state.keysList or {}
+
+    if keys[plate] then return end
+    keys[plate] = true
+    Player(source).state:set('keysList', keys, true)
+    local citizenid = getCitizenId(source)
+
+    if not citizenid then return end
+
+    -- if isVehicleVisibleByServer(plate) then
+    if not keysList[citizenid] then
+        keysList[citizenid] = {}
+    end
+
+    keysList[citizenid][plate] = true
+    -- end
+
+    exports.qbx_core:Notify(source, locale('notify.keys_taken'))
 end
+
 exports('GiveKeys', GiveKeys)
 
-function RemoveKeys(id, plate)
-    local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
+function RemoveKeys(source, plate)
+    local state = Player(source).state
 
-    if vehicleList[plate] and vehicleList[plate][citizenid] then
-        vehicleList[plate][citizenid] = nil
-    end
-
-    TriggerClientEvent('qb-vehiclekeys:client:RemoveKeys', id, plate)
+    if not state.keysList[plate] then return end
+    local citizenid = getCitizenId(source)
+    state.keysList = keysList[citizenid]
+    keysList[citizenid][plate] = nil
 end
 
-function HasKeys(id, plate)
-    local citizenid = exports.qbx_core:GetPlayer(id).PlayerData.citizenid
-    if vehicleList[plate] and vehicleList[plate][citizenid] then
-        return true
-    end
-    return false
+function HasKeys(source, plate)
+    return Player(source).state.keysList[plate]
 end
 
 --- Gives a key to an entity based on the player's CitizenID.
@@ -163,4 +175,9 @@ end)
 lib.callback.register('vehiclekeys:server:ToggleDoorState', function(source, netId)
     if not source or not netId then return end
     -- This callback is not yet implemented
+end)
+
+AddEventHandler('QBCore:Server:PlayerLoaded', function(player)
+    local PlayerData = player.PlayerData
+    Player(PlayerData.source).state.keysList = keysList[PlayerData.citizenid]
 end)
