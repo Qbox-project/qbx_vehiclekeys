@@ -22,7 +22,7 @@ local isHotwiring = false
 
 local function giveKeys(id, plate)
     local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(id))))
-    if distance < 1.5 and distance > 0.0 then
+    if distance < 3 then
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
     else
         exports.qbx_core:Notify(locale("notify.not_near"), 'error')
@@ -473,7 +473,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
                         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', GetPlayerServerId(NetworkGetPlayerIndexFromPed(otherOccupants[p])), targetPlate)
                     end
                 else -- Give keys to closest player
-                    local playerId, _, _ = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
+                    local playerId = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
                     giveKeys(playerId, targetPlate)
                 end
             end
