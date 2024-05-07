@@ -8,6 +8,8 @@
     "givekeys": "Andke võtmed kellelegi üle. Kui isikut tõendav dokument puudub, annab see lähimale inimesele või kõigile sõidukis viibijatele.",
     "givekeys_id": "id",
     "givekeys_id_help": "Mängija ID",
+    "givekeys_plate": "Numbrimärk",
+    "givekeys_plate_help": "Numbrimärk",
     "remove_keys": "Eemaldage kellegi jaoks sõiduki võtmed.",
     "remove_keys_id": "id",
     "remove_keys_id_help": "Mängija ID",

@@ -8,6 +8,8 @@
     "givekeys": "Předejte někomu klíče. Pokud nemáte průkaz totožnosti, dejte je nejbližší osobě nebo všem ve vozidle.",
     "givekeys_id": "ID",
     "givekeys_id_help": "ID hráče",
+    "givekeys_plate": "SPZ",
+    "givekeys_plate_help": "SPZ",
     "remove_keys": "Odebrat někomu klíče od vozidla.",
     "remove_keys_id": "id",
     "remove_keys_id_help": "ID hráče",

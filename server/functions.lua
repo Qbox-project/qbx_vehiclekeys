@@ -1,4 +1,4 @@
---- Checks for the existence of a key.
+---Checks for the existence of a key.
 ---@param entity number The entity (vehicle) where we check for the existence of a key.
 ---@param citizenid string The CitizenID of the player whose key we check for.
 ---@return boolean? `true` if the player has a key for the vehicle, nil otherwise.
@@ -9,7 +9,7 @@ function HasKey(entity, citizenid)
     return ent.state.keys[citizenid]
 end
 
---- Adds a key to the selected vehicle entity and returns a success status.
+---Adds a key to the selected vehicle entity and returns a success status.
 ---@param entity number The entity (vehicle) to which the key is added.
 ---@param citizenid string The CitizenID of the player whose key is being added.
 ---@param doorState number | nil -- Sets the doorState of the vehicle if present
@@ -33,7 +33,7 @@ function GiveKey(entity, citizenid, doorState)
     end
 end
 
---- Removes a key from the selected vehicle entity and returns a success status.
+---Removes a key from the selected vehicle entity and returns a success status.
 ---@param entity number The entity (vehicle) from which the key is removed.
 ---@param citizenid string The CitizenID of the player whose key is being removed.
 ---@return boolean? `true` if the key was successfully removed, `nil` otherwise.
@@ -53,7 +53,7 @@ function RemoveKey(entity, citizenid)
     end
 end
 
---- Sets the door state of the vehicle.
+---Sets the door state of the vehicle.
 ---@param entity number The entity (vehicle) for which the door state is updated.
 ---@param doorState number The door state number to update.
 ---@return boolean? `true` if the door state was successfully updated, `nil` otherwise.
@@ -67,7 +67,7 @@ function SetDoorState(entity, doorState)
     return true
 end
 
---- Toggles the door state of the vehicle between open and closed.
+---Toggles the door state of the vehicle between open and closed.
 ---@param entity number The entity (vehicle) for which the door state is being toggled.
 ---@return number | nil returns the new doorState of the vehicle
 function ToggleDoorState(entity)

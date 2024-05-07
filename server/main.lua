@@ -7,14 +7,26 @@ local vehicleList = {}
 ----   Threads     ----
 -----------------------
 
+CreateThread(function()
+    local vehicles = MySQL.query.await('SELECT * FROM player_vehicles')
+    for i = 1, #vehicles do
+        local data = vehicles[i]
+        vehicleList[data.plate] = {}
+
+        if data.citizenid then
+            vehicleList[data.plate][data.citizenid] = true
+        end
+    end
+end)
+
 -----------------------
 ---- Server Events ----
 -----------------------
 
---- Checking if the player has the vehicle keys
---- @param source number ID of the player
---- @param plate string the vehicle plate value
---- @return boolean? `true` if the player has the vehicle keys, nil otherwise.
+---Checking if the player has the vehicle keys
+---@param source number ID of the player
+---@param plate string the vehicle plate value
+---@return boolean? `true` if the player has the vehicle keys, nil otherwise.
 lib.callback.register('qbx_vehiclekeys:server:hasKeys', function(source, plate)
     local citizenid = exports.qbx_core:GetPlayer(source).PlayerData.citizenid
     if vehicleList[plate] and vehicleList[plate][citizenid] then return true end
@@ -98,7 +110,7 @@ function HasKeys(id, plate)
     return false
 end
 
---- Gives a key to an entity based on the player's CitizenID.
+---Gives a key to an entity based on the player's CitizenID.
 ---@param id integer The player's ID.
 ---@param netId number The network ID of the entity.
 ---@param doorState number | nil Sets the door state if given
@@ -111,7 +123,7 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveKey', function(id, netId, doorState)
 end)
 exports('GiveKey', GiveKey)
 
---- Removes a key from an entity based on the player's CitizenID.
+---Removes a key from an entity based on the player's CitizenID.
 ---@param id integer The player's ID.
 ---@param netId number The network ID of the entity.
 RegisterNetEvent('vehiclekeys:server:RemoveKey', function(id, netId)
@@ -123,8 +135,8 @@ RegisterNetEvent('vehiclekeys:server:RemoveKey', function(id, netId)
 end)
 exports('RemoveKey', RemoveKey)
 
---- Sets the door state to a desired value.
---- This event is expected to be called only by the server.
+---Sets the door state to a desired value.
+---This event is expected to be called only by the server.
 ---@param netId number The network ID of the entity.
 ---@param doorState number | nil Sets the door state if given
 RegisterNetEvent('vehiclekeys:server:SetDoorState', function(netId, doorState)
@@ -136,7 +148,7 @@ RegisterNetEvent('vehiclekeys:server:SetDoorState', function(netId, doorState)
 end)
 exports('SetDoorState', SetDoorState)
 
---- Gives a key to an entity based on the target player's CitizenID but only if the owner already has a key.
+---Gives a key to an entity based on the target player's CitizenID but only if the owner already has a key.
 ---@param source number ID of the player
 ---@param netId number The network ID of the entity.
 ---@param targetPlayerId number ID of the target player who receives the key
@@ -146,7 +158,7 @@ lib.callback.register('vehiclekeys:server:GiveKey', function(source, netId, targ
     -- This callback is not yet implemented
 end)
 
---- Removes a key from an entity based on the target player's CitizenID but only if the owner has a key.
+---Removes a key from an entity based on the target player's CitizenID but only if the owner has a key.
 ---@param source number ID of the player
 ---@param netId number The network ID of the entity.
 ---@param targetPlayerId number ID of the target player who receives the key
@@ -156,11 +168,18 @@ lib.callback.register('vehiclekeys:server:RemoveKey', function(source, netId, ta
     -- This callback is not yet implemented
 end)
 
---- Toggles the door state of the vehicle between open and closed.
+---Toggles the door state of the vehicle between open and closed.
 ---@param source number ID of the player
 ---@param netId number The network ID of the entity
 ---@return number | nil -- Returns the current Door State
 lib.callback.register('vehiclekeys:server:ToggleDoorState', function(source, netId)
     if not source or not netId then return end
     -- This callback is not yet implemented
+end)
+
+---Returns if the vehicle is owned by a player or not
+---@param plate string
+---@return boolean
+lib.callback.register('vehiclekeys:server:IsPlayerOwned', function(_, plate)
+    return not not vehicleList[plate]
 end)

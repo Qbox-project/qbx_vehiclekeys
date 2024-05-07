@@ -8,6 +8,8 @@
     "givekeys": "Übergebe die Schlüssel an jemanden. Wenn keine Bürger-ID angegeben, geht er an die nächstgelegene Person oder an alle Personen im Fahrzeug.",
     "givekeys_id": "id",
     "givekeys_id_help": "Bürger-ID",
+    "givekeys_plate": "kennzeichen",
+    "givekeys_plate_help": "Kennzeichen",
     "remove_keys": "Jemandem die Schlüssel eines Fahrzeugs abnehmen.",
     "remove_keys_id": "id",
     "remove_keys_id_help": "Bürger-ID",
