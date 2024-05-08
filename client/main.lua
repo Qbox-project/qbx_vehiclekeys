@@ -431,7 +431,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id)
                         GetPlayerServerId(NetworkGetPlayerIndexFromPed(occupant)), targetPlate)
                 end
             else     -- Give keys to closest player
-                local playerId, _, _ = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
+                local playerId = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
                 giveKeys(playerId, targetPlate)
             end
         end
