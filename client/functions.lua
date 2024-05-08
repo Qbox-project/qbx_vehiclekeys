@@ -205,7 +205,7 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
         or GetVehicleDoorLockStatus(vehicle) < 2                            -- the vehicle is locked
     then return end
 
-    lockpickingSemaphore = lockpickingSemaphore + 1
+    lockpickingSemaphore += 1
     if lockpickingSemaphore > 1 then return end
 
     CreateThread(function()
