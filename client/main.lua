@@ -6,26 +6,24 @@ local config = require 'config.client'
 local functions = require 'client.functions'
 local sharedFunction = require 'shared.functions'
 
---#region spread functions
-local hasKeys,
-    lockpickDoor,
-    attemptPoliceAlert,
-    isBlacklistedWeapon,
-    isBlacklistedVehicle =
-    functions.hasKeys,
-    functions.lockpickDoor,
-    functions.attemptPoliceAlert,
-    functions.isBlacklistedWeapon,
-    functions.isBlacklistedVehicle
+-- #region spread imported functions
 
-local getHash = sharedFunction.getHash
---#endregion
+local hasKeys = functions.hasKeys
+local lockpickDoor = functions.lockpickDoor
+local attemptPoliceAlert = functions.attemptPoliceAlert
+local isBlacklistedWeapon = functions.isBlacklistedWeapon
+local isBlacklistedVehicle = functions.isBlacklistedVehicle
+
+-- #endregion
 
 -----------------------
 ----   Variables   ----
 -----------------------
 
-local isTakingKeys, isCarjacking, isHotwiring, canCarjack = false, false, false, true
+local isTakingKeys = false
+local isCarjacking = false
+local isHotwiring = false
+local canCarjack = true
 
 -----------------------
 ----   Functions   ----
@@ -189,10 +187,8 @@ local function hotwire(vehicle, plate)
             exports.qbx_core:Notify(locale("notify.failed_keys"), 'error')
         end
         Wait(config.timeBetweenHotwires)
-        isHotwiring = false
-    else
-        isHotwiring = false
     end
+
     SetTimeout(10000, function()
         attemptPoliceAlert("steal")
     end)
@@ -294,7 +290,7 @@ CreateThread(function()
 
                 local driver = GetPedInVehicleSeat(entering, -1)
                 for _, vehicle in ipairs(config.immuneVehicles) do
-                    if GetEntityModel(entering) == getHash(vehicle) then
+                    if GetEntityModel(entering) == joaat(vehicle) then
                         carIsImmune = true
                     end
                 end
@@ -371,7 +367,7 @@ CreateThread(function()
                     if DoesEntityExist(target) and IsPedInAnyVehicle(target, false) and not IsEntityDead(target) and not IsPedAPlayer(target) then
                         local targetVehicle = GetVehiclePedIsIn(target, false)
                         for _, vehicle in ipairs(config.immuneVehicles) do
-                            if GetEntityModel(targetVehicle) == getHash(vehicle) then
+                            if GetEntityModel(targetVehicle) == joaat(vehicle) then
                                 carIsImmune = true
                             end
                         end
@@ -442,7 +438,13 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
     lockpickDoor(isAdvanced)
 end)
 
--- Backwards Compatibility ONLY -- Remove at some point --
+AddEventHandler('onResourceStart', function(resourceName)
+    if resourceName == GetCurrentResourceName() then
+        TriggerServerEvent('qbx-vehiclekeys:server:setPlayerKeys')
+    end
+end)
+
+-- #region Backwards Compatibility ONLY -- Remove at some point --
 RegisterNetEvent('qb-vehiclekeys:client:AddKeys', function(plate)
     TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
     if cache.vehicle and plate == qbx.getVehiclePlate(cache.vehicle) then
@@ -453,10 +455,4 @@ end)
 RegisterNetEvent('vehiclekeys:client:SetOwner', function(plate)
     TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
 end)
--- Backwards Compatibility ONLY -- Remove at some point --
-
-AddEventHandler('onResourceStart', function(resourceName)
-    if resourceName == GetCurrentResourceName() then
-        TriggerServerEvent('qbx-vehiclekeys:server:setPlayerKeys')
-    end
-end)
+-- #endregion Backwards Compatibility ONLY -- Remove at some point --

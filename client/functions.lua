@@ -1,6 +1,6 @@
 local config = require 'config.client'
 local functions = require 'shared.functions'
-local getHash, isCloseToCoords = functions.getHash, functions.isCloseToCoords
+local isCloseToCoords = functions.isCloseToCoords
 
 local alertSend = false
 local public = {}
@@ -40,7 +40,7 @@ end
 
 --- Checks if player has vehicle keys
 ---@param plate string The plate number of the vehicle.
----@return boolean? true if player has vehicle keys, nil otherwise
+---@return boolean? `true` if player has vehicle keys, `nil` otherwise.
 function public.hasKeys(plate)
     local keysList = Player(cache.serverId).state.keysList or {}
     return keysList[plate]
@@ -48,24 +48,24 @@ end
 exports('HasKeys', public.hasKeys)
 
 --- Checking weapon on the blacklist.
---- @return boolean? `true` if the vehicle is blacklisted, nil otherwise.
+--- @return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
 function public.isBlacklistedWeapon()
     local weapon = GetSelectedPedWeapon(cache.ped)
 
     for _, v in pairs(config.noCarjackWeapons) do
-        if weapon == getHash(v) then return true end
+        if weapon == joaat(v) then return true end
     end
 end
 
 --- Checking vehicle on the blacklist.
 --- @param vehicle number The entity number of the vehicle.
---- @return boolean? `true` if the vehicle is blacklisted, nil otherwise.
+--- @return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
 function public.isBlacklistedVehicle(vehicle)
     if Entity(vehicle).state.ignoreLocks or GetVehicleClass(vehicle) == 13 then return true end
 
     local vehicleHash = GetEntityModel(vehicle)
     for _, v in ipairs(config.noLockVehicles) do
-        if vehicleHash == getHash(v) then return true end
+        if vehicleHash == joaat(v) then return true end
     end
 end
 
@@ -91,7 +91,7 @@ end
 --- Gets bone coords
 --- @param entity number The entity index.
 --- @param boneName string The entity bone name.
---- @return vector3 Bone coords if exists, entity coords otherwise.
+--- @return vector3 `Bone coords` if exists, `entity coords` otherwise.
 local function getBoneCoords(entity, boneName)
     local boneIndex = GetEntityBoneIndexByName(entity, boneName)
 
@@ -102,12 +102,12 @@ local function getBoneCoords(entity, boneName)
     end
 end
 
---- comment
+--- checks if any of the bones are close enough to the coords
 --- @param coords vector3
 --- @param entity number
 --- @param bones table
 --- @param maxDistance number
---- @return boolean? Bone coords if exists, entity coords otherwise.
+--- @return boolean? `true` if bone exists, `nil` otherwise.
 local function isCloseToAnyBone(coords, entity, bones, maxDistance)
     for _, boneName in ipairs(bones) do
         local boneCoords = getBoneCoords(entity, boneName)
@@ -122,7 +122,7 @@ local doorBones = {'door_dside_f', 'door_dside_r', 'door_pside_f', 'door_pside_r
 --- Checking whether the character is close enough to the vehicle driver door.
 --- @param vehicle number The entity number of the vehicle.
 --- @param maxDistance number The max distance to check.
---- @return boolean? `true` if the ped is out of a vehicle and in the range of the opened vehicle, nil otherwise.
+--- @return boolean? `true` if the player ped is next to an open vehicle, `nil` otherwise.
 local function isVehicleInRange(vehicle, maxDistance)
     local vehicles = GetGamePool('CVehicle')
     local pedCoords = GetEntityCoords(cache.ped)
@@ -136,7 +136,7 @@ local function isVehicleInRange(vehicle, maxDistance)
     end
 end
 
---- The function will be execuded when the opening of the lock succeeds.
+--- Will be execuded when the opening of the lock succeeds.
 --- @param vehicle number The entity number of the vehicle.
 --- @param plate string The plate number of the vehicle.
 local function lockpickSuccessCallback(vehicle, plate)
@@ -181,7 +181,7 @@ local function lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistanc
     end
 end
 
-local lockpickingSemaphore = 0 -- semaphore
+local islockpickingProcessLocked = false -- lock flag
 --- Lockpicking quickevent.
 --- @param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
 --- @param maxDistance number? The max distance to check.
@@ -205,8 +205,8 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
         or GetVehicleDoorLockStatus(vehicle) < 2                            -- the vehicle is locked
     then return end
 
-    lockpickingSemaphore += 1
-    if lockpickingSemaphore > 1 then return end
+    if islockpickingProcessLocked then return end -- start of the critical section
+    islockpickingProcessLocked = true             -- one call per player at a time
 
     CreateThread(function()
         --- lock opening animation
@@ -222,7 +222,7 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
         Wait(config.lockpickCooldown)
     end)
 
-    lockpickingSemaphore = 0
+    islockpickingProcessLocked = false            -- end of the critical section
 end
 
 return public
