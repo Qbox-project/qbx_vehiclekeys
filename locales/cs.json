@@ -25,14 +25,17 @@
   "notify": {
     "carjack_failed": "Krádež auta se nezdařila!",
     "failed_lockedpick": "Nedaří se vám najít klíče a jste zklamaní.",
-    "fpid": "Vyplňte ID hráče a SPZ",
     "gave_keys": "Předáš klíče.",
+    "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Dostanete klíčky od vozidla!",
     "no_keys": "Od tohoto vozidla nemáte klíče.",
     "not_near": "V blízkosti není nikdo, komu by bylo možné předat klíče",
     "vehicle_locked": "Vozidlo je zamčené!",
     "vehicle_lockedpick": "Podařilo se ti otevřít zámek dveří!",
-    "vehicle_unlocked": "Vozidlo odemčeno!"
+    "vehicle_unlocked": "Vozidlo odemčeno!",
+    "removed_keys": "The keys to plate %s for player %s have been removed!",
+    "removed_keys_player": "Your keys to plate %s have been removed!",
+    "player_offline": "This player is not online!"
   },
   "progress": {
     "attempting_carjack": "Pokus o krádež auta...",

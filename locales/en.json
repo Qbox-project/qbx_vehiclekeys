@@ -25,14 +25,17 @@
   "notify": {
     "carjack_failed": "Carjacking failed!",
     "failed_lockedpick": "You fail to find the keys and get frustrated.",
-    "fpid": "Fill out the player ID and Plate arguments",
     "gave_keys": "You hand over the keys.",
+    "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "You get keys to the vehicle!",
     "no_keys": "You don't have keys to this vehicle.",
     "not_near": "There is nobody nearby to hand keys to",
     "vehicle_locked": "Vehicle locked!",
     "vehicle_lockedpick": "You managed to pick the door lock open!",
-    "vehicle_unlocked": "Vehicle unlocked!"
+    "vehicle_unlocked": "Vehicle unlocked!",
+    "removed_keys": "The keys to plate %s for player %s have been removed!",
+    "removed_keys_player": "Your keys to plate %s have been removed!",
+    "player_offline": "This player is not online!"
   },
   "progress": {
     "attempting_carjack": "Attempting Carjacking...",

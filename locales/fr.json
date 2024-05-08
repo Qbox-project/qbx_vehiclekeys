@@ -25,14 +25,17 @@
   "notify": {
     "carjack_failed": "Le détournement de voiture a échoué",
     "failed_lockedpick": "Vous n'avez pas réussi à ouvrir le véhicule et vous êtes frustré.",
-    "fpid": "Remplissez les arguments ID et plaque.",
     "gave_keys": "Vous donnez les clés.",
+    "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Vous obtenez les clés du véhicule!",
     "no_keys": "Vous n'avez pas de clés de ce véhicule.",
     "not_near": "Il n'y a personne à proximité.",
     "vehicle_locked": "Véhicule verrouillé!",
     "vehicle_lockedpick": "Vous avez réussi à ouvrir le véhicule!",
-    "vehicle_unlocked": "Véhicule déverrouillé!"
+    "vehicle_unlocked": "Véhicule déverrouillé!",
+    "removed_keys": "The keys to plate %s for player %s have been removed!",
+    "removed_keys_player": "Your keys to plate %s have been removed!",
+    "player_offline": "This player is not online!"
   },
   "progress": {
     "attempting_carjack": "Tentative de vol de carjack..",

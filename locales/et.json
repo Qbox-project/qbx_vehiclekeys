@@ -25,14 +25,17 @@
   "notify": {
     "carjack_failed": "Autovargamine ebaõnnestus!",
     "failed_lockedpick": "Te ei leia võtmeid ja olete pettunud.",
-    "fpid": "Täitke mängija ID ja plaadi argumendid",
     "gave_keys": "Annad võtmed üle.",
+    "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Saate auto võtmed!",
     "no_keys": "Teil pole selle sõiduki võtmeid.",
     "not_near": "Läheduses pole kedagi, kellele võtmed kätte anda",
     "vehicle_locked": "Sõiduk lukus!",
     "vehicle_lockedpick": "Sul õnnestus ukselukk lahti keerata!",
-    "vehicle_unlocked": "Sõiduk avatud!"
+    "vehicle_unlocked": "Sõiduk avatud!",
+    "removed_keys": "The keys to plate %s for player %s have been removed!",
+    "removed_keys_player": "Your keys to plate %s have been removed!",
+    "player_offline": "This player is not online!"
   },
   "progress": {
     "attempting_carjack": "Autovarguse katse...",

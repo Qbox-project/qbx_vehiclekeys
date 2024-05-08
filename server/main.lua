@@ -45,8 +45,8 @@ function GiveKeys(id, plate)
     if not vehicleList[plate] then vehicleList[plate] = {} end
     vehicleList[plate][player.PlayerData.citizenid] = true
 
-    exports.qbx_core:Notify(id, locale('notify.keys_taken'))
     TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
+    exports.qbx_core:Notify(id, locale('notify.keys_taken'))
 
     return true
 end
