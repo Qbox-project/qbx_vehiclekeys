@@ -52,8 +52,8 @@ exports('HasKeys', public.hasKeys)
 function public.isBlacklistedWeapon()
     local weapon = GetSelectedPedWeapon(cache.ped)
 
-    for _, v in ipairs(config.noCarjackWeapons) do
-        if weapon == joaat(v) then return true end
+    for _, w in ipairs(config.noCarjackWeapons) do
+        if weapon == joaat(w) then return true end
     end
 end
 
