@@ -59,21 +59,6 @@ end)
 ----   Functions   ----
 -----------------------
 
--- local function isVehicleVisibleByServer(plate)
---     local vehicles = GetAllVehicles()
---     if type(vehicles) == "table" then
---         for _, vehicle in ipairs(vehicles) do
---             local p = GetVehicleNumberPlateText(vehicle)
---             if p == plate then
---                 Wait(500)
---                 if GetEntityPopulationType(vehicle) == 7 then
---                     return true
---                 end
---             end
---         end
---     end
--- end
-
 function GiveKeys(source, plate)
     local keys = Player(source).state.keysList or {}
 
@@ -84,13 +69,11 @@ function GiveKeys(source, plate)
 
     if not citizenid then return end
 
-    -- if isVehicleVisibleByServer(plate) then
     if not keysList[citizenid] then
         keysList[citizenid] = {}
     end
 
     keysList[citizenid][plate] = true
-    -- end
 
     exports.qbx_core:Notify(source, locale('notify.keys_taken'))
 end

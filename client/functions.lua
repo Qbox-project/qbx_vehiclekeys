@@ -52,7 +52,7 @@ exports('HasKeys', public.hasKeys)
 function public.isBlacklistedWeapon()
     local weapon = GetSelectedPedWeapon(cache.ped)
 
-    for _, v in pairs(config.noCarjackWeapons) do
+    for _, v in ipairs(config.noCarjackWeapons) do
         if weapon == joaat(v) then return true end
     end
 end
