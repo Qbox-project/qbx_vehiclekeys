@@ -10,8 +10,7 @@ lib.addCommand('givekeys', {
     },
     restricted = false,
 }, function (source, args)
-    local src = source
-    TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', src, args.id)
+    TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', source, args.id)
 end)
 
 lib.addCommand('addkeys', {
@@ -32,11 +31,10 @@ lib.addCommand('addkeys', {
     },
     restricted = 'group.admin',
 }, function (source, args)
-    local src = source
     if not args.id or not args.plate then
-        exports.qbx_core:Notify(src, locale("notify.fpid"))
-        return
+        return exports.qbx_core:Notify(source, locale("notify.fpid"))
     end
+
     GiveKeys(args.id, args.plate)
 end)
 
@@ -58,10 +56,9 @@ lib.addCommand('removekeys', {
     },
     restricted = 'group.admin',
 }, function (source, args)
-    local src = source
     if not args.id or not args.plate then
-        exports.qbx_core:Notify(src, locale("notify.fpid"))
-        return
+        return exports.qbx_core:Notify(source, locale("notify.fpid"))
     end
+
     RemoveKeys(args.id, args.plate)
 end)
