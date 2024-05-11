@@ -18,7 +18,7 @@ lib.addCommand('givekeys', {
 }, function (source, args)
     local id = args[locale('addcom.givekeys_id')]
     if id and not exports.qbx_core:GetPlayer(id) then
-        exports.qbx_core:Notify(source, locale('notify.player_offline'))
+        exports.qbx_core:Notify(source, locale('notify.player_offline'), 'error')
         return
     end
 
@@ -45,9 +45,9 @@ lib.addCommand('addkeys', {
     local plate = args[locale('addcom.addkeys_plate')]
     local success = GiveKeys(id, plate)
     if success then
-        exports.qbx_core:Notify(source, locale('notify.added_keys', plate, id))
+        exports.qbx_core:Notify(source, locale('notify.added_keys', plate, id), 'success')
     else
-        exports.qbx_core:Notify(source, locale('notify.player_offline'))
+        exports.qbx_core:Notify(source, locale('notify.player_offline'), 'error')
     end
 end)
 
@@ -71,8 +71,8 @@ lib.addCommand('removekeys', {
     local plate = args[locale('addcom.removekeys_plate')]
     local success = RemoveKeys(id, plate)
     if success then
-        exports.qbx_core:Notify(source, locale('notify.removed_keys', plate, id))
+        exports.qbx_core:Notify(source, locale('notify.removed_keys', plate, id), 'success')
     else
-        exports.qbx_core:Notify(source, locale('notify.player_offline'))
+        exports.qbx_core:Notify(source, locale('notify.player_offline'), 'error')
     end
 end)
