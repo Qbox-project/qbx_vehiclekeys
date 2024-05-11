@@ -101,7 +101,7 @@ local function setVehicleDoorLock(veh, state, anim)
                 TriggerServerEvent('InteractSound_SV:PlayWithinDistance', 5, 'lock', 0.3)
                 NetworkRequestControlOfEntity(veh)
                 if state then
-                    state = not state and 1 or 2
+                    state = state and 2 or 1
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), state)
                     exports.qbx_core:Notify(state == 2 and locale('notify.vehicle_locked') or locale('notify.vehicle_unlocked'), 'inform')
                 else
