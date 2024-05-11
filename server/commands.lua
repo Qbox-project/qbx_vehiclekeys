@@ -14,12 +14,8 @@ lib.addCommand('givekeys', {
 end)
 
 local function getVehicleKeysParams(source, args)
-    local playerId = args.target
+    local playerId = args.target or source
     local plate = args.plate
-
-    if not playerId then
-        playerId = source
-    end
 
     if not plate then
         local ped = GetPlayerPed(source)
