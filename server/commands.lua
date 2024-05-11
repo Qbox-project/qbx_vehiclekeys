@@ -51,7 +51,7 @@ lib.addCommand('addkeys', {
     local playerId, plate = getVehicleKeysParams(source, args)
 
     if not playerId or plate == 0 then
-        return exports.qbx_core:Notify(source, locale('commands.vehiclekeys.error'), 'error')
+        return exports.qbx_core:Notify(source, locale('notify.fpid'), 'error')
     end
 
     GiveKeys(playerId, plate)
@@ -78,7 +78,7 @@ lib.addCommand('removekeys', {
     local playerId, plate = getVehicleKeysParams(source, args)
 
     if not playerId or plate == 0 then
-        return exports.qbx_core:Notify(source, locale('commands.vehiclekeys.error'), 'error')
+        return exports.qbx_core:Notify(source, locale('cnotify.fpid'), 'error')
     end
 
     RemoveKeys(playerId, plate)
