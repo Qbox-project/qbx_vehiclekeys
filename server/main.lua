@@ -59,35 +59,60 @@ end)
 ----   Functions   ----
 -----------------------
 
+--- Gives the user the keys to the vehicle
+--- @param source number ID of the player
+--- @param plate string The plate number of the vehicle.
 function GiveKeys(source, plate)
-    local keys = Player(source).state.keysList or {}
-
-    if keys[plate] then return end
-    keys[plate] = true
-    Player(source).state:set('keysList', keys, true)
     local citizenid = getCitizenId(source)
 
     if not citizenid then return end
 
-    if not keysList[citizenid] then
-        keysList[citizenid] = {}
-    end
+    local keys = Player(source).state.keysList or {}
 
-    keysList[citizenid][plate] = true
+    if keys[plate] then return end
+    keys[plate] = true
+
+    Player(source).state:set('keysList', keys, true)
+
+    if not keysList[citizenid] then
+        keysList[citizenid] = {plate = true}
+    else
+        keysList[citizenid][plate] = true
+    end
 
     exports.qbx_core:Notify(source, locale('notify.keys_taken'))
 end
 
+RegisterNetEvent('qbx_vehiclekeys:server:giveKeys', function(source, plate)
+    if not GetInvokingResource() then return end
+    GiveKeys(source, plate)
+end)
+
 exports('GiveKeys', GiveKeys)
 
 function RemoveKeys(source, plate)
-    local state = Player(source).state
-
-    if not state.keysList[plate] then return end
     local citizenid = getCitizenId(source)
-    state.keysList = keysList[citizenid]
-    keysList[citizenid][plate] = nil
+
+    if not citizenid then return end
+
+    local keys = Player(source).state.keysList or {}
+
+    if not keys[plate] then return end
+    keys[plate] = nil
+
+    Player(source).state:set('keysList', keys, true)
+
+    if keysList and keysList[citizenid] then
+        keysList[citizenid][plate] = nil
+    end
+
+    exports.qbx_core:Notify(source, locale('notify.keys_removed'))
 end
+
+RegisterNetEvent('qbx_vehiclekeys:server:removeKeys', function(source, plate)
+    if not GetInvokingResource() then return end
+    RemoveKeys(source, plate)
+end)
 
 function HasKeys(source, plate)
     return Player(source).state.keysList[plate]

@@ -27,6 +27,7 @@
     "fpid": "Fill out the player ID and Plate arguments",
     "gave_keys": "You hand over the keys.",
     "keys_taken": "You get keys to the vehicle!",
+    "keys_removed": "You lost keys to the vehicle!",
     "no_keys": "You don't have keys to this vehicle.",
     "not_near": "There is nobody nearby to hand keys to",
     "vehicle_locked": "Vehicle locked!",
