@@ -83,11 +83,6 @@ function GiveKeys(source, plate)
     exports.qbx_core:Notify(source, locale('notify.keys_taken'))
 end
 
-RegisterNetEvent('qbx_vehiclekeys:server:giveKeys', function(source, plate)
-    if not GetInvokingResource() then return end
-    GiveKeys(source, plate)
-end)
-
 exports('GiveKeys', GiveKeys)
 
 --- Removing the vehicle keys from the user
@@ -111,11 +106,6 @@ function RemoveKeys(source, plate)
 
     exports.qbx_core:Notify(source, locale('notify.keys_removed'))
 end
-
-RegisterNetEvent('qbx_vehiclekeys:server:removeKeys', function(source, plate)
-    if not GetInvokingResource() then return end
-    RemoveKeys(source, plate)
-end)
 
 function HasKeys(source, plate)
     return Player(source).state.keysList[plate]
