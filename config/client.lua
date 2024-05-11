@@ -153,6 +153,9 @@ return {
     policeAlertChance = 0.75, -- Chance of alerting the police during the day
     policeNightAlertChance = 0.50, -- Chance of alerting the police at night (times: 01-06)
 
+    vehicleAlarmDuration = 10000,
+    lockpickCooldown = 1000,
+
     -- Job Settings
     sharedKeys = { -- Share keys amongst employees. Employees can lock/unlock any job-listed vehicle
         ['police'] = { -- Job name

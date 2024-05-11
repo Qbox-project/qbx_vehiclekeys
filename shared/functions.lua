@@ -1,13 +1,5 @@
 local public = {}
 
---- Gets model hash
---- @param model string | number model name or number.
---- @return number hash of the model.
-function public.getHash(model)
-    if type(model) == 'string' then return joaat(model) end
-    return model
-end
-
 --- Checks if the given two coordinates are close to each other based on distance.
 --- @param coord1 vector3[] The first set of coordinates.
 --- @param coord2 vector3[] The second set of coordinates.
