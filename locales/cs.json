@@ -24,7 +24,8 @@
   },
   "notify": {
     "carjack_failed": "Krádež auta se nezdařila!",
-    "failed_lockedpick": "Nedaří se vám najít klíče a jste zklamaní.",
+    "failed_lockedpick": "You failed to lockpick.",
+    "failed_keys": "You fail to find the keys and get frustrated.",
     "gave_keys": "Předáš klíče.",
     "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Dostanete klíčky od vozidla!",

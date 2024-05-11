@@ -24,7 +24,8 @@
   },
   "notify": {
     "carjack_failed": "Falha no assalto ao veículo!",
-    "failed_lockedpick": "Falhas em encontrar as chaves e ficas frustrado.",
+    "failed_lockedpick": "You failed to lockpick.",
+    "failed_keys": "You fail to find the keys and get frustrated.",
     "gave_keys": "Entregaste as chaves.",
     "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Recebeste as chaves do veículo!",

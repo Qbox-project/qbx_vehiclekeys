@@ -24,7 +24,8 @@
   },
   "notify": {
     "carjack_failed": "Voertuigdiefstal mislukt!",
-    "failed_lockedpick": "Je kon de sleutels niet vinden en raakt gefrustreerd.",
+    "failed_lockedpick": "Het lockpicken mislukte.",
+    "failed_keys": "Je kon de sleutels niet vinden en raakt gefrustreerd.",
     "gave_keys": "Je hebt de sleutels overgedragen.",
     "added_keys": "Je hebt een kopie van de sleutels voor het voertuig met kenteken %s gegeven aan speler %s!",
     "keys_taken": "Je kreeg de sleutels van het voertuig!",

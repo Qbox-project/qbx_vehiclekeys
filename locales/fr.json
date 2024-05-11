@@ -24,7 +24,8 @@
   },
   "notify": {
     "carjack_failed": "Le détournement de voiture a échoué",
-    "failed_lockedpick": "Vous n'avez pas réussi à ouvrir le véhicule et vous êtes frustré.",
+    "failed_lockedpick": "You failed to lockpick.",
+    "failed_keys": "You fail to find the keys and get frustrated.",
     "gave_keys": "Vous donnez les clés.",
     "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Vous obtenez les clés du véhicule!",
