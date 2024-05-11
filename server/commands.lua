@@ -23,7 +23,7 @@ local function getVehicleKeysParams(source, args)
 
     if not plate then
         local ped = GetPlayerPed(source)
-        local vehicle = GetVehiclePedIsIn(ped, false);
+        local vehicle = GetVehiclePedIsIn(ped, false)
         plate = GetVehicleNumberPlateText(vehicle)
     end
 
