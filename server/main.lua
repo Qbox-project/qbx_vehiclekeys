@@ -84,7 +84,7 @@ function HasKeys(source, plate)
 end
 
 -----------------------
----- Server Events ----
+----    Events     ----
 -----------------------
 
 -- Event to give keys. receiver can either be a single id, or a table of ids.
@@ -203,6 +203,19 @@ end)
 lib.callback.register('vehiclekeys:server:ToggleDoorState', function(source, netId)
     if not source or not netId then return end
     -- This callback is not yet implemented
+end)
+
+---Returns if the vehicle is owned by a player or not
+---@param plate string
+---@return boolean
+lib.callback.register('vehiclekeys:server:IsPlayerOwned', function(_, plate)
+    for _, v in pairs(keysList) do
+        if v[plate] then
+            return true
+        end
+    end
+
+    return false
 end)
 
 -----------------------
