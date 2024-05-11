@@ -48,7 +48,7 @@ end
 exports('HasKeys', public.hasKeys)
 
 --- Checking weapon on the blacklist.
---- @return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
+---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
 function public.isBlacklistedWeapon()
     local weapon = GetSelectedPedWeapon(cache.ped)
 
@@ -58,8 +58,8 @@ function public.isBlacklistedWeapon()
 end
 
 --- Checking vehicle on the blacklist.
---- @param vehicle number The entity number of the vehicle.
---- @return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
 function public.isBlacklistedVehicle(vehicle)
     if Entity(vehicle).state.ignoreLocks or GetVehicleClass(vehicle) == 13 then return true end
 
@@ -89,9 +89,9 @@ function public.attemptPoliceAlert(type)
 end
 
 --- Gets bone coords
---- @param entity number The entity index.
---- @param boneName string The entity bone name.
---- @return vector3 `Bone coords` if exists, `entity coords` otherwise.
+---@param entity number The entity index.
+---@param boneName string The entity bone name.
+---@return vector3 `Bone coords` if exists, `entity coords` otherwise.
 local function getBoneCoords(entity, boneName)
     local boneIndex = GetEntityBoneIndexByName(entity, boneName)
 
@@ -103,11 +103,11 @@ local function getBoneCoords(entity, boneName)
 end
 
 --- checks if any of the bones are close enough to the coords
---- @param coords vector3
---- @param entity number
---- @param bones table
---- @param maxDistance number
---- @return boolean? `true` if bone exists, `nil` otherwise.
+---@param coords vector3
+---@param entity number
+---@param bones table
+---@param maxDistance number
+---@return boolean? `true` if bone exists, `nil` otherwise.
 local function isCloseToAnyBone(coords, entity, bones, maxDistance)
     for _, boneName in ipairs(bones) do
         local boneCoords = getBoneCoords(entity, boneName)
@@ -120,9 +120,9 @@ end
 local doorBones = {'door_dside_f', 'door_dside_r', 'door_pside_f', 'door_pside_r'}
 
 --- Checking whether the character is close enough to the vehicle driver door.
---- @param vehicle number The entity number of the vehicle.
---- @param maxDistance number The max distance to check.
---- @return boolean? `true` if the player ped is next to an open vehicle, `nil` otherwise.
+---@param vehicle number The entity number of the vehicle.
+---@param maxDistance number The max distance to check.
+---@return boolean? `true` if the player ped is next to an open vehicle, `nil` otherwise.
 local function isVehicleInRange(vehicle, maxDistance)
     local vehicles = GetGamePool('CVehicle')
     local pedCoords = GetEntityCoords(cache.ped)
@@ -137,8 +137,8 @@ local function isVehicleInRange(vehicle, maxDistance)
 end
 
 --- Will be execuded when the opening of the lock succeeds.
---- @param vehicle number The entity number of the vehicle.
---- @param plate string The plate number of the vehicle.
+---@param vehicle number The entity number of the vehicle.
+---@param plate string The plate number of the vehicle.
 local function lockpickSuccessCallback(vehicle, plate)
     TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
 
@@ -152,11 +152,11 @@ local function lockpickSuccessCallback(vehicle, plate)
 end
 
 --- Operations done after the LockpickDoor quickevent done.
---- @param vehicle number The entity number of the vehicle.
---- @param plate string The plate number of the vehicle.
---- @param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used.
---- @param maxDistance number The max distance to check.
---- @param isSuccess boolean? Determines whether the lock has been successfully opened.
+---@param vehicle number The entity number of the vehicle.
+---@param plate string The plate number of the vehicle.
+---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used.
+---@param maxDistance number The max distance to check.
+---@param isSuccess boolean? Determines whether the lock has been successfully opened.
 local function lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistance, isSuccess)
     if not isVehicleInRange(vehicle, maxDistance) then return end -- the action will be aborted if the opened vehicle is too far.
     if isSuccess then
@@ -183,9 +183,9 @@ end
 
 local islockpickingProcessLocked = false -- lock flag
 --- Lockpicking quickevent.
---- @param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
---- @param maxDistance number? The max distance to check.
---- @param customChallenge boolean? lockpick challenge
+---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
+---@param maxDistance number? The max distance to check.
+---@param customChallenge boolean? lockpick challenge
 function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     maxDistance = maxDistance or 2
     local pedCoords = GetEntityCoords(cache.ped)

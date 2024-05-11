@@ -60,8 +60,8 @@ end)
 -----------------------
 
 --- Gives the user the keys to the vehicle
---- @param source number ID of the player
---- @param plate string The plate number of the vehicle.
+---@param source number ID of the player
+---@param plate string The plate number of the vehicle.
 function GiveKeys(source, plate)
     local citizenid = getCitizenId(source)
 
@@ -91,8 +91,8 @@ end)
 exports('GiveKeys', GiveKeys)
 
 --- Removing the vehicle keys from the user
---- @param source number ID of the player
---- @param plate string The plate number of the vehicle.
+---@param source number ID of the player
+---@param plate string The plate number of the vehicle.
 function RemoveKeys(source, plate)
     local citizenid = getCitizenId(source)
 

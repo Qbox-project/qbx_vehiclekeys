@@ -13,17 +13,20 @@ lib.addCommand('givekeys', {
     TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', source, args.id)
 end)
 
-local function getVehicleKeysParams(source, args)
-    local playerId = args.target or source
-    local plate = args.plate
-
+--- Gets the plate of the vehicle in which the executor is, if args.plate is nil
+---@param source number ID of the player
+---@param plate string? The plate number of the vehicle.
+---@return string?
+local function getPlayersVehiclePlate(source, plate)
     if not plate then
         local ped = GetPlayerPed(source)
         local vehicle = GetVehiclePedIsIn(ped, false)
+
+        if vehicle == 0 then return end
         plate = GetVehicleNumberPlateText(vehicle)
     end
 
-    return playerId, plate
+    return plate
 end
 
 lib.addCommand('addkeys', {
@@ -44,9 +47,10 @@ lib.addCommand('addkeys', {
     },
     restricted = 'group.admin',
 }, function (source, args)
-    local playerId, plate = getVehicleKeysParams(source, args)
+    local playerId = args.target or source
+    local plate = getPlayersVehiclePlate(source, args.plate)
 
-    if not playerId or plate == 0 then
+    if not playerId or not plate then
         return exports.qbx_core:Notify(source, locale('notify.fpid'), 'error')
     end
 
@@ -71,9 +75,10 @@ lib.addCommand('removekeys', {
     },
     restricted = 'group.admin',
 }, function (source, args)
-    local playerId, plate = getVehicleKeysParams(source, args)
+    local playerId = args.target or source
+    local plate = getPlayersVehiclePlate(source, args.plate)
 
-    if not playerId or plate == 0 then
+    if not playerId or not plate then
         return exports.qbx_core:Notify(source, locale('cnotify.fpid'), 'error')
     end
 
