@@ -8,6 +8,9 @@ local keysList = {}
 ----   Functions   ----
 -----------------------
 
+---Gets Citizen Id based on source
+---@param source number ID of the player
+---@return string citizenid The CitizenID of the player whose key is being added.
 local function getCitizenId(source)
     local player = exports.qbx_core:GetPlayer(source)
     if not player then return end
@@ -56,21 +59,27 @@ local function removePlayer(src)
     Player(src).state:set('keysList', nil, true)
 end
 
+---Gives the user the keys to the vehicle
+---@param source number ID of the player
+---@param plate string The plate number of the vehicle.
 function GiveKeys(source, plate)
-    local keys = Player(source).state.keysList or {}
-    if keys[plate] then return true end
+    local citizenid = getCitizenId(source)
 
+    if not citizenid then return end
+
+    local keys = Player(source).state.keysList or {}
+
+    if keys[plate] then return end
     keys[plate] = true
+
     Player(source).state:set('keysList', keys, true)
 
-    local citizenid = getCitizenId(source)
-    if not citizenid then return false end
-
     if not keysList[citizenid] then
-        keysList[citizenid] = {}
+        keysList[citizenid] = {plate = true}
+    else
+        keysList[citizenid][plate] = true
     end
 
-    keysList[citizenid][plate] = true
     exports.qbx_core:Notify(source, locale('notify.keys_taken'))
 
     return true
@@ -78,16 +87,26 @@ end
 
 exports('GiveKeys', GiveKeys)
 
+--- Removing the vehicle keys from the user
+---@param source number ID of the player
+---@param plate string The plate number of the vehicle.
 function RemoveKeys(source, plate)
-    local state = Player(source).state
-    if not state.keysList[plate] then return true end
-
     local citizenid = getCitizenId(source)
-    if not citizenid then return false end
 
-    keysList[citizenid][plate] = nil
-    state:set('keysList', keysList[citizenid], true)
-    exports.qbx_core:Notify(source, locale('notify.removed_keys_player', plate))
+    if not citizenid then return end
+
+    local keys = Player(source).state.keysList or {}
+
+    if not keys[plate] then return end
+    keys[plate] = nil
+
+    Player(source).state:set('keysList', keys, true)
+
+    if keysList and keysList[citizenid] then
+        keysList[citizenid][plate] = nil
+    end
+
+    exports.qbx_core:Notify(source, locale('notify.keys_removed'))
 
     return true
 end
@@ -142,8 +161,6 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveKey', function(id, netId, doorState)
         -- drop player
     end
 end)
-
-exports('GiveKey', GiveKey)
 
 ---Removes a key from an entity based on the player's CitizenID.
 ---@param id integer The player's ID.

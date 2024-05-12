@@ -196,7 +196,8 @@ local islockpickingProcessLocked = false -- lock flag
 function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     maxDistance = maxDistance or 2
     local pedCoords = GetEntityCoords(cache.ped)
-    local vehicle = lib.getClosestVehicle(pedCoords, 4, false)
+    local vehicle = lib.getClosestVehicle(pedCoords, maxDistance * 2, false) -- The difference between the door and the center of the vehicle
+
     if not vehicle then return end
 
     local plate = qbx.getVehiclePlate(vehicle)
