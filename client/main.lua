@@ -333,7 +333,7 @@ CreateThread(function()
                         end
                     end
                 -- Parked car logic
-                elseif driver == 0 and Entity(entering).state.isOpen == false and not hasKeys(plate) and not isTakingKeys and not lib.callback.await('vehiclekeys:server:IsPlayerOwned', false, plate) then
+                elseif driver == 0 and Entity(entering).state.isOpen == false and not hasKeys(plate) and not isTakingKeys and not Entity(entering).state.vehicleid then
                     if config.lockNPCParkedCars then
                         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 2)
                     else
