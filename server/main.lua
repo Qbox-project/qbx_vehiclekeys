@@ -189,12 +189,12 @@ end)
 
 exports('SetDoorState', SetDoorState)
 
-AddEventHandler('QBCore:Server:OnPlayerLoaded', function()
+RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
     addPlayer(source --[[@as integer]])
 end)
 
 ---@param src integer
-AddEventHandler('QBCore:Server:OnPlayerUnload', function(src)
+RegisterNetEvent('QBCore:Server:OnPlayerUnload', function(src)
     removePlayer(src)
 end)
 
