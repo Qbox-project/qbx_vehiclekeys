@@ -8,6 +8,8 @@
     "givekeys": "Übergebe die Schlüssel an jemanden. Wenn keine Bürger-ID angegeben, geht er an die nächstgelegene Person oder an alle Personen im Fahrzeug.",
     "givekeys_id": "id",
     "givekeys_id_help": "Bürger-ID",
+    "givekeys_plate": "kennzeichen",
+    "givekeys_plate_help": "Kennzeichen",
     "remove_keys": "Jemandem die Schlüssel eines Fahrzeugs abnehmen.",
     "remove_keys_id": "id",
     "remove_keys_id_help": "Bürger-ID",
@@ -22,15 +24,19 @@
   },
   "notify": {
     "carjack_failed": "Knacken des Autos ist fehlgeschlagen!",
-    "failed_lockedpick": "Du kannst keine Schlüssel finden und bist frustriert.",
-    "fpid": "Gebe die Bürger-ID und das Kennzeichen an.",
+    "failed_lockedpick": "You failed to lockpick.",
+    "failed_keys": "You fail to find the keys and get frustrated.",
     "gave_keys": "Du gibst die Schlüssel ab.",
+    "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Du erhälst die Schlüssel für das Fahrzeug!",
     "no_keys": "Du hast keine Schlüssel für das Fahrzeug!",
     "not_near": "Es ist niemand in der Nähe, der den Schlüssel bekommen könnte!",
     "vehicle_locked": "Fahrzeug verriegelt!",
     "vehicle_lockedpick": "Du hast es geschafft, das Türschloss zu knacken!",
-    "vehicle_unlocked": "Fahrzeug entriegelt."
+    "vehicle_unlocked": "Fahrzeug entriegelt.",
+    "removed_keys": "The keys to plate %s for player %s have been removed!",
+    "removed_keys_player": "Your keys to plate %s have been removed!",
+    "player_offline": "This player is not online!"
   },
   "progress": {
     "attempting_carjack": "Versuchter Autodiebstahl...",

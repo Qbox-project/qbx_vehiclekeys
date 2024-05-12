@@ -18,7 +18,10 @@ client_scripts {
 	'client/*.lua'
 }
 
-server_script 'server/*.lua'
+server_scripts {
+	'@oxmysql/lib/MySQL.lua',
+	'server/*.lua'
+}
 
 files {
 	'locales/*.json',
@@ -30,5 +33,5 @@ dependencies {
     'qbx_core'
 }
 
-use_experimental_fxv2_oal 'yes'
 lua54 'yes'
+use_experimental_fxv2_oal 'yes'

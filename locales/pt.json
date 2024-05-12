@@ -8,6 +8,8 @@
     "givekeys": "Entrega as chaves a alguém. Se não houver ID, dá à pessoa mais próxima ou a todos no veículo.",
     "givekeys_id": "id",
     "givekeys_id_help": "ID do Jogador",
+    "givekeys_plate": "placa",
+    "givekeys_plate_help": "Placa",
     "remove_keys": "Remove chaves de um veículo para alguém.",
     "remove_keys_id": "id",
     "remove_keys_id_help": "ID do Jogador",
@@ -22,15 +24,19 @@
   },
   "notify": {
     "carjack_failed": "Falha no assalto ao veículo!",
-    "failed_lockedpick": "Falhas em encontrar as chaves e ficas frustrado.",
-    "fpid": "Preenche os argumentos do ID do jogador e da placa",
+    "failed_lockedpick": "You failed to lockpick.",
+    "failed_keys": "You fail to find the keys and get frustrated.",
     "gave_keys": "Entregaste as chaves.",
+    "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Recebeste as chaves do veículo!",
     "no_keys": "Não tens as chaves deste veículo.",
     "not_near": "Não há ninguém por perto para entregar as chaves",
     "vehicle_locked": "Veículo trancado!",
     "vehicle_lockedpick": "Conseguiste abrir a fechadura da porta!",
-    "vehicle_unlocked": "Veículo destrancado!"
+    "vehicle_unlocked": "Veículo destrancado!",
+    "removed_keys": "The keys to plate %s for player %s have been removed!",
+    "removed_keys_player": "Your keys to plate %s have been removed!",
+    "player_offline": "This player is not online!"
   },
   "progress": {
     "attempting_carjack": "Tentativa de assalto ao veículo...",
