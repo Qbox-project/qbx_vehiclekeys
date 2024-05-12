@@ -15,6 +15,16 @@ local function getCitizenId(source)
     return player.PlayerData.citizenid
 end
 
+local function findVehicleByPlate(plate)
+    local vehicles = GetAllVehicles()
+    for i = 1, #vehicles do
+        local vehicle = vehicles[i]
+        if qbx.getVehiclePlate(vehicle) == plate then
+            return vehicle
+        end
+    end
+end
+
 ---Loads a players vehicles to the vehicleList
 ---@param src integer
 local function addPlayer(src)
@@ -27,7 +37,10 @@ local function addPlayer(src)
 
     local vehicles = MySQL.query.await('SELECT * FROM player_vehicles WHERE citizenid = ?', { citizenid })
     for i = 1, #vehicles do
-        keysList[citizenid][vehicles[i].plate] = true
+        local data = vehicles[i]
+        if findVehicleByPlate(data.plate) then
+            keysList[citizenid][data.plate] = true
+        end
     end
 
     Player(src).state:set('keysList', keysList[citizenid], true)
@@ -67,7 +80,7 @@ exports('GiveKeys', GiveKeys)
 
 function RemoveKeys(source, plate)
     local state = Player(source).state
-    if not state.keysList[plate] then return false end
+    if not state.keysList[plate] then return true end
 
     local citizenid = getCitizenId(source)
     if not citizenid then return false end
@@ -205,19 +218,6 @@ lib.callback.register('vehiclekeys:server:ToggleDoorState', function(source, net
     -- This callback is not yet implemented
 end)
 
----Returns if the vehicle is owned by a player or not
----@param plate string
----@return boolean
-lib.callback.register('vehiclekeys:server:IsPlayerOwned', function(_, plate)
-    for _, v in pairs(keysList) do
-        if v[plate] then
-            return true
-        end
-    end
-
-    return false
-end)
-
 -----------------------
 ----   Threads     ----
 -----------------------
@@ -226,7 +226,7 @@ CreateThread(function()
     local vehicles = MySQL.query.await('SELECT * FROM player_vehicles')
     for i = 1, #vehicles do
         local data = vehicles[i]
-        if data.citizenid then
+        if data.citizenid and findVehicleByPlate(data.plate) then
             if not keysList[data.citizenid] then
                 keysList[data.citizenid] = {}
             end
