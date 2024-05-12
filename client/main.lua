@@ -346,7 +346,11 @@ CreateThread(function()
             if cache.vehicle and not isHotwiring then
                 sleep = 1000
                 local plate = qbx.getVehiclePlate(cache.vehicle)
-                if cache.seat == -1 and not hasKeys(plate) and not isBlacklistedVehicle(cache.vehicle) and not areKeysJobShared(cache.vehicle) then
+                if cache.seat == -1
+                    and not hasKeys(plate)
+                    and not isBlacklistedVehicle(cache.vehicle)
+                    and not areKeysJobShared(cache.vehicle)
+                then
                     sleep = 0
                     local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
                     qbx.drawText3d({ text = locale('info.search_keys'), coords = vehiclePos })
