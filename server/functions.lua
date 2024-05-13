@@ -83,3 +83,143 @@ function ToggleDoorState(entity)
         return 0
     end
 end
+
+local public = {}
+
+---Gets Citizen Id based on source
+---@param source number ID of the player
+---@return string? citizenid The player CitizenID, nil otherwise.
+local function getCitizenId(source)
+    local player = exports.qbx_core:GetPlayer(source)
+    if not player then return end
+
+    return player.PlayerData.citizenid
+end
+
+---Looking for a vehicle in the world
+---@param plate string The plate number of the vehicle.
+---@return number? vehicle The entity number of the found vehicle, nil otherwise.
+function public.findVehicleByPlate(plate)
+    local vehicles = GetAllVehicles()
+    for i = 1, #vehicles do
+        local vehicle = vehicles[i]
+        if qbx.getVehiclePlate(vehicle) == plate then
+            return vehicle
+        end
+    end
+end
+
+---Gives the player the vehicle keys item.
+---@param source number ID of the player
+---@param plate string The plate number of the vehicle.
+function public.giveKeysItem(source, plate)
+    local citizenid = getCitizenId(source)
+
+    if not citizenid then return end
+
+    local vehicleId = MySQL.single.await('SELECT id FROM player_vehicles WHERE citizenid = ? AND plate = ? LIMIT 1', { citizenid, plate })
+    exports.ox_inventory:AddItem(source, 'vehiclekeys', 1, { vehicleId = vehicleId, key = 'placeholder' })
+end
+
+---Takes the player the vehicle keys item.
+---@param source number ID of the player
+---@param plate string The plate number of the vehicle.
+function public.removeKeysItem(source, plate)
+    local citizenid = getCitizenId(source)
+
+    if not citizenid then return end
+
+    local vehicleId = MySQL.single.await('SELECT id FROM player_vehicles WHERE citizenid = ? AND plate = ? LIMIT 1', { citizenid, plate })
+    exports.ox_inventory:RemoveItem(source, 'vehiclekeys', 1, { vehicleId = vehicleId, key = 'placeholder' })
+end
+
+---Check if player has vehicle keys
+---@param source number ID of the player
+---@param vehicleId number unique id of the vehicle
+---@return boolean
+function public.hasKeysItem(source, vehicleId)
+    return exports.ox_inventory:GetItemCount(source, 'vehiclekeys', { vehicleId = vehicleId, key = 'placeholder' }, true) > 0
+end
+
+---Loads a players vehicles to the vehicleList
+---@param src integer
+function public.addPlayer(src)
+    local citizenid = getCitizenId(src)
+    if not citizenid then return end
+
+    local vehicles = MySQL.query.await('SELECT * FROM player_vehicles WHERE citizenid = ?', { citizenid })
+
+    local state = {}
+    local platesAssociations = {}
+
+    for i = 1, #vehicles do
+        platesAssociations[vehicles[i].plate] = true
+    end
+
+    local worldVehicles = GetAllVehicles()
+    for i = 1, #worldVehicles do
+        local vehiclePlate = qbx.getVehiclePlate(worldVehicles[i])
+        if platesAssociations[vehiclePlate] then
+            state[vehiclePlate] = true
+        end
+    end
+
+    Player(src).state:set('keysList', state, true)
+end
+
+---Removes a players vehicles from the vehicleList
+---@param src integer
+function public.removePlayer(src)
+    local citizenid = getCitizenId(src)
+    if not citizenid then return end
+
+    Player(src).state:set('keysList', nil, true)
+end
+
+--- Removing the vehicle keys from the user
+---@param source number ID of the player
+---@param plate string The plate number of the vehicle.
+function public.removeKeys(source, plate)
+    local citizenid = getCitizenId(source)
+
+    if not citizenid then return end
+
+    local keys = Player(source).state.keysList or {}
+
+    if not keys[plate] then return end
+    keys[plate] = nil
+
+    Player(source).state:set('keysList', keys, true)
+
+    exports.qbx_core:Notify(source, locale('notify.keys_removed'))
+
+    return true
+end
+
+function public.hasKeys(source, plate)
+    return Player(source).state.keysList[plate]
+end
+
+---Gives the user the keys to the vehicle
+---@param source number ID of the player
+---@param plate string The plate number of the vehicle.
+function public.giveKeys(source, plate)
+    local citizenid = getCitizenId(source)
+
+    if not citizenid then return end
+
+    local keys = Player(source).state.keysList or {}
+
+    if keys[plate] then return end
+    keys[plate] = true
+
+    Player(source).state:set('keysList', keys, true)
+
+    exports.qbx_core:Notify(source, locale('notify.keys_taken'))
+
+    return true
+end
+
+exports('GiveKeys', public.giveKeys)
+
+return public

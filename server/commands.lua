@@ -1,5 +1,18 @@
-lib.addCommand('givekeys', {
-    help = locale('addcom.givekeys'),
+-----------------------
+----    Imports    ----
+-----------------------
+
+local functions = require 'server.functions'
+
+local removeKeys = functions.removeKeys
+local giveKeys = functions.giveKeys
+
+-----------------------
+----   Commands    ----
+-----------------------
+
+lib.addCommand(locale('addcom.givekeys'), {
+    help = locale('addcom.givekeys_help'),
     params = {
         {
             name = locale('addcom.givekeys_id'),
@@ -18,8 +31,7 @@ lib.addCommand('givekeys', {
 }, function (source, args)
     local id = args[locale('addcom.givekeys_id')]
     if id and not exports.qbx_core:GetPlayer(id) then
-        exports.qbx_core:Notify(source, locale('notify.player_offline'), 'error')
-        return
+        return exports.qbx_core:Notify(source, locale('notify.player_offline'), 'error')
     end
 
     TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', source, id, args[locale('addcom.givekeys_plate')])
@@ -41,18 +53,20 @@ local function getPlayersVehiclePlate(source, plate)
     return plate
 end
 
-lib.addCommand('addkeys', {
-    help = locale('addcom.addkeys'),
+lib.addCommand(locale('addcom.addkeys'), {
+    help = locale('addcom.addkeys_help'),
     params = {
         {
             name = locale('addcom.addkeys_id'),
             type = 'playerId',
-            help = locale('addcom.addkeys_id_help')
+            help = locale('addcom.addkeys_id_help'),
+            optional = true
         },
         {
             name = locale('addcom.addkeys_plate'),
             type = 'string',
-            help = locale('addcom.addkeys_plate_help')
+            help = locale('addcom.addkeys_plate_help'),
+            optional = true
         },
     },
     restricted = 'group.admin',
@@ -64,25 +78,27 @@ lib.addCommand('addkeys', {
         return exports.qbx_core:Notify(source, locale('notify.fpid'), 'error')
     end
 
-    if GiveKeys(playerId, plate) then
+    if giveKeys(playerId, plate) then
         return exports.qbx_core:Notify(source, locale('notify.added_keys', plate, playerId), 'success')
     end
 
     exports.qbx_core:Notify(source, locale('notify.player_offline'), 'error')
 end)
 
-lib.addCommand('removekeys', {
-    help = locale('addcom.remove_keys'),
+lib.addCommand(locale('addcom.removekeys'), {
+    help = locale('addcom.removekeys_help'),
     params = {
         {
             name = locale('addcom.removekeys_id'),
             type = 'playerId',
-            help = locale('addcom.remove_keys_id_help')
+            help = locale('addcom.removekeys_id_help'),
+            optional = true
         },
         {
             name = locale('addcom.removekeys_plate'),
             type = 'string',
-            help = locale('addcom.remove_keys_plate_help')
+            help = locale('addcom.removekeys_plate_help'),
+            optional = true
         }
     },
     restricted = 'group.admin',
@@ -94,7 +110,7 @@ lib.addCommand('removekeys', {
         return exports.qbx_core:Notify(source, locale('notify.fpid'), 'error')
     end
 
-    if RemoveKeys(playerId, plate) then
+    if removeKeys(playerId, plate) then
         return exports.qbx_core:Notify(source, locale('notify.removed_keys', plate, playerId), 'success')
     end
 
