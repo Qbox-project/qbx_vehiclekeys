@@ -109,38 +109,6 @@ function public.findVehicleByPlate(plate)
     end
 end
 
----Gives the player the vehicle keys item.
----@param source number ID of the player
----@param plate string The plate number of the vehicle.
-function public.giveKeysItem(source, plate)
-    local citizenid = getCitizenId(source)
-
-    if not citizenid then return end
-
-    local vehicleId = MySQL.single.await('SELECT id FROM player_vehicles WHERE citizenid = ? AND plate = ? LIMIT 1', { citizenid, plate })
-    exports.ox_inventory:AddItem(source, 'vehiclekeys', 1, { vehicleId = vehicleId, key = 'placeholder' })
-end
-
----Takes the player the vehicle keys item.
----@param source number ID of the player
----@param plate string The plate number of the vehicle.
-function public.removeKeysItem(source, plate)
-    local citizenid = getCitizenId(source)
-
-    if not citizenid then return end
-
-    local vehicleId = MySQL.single.await('SELECT id FROM player_vehicles WHERE citizenid = ? AND plate = ? LIMIT 1', { citizenid, plate })
-    exports.ox_inventory:RemoveItem(source, 'vehiclekeys', 1, { vehicleId = vehicleId, key = 'placeholder' })
-end
-
----Check if player has vehicle keys
----@param source number ID of the player
----@param vehicleId number unique id of the vehicle
----@return boolean
-function public.hasKeysItem(source, vehicleId)
-    return exports.ox_inventory:GetItemCount(source, 'vehiclekeys', { vehicleId = vehicleId, key = 'placeholder' }, true) > 0
-end
-
 ---Loads a players vehicles to the vehicleList
 ---@param src integer
 function public.addPlayer(src)
