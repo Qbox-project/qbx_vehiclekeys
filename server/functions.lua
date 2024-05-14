@@ -96,7 +96,6 @@ CreateThread(function ()
         local time = os.time()
         for citizenId, lifetime in pairs(keysLifetime) do
             if lifetime + 300 < time then
-                print('klucze wyczyszczone '.. citizenId)
                 keysList[citizenId] = nil
                 keysLifetime[citizenId] = nil
             end
