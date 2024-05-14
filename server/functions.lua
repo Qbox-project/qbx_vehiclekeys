@@ -86,6 +86,25 @@ end
 
 local public = {}
 
+local keysList = {} ---holds key status for some time after player logs out (Prevents frustration by crashing the client)
+local keysLifetime = {} ---Life timestamp of the keys of a character who has logged out
+
+---CRON: Removes old keys from server memory 
+CreateThread(function ()
+    while true do
+        Wait(300 * 1000)
+        local time = os.time()
+        for citizenId, lifetime in pairs(keysLifetime) do
+            if lifetime + 300 < time then
+                print('klucze wyczyszczone '.. citizenId)
+                keysList[citizenId] = nil
+                keysLifetime[citizenId] = nil
+            end
+        end
+    end
+end)
+---CRON
+
 ---Gets Citizen Id based on source
 ---@param source number ID of the player
 ---@return string? citizenid The player CitizenID, nil otherwise.
@@ -124,6 +143,14 @@ function public.addPlayer(src)
         platesAssociations[vehicles[i].plate] = true
     end
 
+    if keysList[citizenid] then
+        keysLifetime[citizenid] = nil
+
+        for plate in pairs(keysList[citizenid]) do
+            platesAssociations[plate] = true
+        end
+    end
+
     local worldVehicles = GetAllVehicles()
     for i = 1, #worldVehicles do
         local vehiclePlate = qbx.getVehiclePlate(worldVehicles[i])
@@ -140,6 +167,9 @@ end
 function public.removePlayer(src)
     local citizenid = getCitizenId(src)
     if not citizenid then return end
+
+    keysList[citizenid] = Player(src).state['keysList']
+    keysLifetime[citizenid] = os.time()
 
     Player(src).state:set('keysList', nil, true)
 end
