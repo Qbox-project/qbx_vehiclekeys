@@ -26,6 +26,7 @@
     "carjack_failed": "Furtul de mașină a eșuat",
     "failed_lockedpick": "You failed to lockpick.",
     "failed_keys": "You fail to find the keys and get frustrated.",
+    "fpid": "Trebuie sa introduci ID-ul jucatorului si numarul de inmatriculare",
     "gave_keys": "Ai dat cheile vehiculului.",
     "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Ai primit cheile vehiculului!",

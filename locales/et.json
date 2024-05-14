@@ -26,6 +26,7 @@
     "carjack_failed": "Autovargamine ebaõnnestus!",
     "failed_lockedpick": "You failed to lockpick.",
     "failed_keys": "You fail to find the keys and get frustrated.",
+    "fpid": "Täitke mängija ID ja plaadi argumendid",
     "gave_keys": "Annad võtmed üle.",
     "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Saate auto võtmed!",

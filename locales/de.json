@@ -26,6 +26,7 @@
     "carjack_failed": "Knacken des Autos ist fehlgeschlagen!",
     "failed_lockedpick": "You failed to lockpick.",
     "failed_keys": "You fail to find the keys and get frustrated.",
+    "fpid": "Gebe die Bürger-ID und das Kennzeichen an.",
     "gave_keys": "Du gibst die Schlüssel ab.",
     "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Du erhälst die Schlüssel für das Fahrzeug!",

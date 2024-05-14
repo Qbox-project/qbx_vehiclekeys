@@ -26,6 +26,7 @@
     "carjack_failed": "¡Robo de carro falló!",
     "failed_lockedpick": "You failed to lockpick.",
     "failed_keys": "You fail to find the keys and get frustrated.",
+    "fpid": "Llena los argumentos de ID y placa del jugador",
     "gave_keys": "Has entregado las llaves",
     "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Has recibido las llaves del vehículo",
