@@ -105,8 +105,8 @@ local function setVehicleDoorLock(vehicle, state, anim)
             NetworkRequestControlOfEntity(vehicle)
 
             local lockstate
-            if state then
-                lockstate = state == true and 2 or 1
+            if state ~= nil then
+                lockstate = state and 2 or 1
             else
                 lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- (1 % 2) + 1 -> 2  (2 % 2) + 1 -> 1 
             end
