@@ -85,24 +85,23 @@ function ToggleDoorState(entity)
 end
 
 local public = {}
+local config = require 'config.server'
+local debug = GetConvarInt(('%s-debug'):format(GetCurrentResourceName()), 0) == 1
 
 local keysList = {} ---holds key status for some time after player logs out (Prevents frustration by crashing the client)
 local keysLifetime = {} ---Life timestamp of the keys of a character who has logged out
 
----CRON: Removes old keys from server memory 
-CreateThread(function ()
-    while true do
-        Wait(300 * 1000)
-        local time = os.time()
-        for citizenId, lifetime in pairs(keysLifetime) do
-            if lifetime + 300 < time then
-                keysList[citizenId] = nil
-                keysLifetime[citizenId] = nil
-            end
+---Removes old keys from server memory 
+lib.cron.new('*/'..config.runClearCronMinutes ..' * * * *', function ()
+    local time = os.time()
+    local seconds = config.runClearCronMinutes * 60
+    for citizenId, lifetime in pairs(keysLifetime) do
+        if lifetime + seconds < time then
+            keysList[citizenId] = nil
+            keysLifetime[citizenId] = nil
         end
     end
-end)
----CRON
+end, {debug = debug})
 
 ---Gets Citizen Id based on source
 ---@param source number ID of the player
@@ -167,7 +166,7 @@ function public.removePlayer(src)
     local citizenid = getCitizenId(src)
     if not citizenid then return end
 
-    keysList[citizenid] = Player(src).state['keysList']
+    keysList[citizenid] = Player(src).state.keysList
     keysLifetime[citizenid] = os.time()
 
     Player(src).state:set('keysList', nil, true)

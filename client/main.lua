@@ -67,7 +67,7 @@ end
 
 local function areKeysJobShared(veh)
     local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
-    local vehPlate = GetVehicleNumberPlateText(veh)
+    local vehPlate = qbx.getVehiclePlate(veh)
     for job, v in pairs(config.sharedKeys) do
         if job == QBX.PlayerData.job.name then
             if config.sharedKeys[job].requireOnduty and not QBX.PlayerData.job.onduty then return false end

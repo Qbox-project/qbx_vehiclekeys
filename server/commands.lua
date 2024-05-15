@@ -18,7 +18,6 @@ lib.addCommand(locale('addcom.givekeys'), {
             name = locale('addcom.givekeys_id'),
             type = 'playerId',
             help = locale('addcom.givekeys_id_help'),
-            optional = true
         },
         {
             name = locale('addcom.givekeys_plate'),
@@ -47,7 +46,7 @@ local function getPlayersVehiclePlate(source, plate)
         local vehicle = GetVehiclePedIsIn(ped, false)
 
         if vehicle == 0 then return end
-        plate = GetVehicleNumberPlateText(vehicle)
+        plate = qbx.getVehiclePlate(vehicle)
     end
 
     return plate
@@ -60,7 +59,6 @@ lib.addCommand(locale('addcom.addkeys'), {
             name = locale('addcom.addkeys_id'),
             type = 'playerId',
             help = locale('addcom.addkeys_id_help'),
-            optional = true
         },
         {
             name = locale('addcom.addkeys_plate'),
@@ -71,7 +69,7 @@ lib.addCommand(locale('addcom.addkeys'), {
     },
     restricted = 'group.admin',
 }, function (source, args)
-    local playerId = args[locale('addcom.addkeys_id')] or source
+    local playerId = args[locale('addcom.addkeys_id')]
     local plate = getPlayersVehiclePlate(source, args[locale('addcom.addkeys_plate')])
 
     if not playerId or not plate then
@@ -92,7 +90,6 @@ lib.addCommand(locale('addcom.removekeys'), {
             name = locale('addcom.removekeys_id'),
             type = 'playerId',
             help = locale('addcom.removekeys_id_help'),
-            optional = true
         },
         {
             name = locale('addcom.removekeys_plate'),
@@ -103,7 +100,7 @@ lib.addCommand(locale('addcom.removekeys'), {
     },
     restricted = 'group.admin',
 }, function (source, args)
-    local playerId = args[locale('addcom.removekeys_id')] or source
+    local playerId = args[locale('addcom.removekeys_id')]
     local plate = getPlayersVehiclePlate(source, args[locale('addcom.removekeys_plate')])
 
     if not playerId or not plate then
