@@ -1,0 +1,3 @@
+return {
+    runClearCronMinutes = 5,
+}

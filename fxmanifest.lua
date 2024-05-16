@@ -8,24 +8,24 @@ version '1.0.0'
 ox_lib 'locale'
 
 shared_scripts {
-	'@ox_lib/init.lua',
-	'@qbx_core/modules/lib.lua',
-	'shared/*.lua'
+    '@ox_lib/init.lua',
+    '@qbx_core/modules/lib.lua',
+    'shared/*.lua'
 }
 
 client_scripts {
-	'@qbx_core/modules/playerdata.lua',
-	'client/*.lua'
+    '@qbx_core/modules/playerdata.lua',
+    'client/*.lua'
 }
 
 server_scripts {
-	'@oxmysql/lib/MySQL.lua',
-	'server/*.lua'
+    '@oxmysql/lib/MySQL.lua',
+    'server/*.lua'
 }
 
 files {
-	'locales/*.json',
-	'config/client.lua'
+    'locales/*.json',
+    'config/client.lua'
 }
 
 dependencies {

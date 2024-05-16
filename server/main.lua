@@ -1,100 +1,13 @@
 -----------------------
-----   Variables   ----
+----    Imports    ----
 -----------------------
 
-local keysList = {}
+local functions = require 'server.functions'
 
------------------------
-----   Functions   ----
------------------------
-
-local function getCitizenId(source)
-    local player = exports.qbx_core:GetPlayer(source)
-    if not player then return end
-
-    return player.PlayerData.citizenid
-end
-
-local function findVehicleByPlate(plate)
-    local vehicles = GetAllVehicles()
-    for i = 1, #vehicles do
-        local vehicle = vehicles[i]
-        if qbx.getVehiclePlate(vehicle) == plate then
-            return vehicle
-        end
-    end
-end
-
----Loads a players vehicles to the vehicleList
----@param src integer
-local function addPlayer(src)
-    local citizenid = getCitizenId(src)
-    if not citizenid then return end
-
-    if not keysList[citizenid] then
-        keysList[citizenid] = {}
-    end
-
-    local vehicles = MySQL.query.await('SELECT * FROM player_vehicles WHERE citizenid = ?', { citizenid })
-    for i = 1, #vehicles do
-        local data = vehicles[i]
-        if findVehicleByPlate(data.plate) then
-            keysList[citizenid][data.plate] = true
-        end
-    end
-
-    Player(src).state:set('keysList', keysList[citizenid], true)
-end
-
----Removes a players vehicles from the vehicleList
----@param src integer
-local function removePlayer(src)
-    local citizenid = getCitizenId(src)
-    if not citizenid or not keysList[citizenid] then return end
-
-    keysList[citizenid] = nil
-    Player(src).state:set('keysList', nil, true)
-end
-
-function GiveKeys(source, plate)
-    local keys = Player(source).state.keysList or {}
-    if keys[plate] then return true end
-
-    keys[plate] = true
-    Player(source).state:set('keysList', keys, true)
-
-    local citizenid = getCitizenId(source)
-    if not citizenid then return false end
-
-    if not keysList[citizenid] then
-        keysList[citizenid] = {}
-    end
-
-    keysList[citizenid][plate] = true
-    exports.qbx_core:Notify(source, locale('notify.keys_taken'))
-
-    return true
-end
-
-exports('GiveKeys', GiveKeys)
-
-function RemoveKeys(source, plate)
-    local state = Player(source).state
-    if not state.keysList[plate] then return true end
-
-    local citizenid = getCitizenId(source)
-    if not citizenid then return false end
-
-    keysList[citizenid][plate] = nil
-    state:set('keysList', keysList[citizenid], true)
-    exports.qbx_core:Notify(source, locale('notify.removed_keys_player', plate))
-
-    return true
-end
-
-function HasKeys(source, plate)
-    return Player(source).state.keysList[plate]
-end
+local hasKeys = functions.hasKeys
+local giveKeys = functions.giveKeys
+local addPlayer = functions.addPlayer
+local removePlayer = functions.removePlayer
 
 -----------------------
 ----    Events     ----
@@ -104,22 +17,24 @@ end
 -- Must already have keys to the vehicle, trigger the event from the server, or pass forcegive paramter as true.
 RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, plate)
     local giver = source
-    if HasKeys(giver, plate) then
-        exports.qbx_core:Notify(giver, locale('notify.gave_keys'))
-        if type(receiver) == 'table' then
-            for i = 1, receiver do
-                GiveKeys(receiver[i], plate)
-            end
-        else
-            GiveKeys(receiver, plate)
+
+    if not hasKeys(giver, plate) then
+        return exports.qbx_core:Notify(giver, locale('notify.no_keys'))
+    end
+
+    if type(receiver) == 'table' then
+        for i = 1, receiver do
+            giveKeys(receiver[i], plate)
         end
     else
-        exports.qbx_core:Notify(giver, locale('notify.no_keys'))
+        giveKeys(receiver, plate)
     end
+
+    exports.qbx_core:Notify(giver, locale('notify.gave_keys'))
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(plate)
-    GiveKeys(source, plate)
+    giveKeys(source, plate)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
@@ -142,8 +57,6 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveKey', function(id, netId, doorState)
         -- drop player
     end
 end)
-
-exports('GiveKey', GiveKey)
 
 ---Removes a key from an entity based on the player's CitizenID.
 ---@param id integer The player's ID.
@@ -172,12 +85,12 @@ end)
 
 exports('SetDoorState', SetDoorState)
 
-AddEventHandler('QBCore:Server:OnPlayerLoaded', function()
+RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
     addPlayer(source --[[@as integer]])
 end)
 
 ---@param src integer
-AddEventHandler('QBCore:Server:OnPlayerUnload', function(src)
+RegisterNetEvent('QBCore:Server:OnPlayerUnload', function(src)
     removePlayer(src)
 end)
 
@@ -216,22 +129,4 @@ end)
 lib.callback.register('vehiclekeys:server:ToggleDoorState', function(source, netId)
     if not source or not netId then return end
     -- This callback is not yet implemented
-end)
-
------------------------
-----   Threads     ----
------------------------
-
-CreateThread(function()
-    local vehicles = MySQL.query.await('SELECT * FROM player_vehicles')
-    for i = 1, #vehicles do
-        local data = vehicles[i]
-        if data.citizenid and findVehicleByPlate(data.plate) then
-            if not keysList[data.citizenid] then
-                keysList[data.citizenid] = {}
-            end
-
-            keysList[data.citizenid][data.plate] = true
-        end
-    end
 end)

@@ -26,6 +26,7 @@
     "carjack_failed": "Krádež auta se nezdařila!",
     "failed_lockedpick": "You failed to lockpick.",
     "failed_keys": "You fail to find the keys and get frustrated.",
+    "fpid": "Vyplňte ID hráče a SPZ",
     "gave_keys": "Předáš klíče.",
     "added_keys": "You gave a copy of the keys to vehicle %s to player %s!",
     "keys_taken": "Dostanete klíčky od vozidla!",

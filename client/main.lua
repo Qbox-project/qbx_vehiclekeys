@@ -67,7 +67,7 @@ end
 
 local function areKeysJobShared(veh)
     local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
-    local vehPlate = GetVehicleNumberPlateText(veh)
+    local vehPlate = qbx.getVehiclePlate(veh)
     for job, v in pairs(config.sharedKeys) do
         if job == QBX.PlayerData.job.name then
             if config.sharedKeys[job].requireOnduty and not QBX.PlayerData.job.onduty then return false end
@@ -87,46 +87,45 @@ local function areKeysJobShared(veh)
     return false
 end
 
-local function setVehicleDoorLock(veh, state, anim)
-    if veh then
-        if not isBlacklistedVehicle(veh) then
-            if hasKeys(qbx.getVehiclePlate(veh)) or areKeysJobShared(veh) then
-                local vehLockStatus = GetVehicleDoorLockStatus(veh)
+---manages the opening of locks
+---@param vehicle number? The entity number of the vehicle.
+---@param state boolean? State of the vehicle lock.
+---@param anim any Aniation
+local function setVehicleDoorLock(vehicle, state, anim)
+    if not vehicle then return end
+    if not isBlacklistedVehicle(vehicle) then
+        if hasKeys(qbx.getVehiclePlate(vehicle)) or areKeysJobShared(vehicle) then
 
-                if anim then
-                    lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
-                    TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
-                end
-
-                TriggerServerEvent('InteractSound_SV:PlayWithinDistance', 5, 'lock', 0.3)
-                NetworkRequestControlOfEntity(veh)
-                if state then
-                    state = state and 2 or 1
-                    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), state)
-                    exports.qbx_core:Notify(state == 2 and locale('notify.vehicle_locked') or locale('notify.vehicle_unlocked'), 'inform')
-                else
-                    if vehLockStatus == 1 then
-                        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 2)
-                        exports.qbx_core:Notify(locale('notify.vehicle_locked'), 'inform')
-                    else
-                        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
-                        exports.qbx_core:Notify(locale('notify.vehicle_unlocked'), 'inform')
-                    end
-                end
-
-                SetVehicleLights(veh, 2)
-                Wait(250)
-                SetVehicleLights(veh, 1)
-                Wait(200)
-                SetVehicleLights(veh, 0)
-                Wait(300)
-                ClearPedTasks(cache.ped)
-            else
-                exports.qbx_core:Notify(locale('notify.no_keys'), 'error')
+            if anim then
+                lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
+                TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
             end
+
+            TriggerServerEvent('InteractSound_SV:PlayWithinDistance', 5, 'lock', 0.3)
+            NetworkRequestControlOfEntity(vehicle)
+
+            local lockstate
+            if state ~= nil then
+                lockstate = state and 2 or 1
+            else
+                lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- (1 % 2) + 1 -> 2  (2 % 2) + 1 -> 1 
+            end
+
+            TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
+            exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
+
+            SetVehicleLights(vehicle, 2)
+            Wait(250)
+            SetVehicleLights(vehicle, 1)
+            Wait(200)
+            SetVehicleLights(vehicle, 0)
+            Wait(300)
+            ClearPedTasks(cache.ped)
         else
-            TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(veh), 1)
+            exports.qbx_core:Notify(locale('notify.no_keys'), 'error')
         end
+    else
+        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
     end
 end
 
@@ -333,12 +332,8 @@ CreateThread(function()
                         end
                     end
                 -- Parked car logic
-                elseif driver == 0 and Entity(entering).state.isOpen == false and not hasKeys(plate) and not isTakingKeys and not Entity(entering).state.vehicleid then
-                    if config.lockNPCParkedCars then
-                        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 2)
-                    else
-                        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), 1)
-                    end
+                elseif driver == 0 and not Entity(entering).state.isOpen and not hasKeys(plate) and not isTakingKeys and not Entity(entering).state.vehicleid then
+                    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(entering), config.lockNPCParkedCars and 2 or 1)
                 end
             end
 
