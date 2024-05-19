@@ -203,9 +203,10 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     local plate = qbx.getVehiclePlate(vehicle)
     local isDriverSeatFree = IsVehicleSeatFree(vehicle, -1)
 
+    assert(plate, 'Vehicle has no plate')
+
     --- player may attempt to open the lock if:
-    if not plate
-        or not isDriverSeatFree -- no one in the driver's seat
+    if not isDriverSeatFree -- no one in the driver's seat
         or public.hasKeys(plate) -- player does not have keys to the vehicle
         or Entity(vehicle).state.isOpen -- the lock is locked
         or not isCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
