@@ -242,4 +242,25 @@ function public.getVehicleByPlate(plate)
     end
 end
 
+---Grants keys for job shared vehicles
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle is shared for a player's job, `nil` otherwise.
+function public.areKeysJobShared(vehicle)
+    local job = QBX.PlayerData.job.name
+    local jobInfo = config.sharedKeys[job]
+
+    if not jobInfo or (jobInfo.requireOnduty and not QBX.PlayerData.job.onduty) then return end
+
+    assert(jobInfo.vehicles, string.format('Vehicles not configured for the %s job.', job))
+
+    if not jobInfo.vehicles[GetEntityModel(vehicle)] then return end
+
+    local vehPlate = qbx.getVehiclePlate(vehicle)
+    if not public.hasKeys(vehPlate) then
+        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', vehPlate)
+    end
+
+    return true
+end
+
 return public

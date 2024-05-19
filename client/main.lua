@@ -11,6 +11,7 @@ local attemptPoliceAlert = functions.attemptPoliceAlert
 local isBlacklistedWeapon = functions.isBlacklistedWeapon
 local isBlacklistedVehicle = functions.isBlacklistedVehicle
 local getVehicleByPlate = functions.getVehicleByPlate
+local areKeysJobShared = functions.areKeysJobShared
 
 -----------------------
 ----   Variables   ----
@@ -63,28 +64,6 @@ local function getVehicle()
     end
 
     return vehicle
-end
-
-local function areKeysJobShared(veh)
-    local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
-    local vehPlate = qbx.getVehiclePlate(veh)
-    for job, v in pairs(config.sharedKeys) do
-        if job == QBX.PlayerData.job.name then
-            if config.sharedKeys[job].requireOnduty and not QBX.PlayerData.job.onduty then return false end
-
-            for _, vehicle in ipairs(v.vehicles) do
-                if string.upper(vehicle) == string.upper(vehName) then
-                    if not hasKeys(vehPlate) then
-                        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', vehPlate)
-                    end
-
-                    return true
-                end
-            end
-        end
-    end
-
-    return false
 end
 
 ---manages the opening of locks
