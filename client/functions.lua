@@ -203,9 +203,10 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     local plate = qbx.getVehiclePlate(vehicle)
     local isDriverSeatFree = IsVehicleSeatFree(vehicle, -1)
 
+    assert(plate, 'Vehicle has no plate')
+
     --- player may attempt to open the lock if:
-    if not plate
-        or not isDriverSeatFree -- no one in the driver's seat
+    if not isDriverSeatFree -- no one in the driver's seat
         or public.hasKeys(plate) -- player does not have keys to the vehicle
         or Entity(vehicle).state.isOpen -- the lock is locked
         or not isCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
@@ -240,6 +241,27 @@ function public.getVehicleByPlate(plate)
             return vehicle
         end
     end
+end
+
+---Grants keys for job shared vehicles
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle is shared for a player's job, `nil` otherwise.
+function public.areKeysJobShared(vehicle)
+    local job = QBX.PlayerData.job.name
+    local jobInfo = config.sharedKeys[job]
+
+    if not jobInfo or (jobInfo.requireOnduty and not QBX.PlayerData.job.onduty) then return end
+
+    assert(jobInfo.vehicles, string.format('Vehicles not configured for the %s job.', job))
+
+    if not jobInfo.vehicles[GetEntityModel(vehicle)] then return end
+
+    local vehPlate = qbx.getVehiclePlate(vehicle)
+    if not public.hasKeys(vehPlate) then
+        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', vehPlate)
+    end
+
+    return true
 end
 
 return public
