@@ -89,11 +89,11 @@ local function setVehicleDoorLock(vehicle, state, anim)
             else
                 local currentLockState = GetVehicleDoorLockStatus(vehicle)
                 local isPedInVehicle = IsPedInVehicle(cache.ped, vehicle, false)
-                -- Vérifier si le joueur est dans le véhicule et que l'état du verrou est 4, puis le passer à 1
+                -- Check if the player is in the vehicle and the lock state is 4, then switch it to 1
                 if isPedInVehicle and currentLockState == 4 then
                     lockstate = 1
                 else
-                    lockstate = isPedInVehicle and 4 or (currentLockState % 2) + 1 -- Utiliser l'état 4 si le joueur est à l'intérieur, sinon 1 ou 2
+                    lockstate = isPedInVehicle and 4 or (currentLockState % 2) + 1 -- Use state 4 if the player is inside, otherwise 1 or 2
                 end
             end
 
