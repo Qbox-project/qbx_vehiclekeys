@@ -1,0 +1,47 @@
+{
+  "addcom": {
+    "addkeys": "Birine araç için anahtar ekleyin.",
+    "addkeys_id": "id",
+    "addkeys_id_help": "Oyuncu ID'si",
+    "addkeys_plate": "plaka",
+    "addkeys_plate_help": "Plaka",
+    "givekeys": "Birine anahtar teslim edin. ID yoksa, en yakın kişiye veya araçtaki herkese teslim edin.",
+    "givekeys_id": "id",
+    "givekeys_id_help": "Oyuncu ID'si",
+    "givekeys_plate": "plaka",
+    "givekeys_plate_help": "Plaka",
+    "remove_keys": "Birinin araç anahtarlarını alın.",
+    "remove_keys_id": "id",
+    "remove_keys_id_help": "Oyuncu ID'si",
+    "remove_keys_plate": "plaka",
+    "remove_keys_plate_help": "Plaka"
+  },
+  "info": {
+    "engine": "Motoru aç/kapat",
+    "search_keys": "[H] - Anahtarları ara",
+    "toggle_locks": "Araç kilidini aç/kapat",
+    "vehicle_theft": "Araç hırsızlığı devam ediyor. Tür: "
+  },
+  "notify": {
+    "carjack_failed": "Araç hırsızlığı başarısız oldu!",
+    "failed_lockedpick": "Kilidi açmada başarısız oldun.",
+    "failed_keys": "Anahtarları bulamayınca hayal kırıklığına uğradın.",
+    "fpid": "Oyuncu ID'si ve plaka argümanlarını doldurun",
+    "gave_keys": "Anahtarları teslim ettin",
+    "added_keys": "Plakalı %s araca ait anahtarları oyuncu %s'ye verdiniz!",
+    "keys_taken": "Araç anahtarlarını aldınız",
+    "no_keys": "Bu aracın anahtarlarına sahip değilsiniz",
+    "not_near": "Anahtarları verecek kimse yakınınızda değil",
+    "vehicle_locked": "Araç kilitli",
+    "vehicle_lockedpick": "Kilidi açmayı başardın",
+    "vehicle_unlocked": "Araç açık",
+    "removed_keys": "Plakalı %s aracın oyuncu %s'ye ait anahtarları alındı!",
+    "removed_keys_player": "Plakalı %s araca ait anahtarlarınız alındı!",
+    "player_offline": "Bu oyuncu çevrimdışı!"
+  },
+  "progress": {
+    "attempting_carjack": "Araç hırsızlığı deneniyor...",
+    "searching_keys": "Araç anahtarları aranıyor...",
+    "takekeys": "Cesetten anahtarlar alınıyor..."
+  }
+}
