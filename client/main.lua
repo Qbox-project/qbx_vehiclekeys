@@ -67,10 +67,10 @@ local function getVehicle()
     return vehicle
 end
 
---- Manages the opening of locks
---- @param vehicle number? The entity number of the vehicle.
---- @param state boolean? State of the vehicle lock.
---- @param anim any Animation
+---Manages the opening of locks
+---@param vehicle number? The entity number of the vehicle.
+---@param state boolean? State of the vehicle lock.
+---@param anim any Animation
 local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle then return end
     if not isBlacklistedVehicle(vehicle) then
@@ -81,12 +81,14 @@ local function setVehicleDoorLock(vehicle, state, anim)
             end
             TriggerServerEvent('InteractSound_SV:PlayWithinDistance', 5, 'lock', 0.3)
             NetworkRequestControlOfEntity(vehicle)
+
             local lockstate
             if state ~= nil then
                 lockstate = state and 2 or 1
             else
                 local currentLockState = GetVehicleDoorLockStatus(vehicle)
                 local isPedInVehicle = cache.vehicle == vehicle
+
                 if childLockEnabled and isPedInVehicle and currentLockState == 4 then
                     -- Check if the player is in the vehicle and the lock state is 4, then switch it to 1
                     lockstate = 1
@@ -94,6 +96,7 @@ local function setVehicleDoorLock(vehicle, state, anim)
                     lockstate = isPedInVehicle and 4 or (currentLockState % 2) + 1 -- Use state 4 if the player is inside, otherwise 1 or 2
                 end
             end
+
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
             exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
             SetVehicleLights(vehicle, 2)
@@ -109,7 +112,8 @@ local function setVehicleDoorLock(vehicle, state, anim)
     else
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
     end
-end exports('SetVehicleDoorLock', setVehicleDoorLock)
+end 
+exports('SetVehicleDoorLock', setVehicleDoorLock)
 
 local function getOtherPlayersInVehicle(vehicle)
     local otherPeds = {}
@@ -369,25 +373,25 @@ end)
 -----------------------
 
 local toggleLocksKeybind = lib.addKeybind({
-    name = 'togglelocks',
+    name = 'vehicle_togglelocks',
     description = locale('info.toggle_locks'),
     defaultKey = 'L',
     onPressed = function(self)
         local vehicle = getVehicle()
         setVehicleDoorLock(vehicle, nil, true)
-        print(('pressed %s (%s)'):format(self.currentKey, self.name))
-    end,
-    onReleased = function(self)
-        print(('released %s (%s)'):format(self.currentKey, self.name))
     end
 })
 
 local engineKeybind = lib.addKeybind({
-    name = 'engine',
+    name = 'vehicle_engine',
     description = locale('info.engine'),
     defaultKey = 'G',
     onPressed = function(self)
-        TriggerEvent('qb-vehiclekeys:client:ToggleEngine')
+        local vehicle = cache.vehicle
+        if vehicle and hasKeys(qbx.getVehiclePlate(vehicle)) then
+            local engineOn = GetIsVehicleEngineRunning(vehicle)
+            SetVehicleEngineOn(vehicle, not engineOn, false, true)
+        end
     end
 })
 
