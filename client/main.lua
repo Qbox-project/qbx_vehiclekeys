@@ -4,6 +4,7 @@
 
 local config = require 'config.client'
 local functions = require 'client.functions'
+local childLockEnabled = GetConvar('qbx:vehiclekeys:enablechildlock', 'false') == 'true'
 
 local hasKeys = functions.hasKeys
 local lockpickDoor = functions.lockpickDoor
@@ -66,40 +67,35 @@ local function getVehicle()
     return vehicle
 end
 
----manages the opening of locks
----@param vehicle number? The entity number of the vehicle.
----@param state boolean? State of the vehicle lock.
----@param anim any Aniation
+--- Manages the opening of locks
+--- @param vehicle number? The entity number of the vehicle.
+--- @param state boolean? State of the vehicle lock.
+--- @param anim any Animation
 local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle then return end
     if not isBlacklistedVehicle(vehicle) then
         if hasKeys(qbx.getVehiclePlate(vehicle)) or areKeysJobShared(vehicle) then
-
             if anim then
                 lib.requestAnimDict('anim@mp_player_intmenu@key_fob@')
                 TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
             end
-
             TriggerServerEvent('InteractSound_SV:PlayWithinDistance', 5, 'lock', 0.3)
             NetworkRequestControlOfEntity(vehicle)
-
             local lockstate
             if state ~= nil then
                 lockstate = state and 2 or 1
             else
                 local currentLockState = GetVehicleDoorLockStatus(vehicle)
-                local isPedInVehicle = IsPedInVehicle(cache.ped, vehicle, false)
-                -- Check if the player is in the vehicle and the lock state is 4, then switch it to 1
-                if isPedInVehicle and currentLockState == 4 then
+                local isPedInVehicle = cache.vehicle == vehicle
+                if childLockEnabled and isPedInVehicle and currentLockState == 4 then
+                    -- Check if the player is in the vehicle and the lock state is 4, then switch it to 1
                     lockstate = 1
                 else
                     lockstate = isPedInVehicle and 4 or (currentLockState % 2) + 1 -- Use state 4 if the player is inside, otherwise 1 or 2
                 end
             end
-
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
             exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
-
             SetVehicleLights(vehicle, 2)
             Wait(250)
             SetVehicleLights(vehicle, 1)
@@ -113,9 +109,7 @@ local function setVehicleDoorLock(vehicle, state, anim)
     else
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
     end
-end
-
-exports('SetVehicleDoorLock', setVehicleDoorLock)
+end exports('SetVehicleDoorLock', setVehicleDoorLock)
 
 local function getOtherPlayersInVehicle(vehicle)
     local otherPeds = {}
@@ -374,15 +368,28 @@ end)
 ---- Client Events ----
 -----------------------
 
-RegisterKeyMapping('togglelocks', locale('info.toggle_locks'), 'keyboard', 'L')
-RegisterCommand('togglelocks', function()
-    setVehicleDoorLock(getVehicle(), nil, true)
-end, false)
+local toggleLocksKeybind = lib.addKeybind({
+    name = 'togglelocks',
+    description = locale('info.toggle_locks'),
+    defaultKey = 'L',
+    onPressed = function(self)
+        local vehicle = getVehicle()
+        setVehicleDoorLock(vehicle, nil, true)
+        print(('pressed %s (%s)'):format(self.currentKey, self.name))
+    end,
+    onReleased = function(self)
+        print(('released %s (%s)'):format(self.currentKey, self.name))
+    end
+})
 
-RegisterKeyMapping('engine', locale('info.engine'), 'keyboard', 'G')
-RegisterCommand('engine', function()
-    TriggerEvent('qb-vehiclekeys:client:ToggleEngine')
-end, false)
+local engineKeybind = lib.addKeybind({
+    name = 'engine',
+    description = locale('info.engine'),
+    defaultKey = 'G',
+    onPressed = function(self)
+        TriggerEvent('qb-vehiclekeys:client:ToggleEngine')
+    end
+})
 
 RegisterNetEvent('qb-vehiclekeys:client:ToggleEngine', function()
     local vehicle = cache.vehicle
