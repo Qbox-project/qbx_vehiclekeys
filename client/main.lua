@@ -4,7 +4,7 @@
 
 local config = require 'config.client'
 local functions = require 'client.functions'
-local childLockEnabled = GetConvar('qbx:vehiclekeys:enablechildlock', 'false') == 'true'
+local childLockEnabled = GetConvar('qbx:vehiclekeys:enablechildlock', 'true') == 'true'
 
 local hasKeys = functions.hasKeys
 local lockpickDoor = functions.lockpickDoor
@@ -98,7 +98,7 @@ local function setVehicleDoorLock(vehicle, state, anim)
             end
 
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
-            exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
+             exports.qbx_core:Notify(locale(lockstate == 1 and 'notify.vehicle_unlocked' or 'notify.vehicle_locked'))
             SetVehicleLights(vehicle, 2)
             Wait(250)
             SetVehicleLights(vehicle, 1)
