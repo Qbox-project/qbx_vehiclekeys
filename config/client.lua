@@ -40,9 +40,6 @@ WeaponTypeGroups = {
 }
 
 return {
-
-    debug = false, -- Set to true for development purposes only. Used for zones, and essential prints. Will be removed upon release
-
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
     -- NPC Vehicle Lock States
