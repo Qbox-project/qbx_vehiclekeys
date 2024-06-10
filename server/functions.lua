@@ -132,7 +132,7 @@ function public.addPlayer(src)
     local citizenid = getCitizenId(src)
     if not citizenid then return end
 
-    local vehicles = MySQL.query.await('SELECT * FROM player_vehicles WHERE citizenid = ?', { citizenid })
+    local vehicles = MySQL.query.await('SELECT plate FROM player_vehicles WHERE citizenid = ?', { citizenid })
 
     local state = {}
     local platesAssociations = {}
