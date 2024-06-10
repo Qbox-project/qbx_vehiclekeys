@@ -87,7 +87,7 @@ local function setVehicleDoorLock(vehicle, state, anim)
             if state ~= nil then
                 lockstate = state and 2 or 1
             else
-                lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- (1 % 2) + 1 -> 2  (2 % 2) + 1 -> 1 
+                lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- (1 % 2) + 1 -> 2  (2 % 2) + 1 -> 1
             end
 
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
@@ -178,17 +178,23 @@ local function carjackVehicle(target)
     if not config.carjackEnable then return end
     isCarjacking = true
     canCarjack = false
-    lib.requestAnimDict('mp_am_hold_up')
     local vehicle = GetVehiclePedIsUsing(target)
     local occupants = getPedsInVehicle(vehicle)
+
+    CreateThread(function ()
+        while isCarjacking do
+            TaskVehicleTempAction(occupants[1], vehicle, 6, 1)
+            Wait(0)
+        end
+    end)
+
     for p = 1, #occupants do
         local occupant = occupants[p]
         CreateThread(function()
-            TaskPlayAnim(occupant, 'mp_am_hold_up', 'holdup_victim_20s', 8.0, -8.0, -1, 49, 0, false, false, false)
+            Wait(math.random(100, 600))
+            lib.playAnim(occupant, 'mp_am_hold_up', 'holdup_victim_20s', 8.0, -8.0, -1, 49, 0, false, false, false)
             PlayPain(occupant, 6, 0)
         end)
-
-        Wait(math.random(200, 500))
     end
 
     -- Cancel progress bar if: Ped dies during robbery, car gets too far away
@@ -215,8 +221,9 @@ local function carjackVehicle(target)
         local hasWeapon, weaponHash = GetCurrentPedWeapon(cache.ped, true)
         if hasWeapon and isCarjacking then
             local carjackChance = 0.5
-            if config.carjackChance[tostring(GetWeapontypeGroup(weaponHash))] then
-                carjackChance = config.carjackChance[tostring(GetWeapontypeGroup(weaponHash))]
+            local chance = config.carjackChance[GetWeapontypeGroup(weaponHash) --[[@as string]]]
+            if chance then
+                carjackChance = chance
             end
 
             if math.random() <= carjackChance then
@@ -224,10 +231,11 @@ local function carjackVehicle(target)
                 for p = 1, #occupants do
                     local ped = occupants[p]
                     CreateThread(function()
+                        Wait(math.random(100, 500))
                         TaskLeaveVehicle(ped, vehicle, 0)
                         PlayPain(ped, 6, 0)
                         Wait(1250)
-                        ClearPedTasksImmediately(ped)
+                        ClearPedTasks(ped)
                         PlayPain(ped, math.random(7, 8), 0)
                         makePedFlee(ped)
                     end)
@@ -236,6 +244,7 @@ local function carjackVehicle(target)
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
                 exports.qbx_core:Notify(locale('notify.carjack_failed'), 'error')
+                ClearPedTasksImmediately(target)
                 makePedFlee(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             end
@@ -246,6 +255,7 @@ local function carjackVehicle(target)
             canCarjack = true
         end
     else
+        ClearPedTasksImmediately(target)
         makePedFlee(target)
         isCarjacking = false
         Wait(config.delayBetweenCarjackingsInMs)
