@@ -80,7 +80,7 @@ local function setVehicleDoorLock(vehicle, state, anim)
                 TaskPlayAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49, 0, false, false, false)
             end
 
-            TriggerServerEvent('InteractSound_SV:PlayWithinDistance', 5, 'lock', 0.3)
+            StartVehicleHorn(vehicle, 1, 'HELDDOWN', false)
             NetworkRequestControlOfEntity(vehicle)
 
             local lockstate
@@ -111,14 +111,14 @@ end
 exports('SetVehicleDoorLock', setVehicleDoorLock)
 
 local function getOtherPlayersInVehicle(vehicle)
-    local otherPeds = {}
+    local otherPlayers = {}
     for seat = -1, GetVehicleModelNumberOfSeats(GetEntityModel(vehicle)) - 2 do
         local pedInSeat = GetPedInVehicleSeat(vehicle, seat)
-        if IsPedAPlayer(pedInSeat) and pedInSeat ~= cache.ped then
-            otherPeds[#otherPeds + 1] = pedInSeat
+        if pedInSeat ~= cache.ped and IsPedAPlayer(pedInSeat) then
+            otherPlayers[#otherPlayers + 1] = GetPlayerServerId(NetworkGetPlayerIndexFromPed(pedInSeat))
         end
     end
-    return otherPeds
+    return otherPlayers
 end
 
 local function getPedsInVehicle(vehicle)
@@ -410,7 +410,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
             if IsPedSittingInVehicle(cache.ped, targetVehicle) then -- Give keys to everyone in vehicle
                 local otherOccupants = getOtherPlayersInVehicle(targetVehicle)
                 for p = 1, #otherOccupants do
-                    TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', GetPlayerServerId(NetworkGetPlayerIndexFromPed(otherOccupants[p])), targetPlate)
+                    TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', otherOccupants[p], targetPlate)
                 end
             else -- Give keys to closest player
                 local playerId = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
