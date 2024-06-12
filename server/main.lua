@@ -4,7 +4,6 @@
 
 local functions = require 'server.functions'
 
-local hasKeys = functions.hasKeys
 local giveKeys = functions.giveKeys
 local addPlayer = functions.addPlayer
 local removePlayer = functions.removePlayer
@@ -16,12 +15,6 @@ local removePlayer = functions.removePlayer
 -- Event to give keys. receiver can either be a single id, or a table of ids.
 -- Must already have keys to the vehicle, trigger the event from the server, or pass forcegive paramter as true.
 RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, plate)
-    local giver = source
-
-    if not hasKeys(giver, plate) then
-        return exports.qbx_core:Notify(giver, locale('notify.no_keys'))
-    end
-
     if type(receiver) == 'table' then
         for i = 1, receiver do
             giveKeys(receiver[i], plate)
@@ -29,8 +22,6 @@ RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, pla
     else
         giveKeys(receiver, plate)
     end
-
-    exports.qbx_core:Notify(giver, locale('notify.gave_keys'))
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(plate)

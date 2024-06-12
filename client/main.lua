@@ -6,6 +6,7 @@ local config = require 'config.client'
 local functions = require 'client.functions'
 
 local hasKeys = functions.hasKeys
+local hotwire = functions.hotwire
 local lockpickDoor = functions.lockpickDoor
 local attemptPoliceAlert = functions.attemptPoliceAlert
 local isBlacklistedWeapon = functions.isBlacklistedWeapon
@@ -29,7 +30,11 @@ local canCarjack = true
 local function giveKeys(id, plate)
     local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(id))))
     if distance < 3 then
+        if not hasKeys(plate) then
+            return exports.qbx_core:Notify(locale('notify.no_keys'))
+        end
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
+        exports.qbx_core:Notify(locale('notify.gave_keys'))
     else
         exports.qbx_core:Notify(locale('notify.not_near'), 'error')
     end
@@ -137,7 +142,7 @@ local function makePedFlee(ped)
     TaskReactAndFleePed(ped, cache.ped)
 end
 
-local function hotwire(vehicle, plate)
+local function findKeys(vehicle, plate)
     local hotwireTime = math.random(config.minHotwireTime, config.maxHotwireTime)
     isHotwiring = true
 
@@ -251,16 +256,15 @@ local function carjackVehicle(target)
             isCarjacking = false
             Wait(2000)
             attemptPoliceAlert('carjack')
-            Wait(config.delayBetweenCarjackingsInMs)
-            canCarjack = true
         end
     else
         ClearPedTasksImmediately(target)
         makePedFlee(target)
         isCarjacking = false
-        Wait(config.delayBetweenCarjackingsInMs)
-        canCarjack = true
     end
+
+    Wait(config.delayBetweenCarjackingsInMs)
+    canCarjack = true
 end
 
 -----------------------
@@ -341,7 +345,7 @@ CreateThread(function()
                     SetVehicleEngineOn(cache.vehicle, false, false, true)
 
                     if IsControlJustPressed(0, 74) then
-                        hotwire(cache.vehicle, plate)
+                        findKeys(cache.vehicle, plate)
                     end
                 end
             end
@@ -406,22 +410,29 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
 
         if id and type(id) == 'number' then -- Give keys to specific ID
             giveKeys(id, targetPlate)
-        else
-            if IsPedSittingInVehicle(cache.ped, targetVehicle) then -- Give keys to everyone in vehicle
-                local otherOccupants = getOtherPlayersInVehicle(targetVehicle)
-                for p = 1, #otherOccupants do
-                    TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', GetPlayerServerId(NetworkGetPlayerIndexFromPed(otherOccupants[p])), targetPlate)
-                end
-            else -- Give keys to closest player
-                local playerId = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
-                giveKeys(playerId, targetPlate)
+        elseif IsPedSittingInVehicle(cache.ped, targetVehicle) then -- Give keys to everyone in vehicle
+            local otherOccupants = getOtherPlayersInVehicle(targetVehicle)
+            if not hasKeys(qbx.getVehiclePlate(targetVehicle)) then
+                return exports.qbx_core:Notify(locale('notify.no_keys'))
             end
+
+            for p = 1, #otherOccupants do
+                TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', GetPlayerServerId(NetworkGetPlayerIndexFromPed(otherOccupants[p])), targetPlate)
+            end
+            exports.qbx_core:Notify(locale('notify.gave_keys'))
+        else -- Give keys to closest player
+            local playerId = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
+            giveKeys(playerId, targetPlate)
         end
     end
 end)
 
 RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
-    lockpickDoor(isAdvanced)
+    if cache.vehicle then
+        hotwire(isAdvanced)
+    else
+        lockpickDoor(isAdvanced)
+    end
 end)
 
 --#region Backwards Compatibility ONLY -- Remove at some point --

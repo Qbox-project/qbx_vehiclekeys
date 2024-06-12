@@ -109,31 +109,38 @@ local function isVehicleInRange(vehicle, maxDistance)
     end
 end
 
----Will be execuded when the opening of the lock succeeds.
----@param vehicle number The entity number of the vehicle.
----@param plate string The plate number of the vehicle.
-local function lockpickSuccessCallback(vehicle, plate)
-    TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-
-    if cache.seat == -1 then
-        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+---Chance to destroy lockpick
+---@param isAdvancedLockedpick any
+---@param vehicleClass any
+local function breakLockpick(isAdvancedLockedpick, vehicleClass)
+    local chance = math.random()
+    if isAdvancedLockedpick then -- there is no benefit to using an advanced tool in the default configuration.
+        if chance <= config.removeAdvancedLockpickChance[vehicleClass] then
+            TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "advancedlockpick")
+        end
     else
-        exports.qbx_core:Notify(locale("notify.vehicle_lockedpick"), 'success')
-        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
-        Entity(vehicle).state.isOpen = true
+        if chance <= config.removeNormalLockpickChance[vehicleClass] then
+            TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "lockpick")
+        end
     end
+end
+
+---Will be executed when the lock opening is successful.
+---@param vehicle number The entity number of the vehicle.
+local function lockpickSuccessCallback(vehicle)
+    TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+    exports.qbx_core:Notify(locale("notify.vehicle_lockedpick"), 'success')
+    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
+    Entity(vehicle).state.isOpen = true
 end
 
 ---Operations done after the LockpickDoor quickevent done.
 ---@param vehicle number The entity number of the vehicle.
----@param plate string The plate number of the vehicle.
 ---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used.
----@param maxDistance number The max distance to check.
 ---@param isSuccess boolean? Determines whether the lock has been successfully opened.
-local function lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistance, isSuccess)
-    if not isVehicleInRange(vehicle, maxDistance) then return end -- the action will be aborted if the opened vehicle is too far.
+local function lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
     if isSuccess then
-        lockpickSuccessCallback(vehicle, plate)
+        lockpickSuccessCallback(vehicle)
     else -- if player fails quickevent
         public.attemptPoliceAlert('carjack')
         SetVehicleAlarm(vehicle, false)
@@ -142,20 +149,10 @@ local function lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistanc
         exports.qbx_core:Notify(locale('notify.failed_lockedpick'), 'error')
     end
 
-    local chance = math.random()
-    if isAdvancedLockedpick then -- there is no benefit to using an advanced tool at this moment.
-        if chance <= config.removeAdvancedLockpickChance[GetVehicleClass(vehicle)] then
-            TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "advancedlockpick")
-        end
-    else
-        if chance <= config.removeNormalLockpickChance[GetVehicleClass(vehicle)] then
-            TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "lockpick")
-        end
-    end
+    breakLockpick(isAdvancedLockedpick, GetVehicleClass(vehicle))
 end
 
 local islockpickingProcessLocked = false -- lock flag
-
 ---Lockpicking quickevent.
 ---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
 ---@param maxDistance number? The max distance to check.
@@ -167,6 +164,7 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
 
     if not vehicle then return end
 
+    local class = GetVehicleClass(vehicle)
     local plate = qbx.getVehiclePlate(vehicle)
     local isDriverSeatFree = IsVehicleSeatFree(vehicle, -1)
 
@@ -178,23 +176,70 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
         or Entity(vehicle).state.isOpen -- the lock is locked
         or not isCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
         or GetVehicleDoorLockStatus(vehicle) < 2 -- the vehicle is locked
+        or (not isAdvancedLockedpick and config.advancedLockpickVehicleClasses[class])
     then return end
 
     if islockpickingProcessLocked then return end -- start of the critical section
-
     islockpickingProcessLocked = true -- one call per player at a time
 
     CreateThread(function()
-        -- lock opening animation
-        lib.requestAnimDict('veh@break_in@0h@p_m_one@')
-        TaskPlayAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false)
-
+        lib.playAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
         local isSuccess = customChallenge or lib.skillCheck({ 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' })
-        lockpickCallback(vehicle, plate, isAdvancedLockedpick, maxDistance, isSuccess)
+
+        if isVehicleInRange(vehicle, maxDistance) then -- the action will be aborted if the opened vehicle is too far.
+            lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
+        end
+
         Wait(config.lockpickCooldown)
     end)
 
     islockpickingProcessLocked = false -- end of the critical section
+end
+
+---Will be executed when the lock opening is successful.
+---@param vehicle number The entity number of the vehicle.
+local function hotwireSuccessCallback(vehicle)
+    local plate = qbx.getVehiclePlate(vehicle)
+    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+end
+
+---Operations done after the LockpickDoor quickevent done.
+---@param vehicle number The entity number of the vehicle.
+---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used.
+---@param isSuccess boolean? Determines whether the lock has been successfully opened.
+local function hotwireCallback(vehicle, isAdvancedLockedpick, isSuccess)
+    if isSuccess then
+        hotwireSuccessCallback(vehicle)
+    else -- if player fails quickevent
+        public.attemptPoliceAlert('carjack')
+        TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+        exports.qbx_core:Notify(locale('notify.failed_lockedpick'), 'error')
+    end
+
+    breakLockpick(isAdvancedLockedpick, GetVehicleClass(vehicle))
+end
+
+local isHotwiringProcessLocked = false -- lock flag
+---Hotwiring with a tool quickevent.
+---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
+---@param customChallenge boolean? lockpick challenge
+function public.hotwire(isAdvancedLockedpick, customChallenge)
+    if not(cache.vehicle
+       and cache.seat
+       and cache.seat == -1)
+    then return end
+
+    if isHotwiringProcessLocked then return end -- start of the critical section
+    isHotwiringProcessLocked = true -- one call per player at a time
+
+    CreateThread(function()
+        lib.playAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
+        local isSuccess = customChallenge or lib.skillCheck({ 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' })
+        hotwireCallback(cache.vehicle, isAdvancedLockedpick, isSuccess)
+        Wait(config.lockpickCooldown)
+    end)
+
+    isHotwiringProcessLocked = false -- end of the critical section
 end
 
 ---Get a vehicle in the players scope by the plate

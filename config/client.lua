@@ -101,6 +101,11 @@ return {
         [VehicleClasses.OPEN_WHEEL] = 0.5
     },
 
+    advancedLockpickVehicleClasses = { -- The vehicle classes can only be opened with an advanced lockpick
+        [VehicleClasses.HELICOPTERS] = true,
+        [VehicleClasses.MILITARY] = true
+    },
+
     -- Carjack Settings
     carjackEnable = true, -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
     carjackingTimeInMs = 7500, -- Time it takes to successfully carjack in miliseconds
