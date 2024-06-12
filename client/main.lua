@@ -417,7 +417,7 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
             end
 
             for p = 1, #otherOccupants do
-                TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', GetPlayerServerId(NetworkGetPlayerIndexFromPed(otherOccupants[p])), targetPlate)
+                TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', otherOccupants[p], targetPlate)
             end
             exports.qbx_core:Notify(locale('notify.gave_keys'))
         else -- Give keys to closest player
