@@ -106,10 +106,6 @@ function public.removeKeys(source, plate)
     return true
 end
 
-function public.hasKeys(source, plate)
-    return Player(source).state.keysList[plate]
-end
-
 ---Gives the user the keys to the vehicle
 ---@param source number ID of the player
 ---@param plate string The plate number of the vehicle.
