@@ -18,6 +18,7 @@ lib.addCommand(locale('addcom.givekeys'), {
             name = locale('addcom.givekeys_id'),
             type = 'playerId',
             help = locale('addcom.givekeys_id_help'),
+            optional = true
         },
         {
             name = locale('addcom.givekeys_plate'),
@@ -29,10 +30,6 @@ lib.addCommand(locale('addcom.givekeys'), {
     restricted = false,
 }, function (source, args)
     local id = args[locale('addcom.givekeys_id')]
-    if id and not exports.qbx_core:GetPlayer(id) then
-        return exports.qbx_core:Notify(source, locale('notify.player_offline'), 'error')
-    end
-
     TriggerClientEvent('qb-vehiclekeys:client:GiveKeys', source, id, args[locale('addcom.givekeys_plate')])
 end)
 
