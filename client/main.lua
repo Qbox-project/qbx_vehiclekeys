@@ -76,6 +76,7 @@ local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle then return end
     if not isBlacklistedVehicle(vehicle) then
         if hasKeys(qbx.getVehiclePlate(vehicle)) or areKeysJobShared(vehicle) then
+
             if anim then
                 lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
             end
