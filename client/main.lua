@@ -288,7 +288,6 @@ local function carjackVehicle(target)
     canCarjack = true
 end
 
-
 local function toggleEngine()
     local vehicle = cache.vehicle
     if vehicle and hasKeys(qbx.getVehiclePlate(vehicle)) then
