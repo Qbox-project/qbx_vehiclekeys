@@ -177,7 +177,7 @@ local function showHotwiringLabel()
     isHotwiring = true
     CreateThread(function()
         -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
-        while LocalPlayer.state.isLoggedIn and cache.vehicle do
+        while cache.vehicle do
             local plate = qbx.getVehiclePlate(cache.vehicle)
             if cache.seat == -1
                 and not hasKeys(plate)
