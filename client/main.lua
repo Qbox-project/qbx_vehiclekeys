@@ -294,7 +294,10 @@ local function toggleEngine()
     end
 end
 
+local isWatchCarjackingAttemptsRunning = false
 local function watchCarjackingAttempts()
+    if isWatchCarjackingAttemptsRunning then return end
+    isWatchCarjackingAttemptsRunning = true
     CreateThread(function()
         while cache.weapon do
             if isCarjackingAvailable then
@@ -330,6 +333,7 @@ local function watchCarjackingAttempts()
             Wait(100)
         end
     end)
+    isWatchCarjackingAttemptsRunning = false
 end
 
 -----------------------
