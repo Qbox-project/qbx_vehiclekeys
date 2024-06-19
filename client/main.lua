@@ -19,9 +19,8 @@ local areKeysJobShared = functions.areKeysJobShared
 -----------------------
 
 local isTakingKeys = false
-local isCarjacking = false
 local isHotwiring = false
-local canCarjack = true
+local isCarjackingAvailable = true
 
 -----------------------
 ----   Functions   ----
@@ -201,9 +200,9 @@ local function showHotwiringLabel()
 end
 
 local function carjackVehicle(target)
-    if not config.carjackEnable then return end
-    isCarjacking = true
-    canCarjack = false
+    if not isCarjackingAvailable then return end
+    isCarjackingAvailable = false
+    local isCarjacking = true
     local vehicle = GetVehiclePedIsUsing(target)
     local occupants = getPedsInVehicle(vehicle)
 
@@ -244,10 +243,9 @@ local function carjackVehicle(target)
             car = true,
         },
     }) then
-        local hasWeapon, weaponHash = GetCurrentPedWeapon(cache.ped, true)
-        if hasWeapon and isCarjacking then
+        if cache.weapon and isCarjacking then
             local carjackChance = 0.5
-            local chance = config.carjackChance[GetWeapontypeGroup(weaponHash) --[[@as string]]]
+            local chance = config.carjackChance[GetWeapontypeGroup(cache.weapon) --[[@as string]]]
             if chance then
                 carjackChance = chance
             end
@@ -285,7 +283,7 @@ local function carjackVehicle(target)
     end
 
     Wait(config.delayBetweenCarjackingsInMs)
-    canCarjack = true
+    isCarjackingAvailable = true
 end
 
 local function toggleEngine()
@@ -296,48 +294,40 @@ local function toggleEngine()
     end
 end
 
------------------------
-----   Threads     ----
------------------------
-
-if config.carjackEnable then
+local function watchCarjackingAttempts()
     CreateThread(function()
-        while true do
-            if LocalPlayer.state.isLoggedIn then
-                if canCarjack then
-                    local aiming, target = GetEntityPlayerIsFreeAimingAt(cache.playerId)
-                    if aiming
-                        and target
-                        and target ~= 0
-                        and DoesEntityExist(target)
-                        and IsPedInAnyVehicle(target, false)
-                        and not IsEntityDead(target)
-                        and not IsPedAPlayer(target)
-                    then
-                        local targetveh = GetVehiclePedIsIn(target, false)
-                        local carIsImmune = false
-                        for i = 1, #config.immuneVehicles do
-                            if GetEntityModel(targetveh) == joaat(config.immuneVehicles[i]) then
-                                carIsImmune = true
-                            end
+        while cache.weapon do
+            if isCarjackingAvailable then
+                local aiming, target = GetEntityPlayerIsFreeAimingAt(cache.playerId)
+                if aiming
+                    and target
+                    and target ~= 0
+                    and DoesEntityExist(target)
+                    and IsPedInAnyVehicle(target, false)
+                    and not IsEntityDead(target)
+                    and not IsPedAPlayer(target)
+                then
+                    local targetveh = GetVehiclePedIsIn(target, false)
+                    local isVehicleImmune = false
+                    for i = 1, #config.immuneVehicles do
+                        if GetEntityModel(targetveh) == joaat(config.immuneVehicles[i]) then
+                            isVehicleImmune = true
                         end
+                    end
 
-                        if not carIsImmune
-                            and GetPedInVehicleSeat(targetveh, -1) == target
-                            and not isBlacklistedWeapon()
-                        then
-                            local pos = GetEntityCoords(cache.ped)
-                            local targetpos = GetEntityCoords(target)
-                            if #(pos - targetpos) < 5.0 and not carIsImmune then
-                                carjackVehicle(target)
-                            end
+                    if not isVehicleImmune
+                        and GetPedInVehicleSeat(targetveh, -1) == target
+                        and not isBlacklistedWeapon()
+                    then
+                        local pos = GetEntityCoords(cache.ped)
+                        local targetpos = GetEntityCoords(target)
+                        if #(pos - targetpos) < 5.0 and not isVehicleImmune then
+                            carjackVehicle(target)
                         end
                     end
                 end
-                Wait(100)
-            else
-                Wait(1000)
             end
+            Wait(100)
         end
     end)
 end
@@ -370,11 +360,6 @@ engineBind = lib.addKeybind({
         engineBind:disable(false)
     end
 })
-
-AddEventHandler('ox_lib:cache:vehicle', function()
-    showHotwiringLabel()
-end)
-showHotwiringLabel()
 
 RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
     if not LocalPlayer.state.isLoggedIn and data.event ~= 'Entering' then return end
@@ -425,7 +410,12 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
             end
         end
         -- Parked car logic
-    elseif driver == 0 and not Entity(data.vehicle).state.isOpen and not hasKeys(plate) and not isTakingKeys and not Entity(data.vehicle).state.vehicleid then
+    elseif driver == 0 and
+        not (isTakingKeys
+        or Entity(data.vehicle).state.isOpen
+        or Entity(data.vehicle).state.vehicleid
+        or hasKeys(plate))
+    then
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, config.lockNPCParkedCars and 2 or 1)
     end
 end)
@@ -463,6 +453,27 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
         hotwire(isAdvanced)
     else
         lockpickDoor(isAdvanced)
+    end
+end)
+
+AddEventHandler('ox_lib:cache:vehicle', function()
+    showHotwiringLabel()
+end)
+
+
+if config.carjackEnable then
+    AddEventHandler('ox_lib:cache:weapon', function()
+        watchCarjackingAttempts()
+    end)
+end
+
+AddEventHandler('onResourceStart', function (resourceName)
+    if (GetCurrentResourceName() ~= resourceName) then return end
+
+    showHotwiringLabel()
+
+    if config.carjackEnable then
+        watchCarjackingAttempts()
     end
 end)
 
