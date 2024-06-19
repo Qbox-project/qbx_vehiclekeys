@@ -19,7 +19,6 @@ local areKeysJobShared = functions.areKeysJobShared
 -----------------------
 
 local isTakingKeys = false
-local isHotwiring = false
 local isCarjackingAvailable = true
 
 -----------------------
@@ -171,9 +170,10 @@ local function findKeys(vehicle, plate)
     end)
 end
 
+local isShowHotwiringLabelRunning = false
 local function showHotwiringLabel()
-    if isHotwiring then return end
-    isHotwiring = true
+    if isShowHotwiringLabelRunning then return end
+    isShowHotwiringLabelRunning = true
     CreateThread(function()
         -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
         while cache.vehicle do
@@ -196,7 +196,7 @@ local function showHotwiringLabel()
             end
         end
     end)
-    isHotwiring = false
+    isShowHotwiringLabelRunning = false
 end
 
 local function carjackVehicle(target)
