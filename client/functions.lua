@@ -18,9 +18,8 @@ exports('HasKeys', public.hasKeys)
 ---Checking weapon on the blacklist.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
 function public.isBlacklistedWeapon()
-    local weapon = GetSelectedPedWeapon(cache.ped)
     for i = 1, #config.noCarjackWeapons do
-        if weapon == joaat(config.noCarjackWeapons[i]) then
+        if cache.weapon == joaat(config.noCarjackWeapons[i]) then
             return true
         end
     end
