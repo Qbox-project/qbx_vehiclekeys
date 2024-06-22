@@ -50,8 +50,8 @@ end
 -- If in vehicle returns that, otherwise tries 3 different raycasts to get the vehicle they are facing.
 -- Raycasts picture: https://i.imgur.com/FRED0kV.png
 local function getVehicle()
-    if cache.vehicle then return
-        cache.vehicle
+    if cache.vehicle then
+        return cache.vehicle
     end
     local raycastOffsetTable = {
         { fromOffset = vec3(0.0, 0.0, 0.0), toOffset = vec3(0.0, 20.0, -10.0) }, -- Waist to ground 45 degree angle
