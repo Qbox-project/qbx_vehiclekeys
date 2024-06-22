@@ -10,9 +10,10 @@ local hotwire = functions.hotwire
 local lockpickDoor = functions.lockpickDoor
 local attemptPoliceAlert = functions.attemptPoliceAlert
 local isBlacklistedWeapon = functions.isBlacklistedWeapon
-local isBlacklistedVehicle = functions.isBlacklistedVehicle
+local getIsVehicleBlacklisted = functions.getIsVehicleBlacklisted
 local getVehicleByPlate = functions.getVehicleByPlate
 local areKeysJobShared = functions.areKeysJobShared
+local getIsVehicleImmune = functions.getIsVehicleImmune
 
 -----------------------
 ----   Variables   ----
@@ -72,7 +73,7 @@ end
 ---@param anim any Aniation
 local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle then return end
-    if not isBlacklistedVehicle(vehicle) then
+    if not getIsVehicleBlacklisted(vehicle) then
         if hasKeys(qbx.getVehiclePlate(vehicle)) or areKeysJobShared(vehicle) then
 
             if anim then
@@ -180,7 +181,7 @@ local function showHotwiringLabel()
             local plate = qbx.getVehiclePlate(cache.vehicle)
             if cache.seat == -1
                 and not hasKeys(plate)
-                and not isBlacklistedVehicle(cache.vehicle)
+                and not getIsVehicleBlacklisted(cache.vehicle)
                 and not areKeysJobShared(cache.vehicle)
             then
                 local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
@@ -311,12 +312,7 @@ local function watchCarjackingAttempts()
                     and not IsPedAPlayer(target)
                 then
                     local targetveh = GetVehiclePedIsIn(target, false)
-                    local isVehicleImmune = false
-                    for i = 1, #config.immuneVehicles do
-                        if GetEntityModel(targetveh) == joaat(config.immuneVehicles[i]) then
-                            isVehicleImmune = true
-                        end
-                    end
+                    local isVehicleImmune = getIsVehicleImmune(targetveh)
 
                     if not isVehicleImmune
                         and GetPedInVehicleSeat(targetveh, -1) == target
@@ -367,14 +363,8 @@ engineBind = lib.addKeybind({
 
 RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
     if not LocalPlayer.state.isLoggedIn and data.event ~= 'Entering' then return end
-    if isBlacklistedVehicle(data.vehicle) then return end
-    local isVehicleImmune
-    for i = 1, #config.immuneVehicles do
-        if GetEntityModel(data.vehicle) == joaat(config.immuneVehicles[i]) then
-            isVehicleImmune = true
-        end
-    end
-
+    if getIsVehicleBlacklisted(data.vehicle) then return end
+    local isVehicleImmune = getIsVehicleImmune(data.vehicle)
     local driver = GetPedInVehicleSeat(data.vehicle, -1)
     local plate = qbx.getVehiclePlate(data.vehicle)
 
