@@ -25,7 +25,8 @@ server_scripts {
 
 files {
     'locales/*.json',
-    'config/client.lua'
+    'config/client.lua',
+    'config/shared.lua'
 }
 
 dependencies {

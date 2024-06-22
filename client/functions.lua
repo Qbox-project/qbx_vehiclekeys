@@ -1,9 +1,13 @@
 local config = require 'config.client'
 local functions = require 'shared.functions'
-local isCloseToCoords = functions.isCloseToCoords
+local getIsCloseToCoords = functions.getIsCloseToCoords
+local getIsVehicleBlacklisted = functions.getIsVehicleBlacklisted
+local getIsVehicleImmune = functions.getIsVehicleImmune
 
 local alertSend = false
 local public = {}
+
+public.getIsVehicleImmune = getIsVehicleImmune -- to prevent circular-dependency error
 
 ---Checks if player has vehicle keys
 ---@param plate string The plate number of the vehicle.
@@ -28,17 +32,12 @@ end
 ---Checking vehicle on the blacklist.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
-function public.isBlacklistedVehicle(vehicle)
+function public.getIsVehicleBlacklisted(vehicle)
     if Entity(vehicle).state.ignoreLocks or GetVehicleClass(vehicle) == 13 then
         return true
     end
 
-    local vehicleHash = GetEntityModel(vehicle)
-    for i = 1, #config.noLockVehicles do
-        if vehicleHash == joaat(config.noLockVehicles[i]) then
-            return true
-        end
-    end
+    return getIsVehicleBlacklisted(vehicle)
 end
 
 function public.attemptPoliceAlert(type)
@@ -80,10 +79,10 @@ end
 ---@param bones table
 ---@param maxDistance number
 ---@return boolean? `true` if bone exists, `nil` otherwise.
-local function isCloseToAnyBone(coords, entity, bones, maxDistance)
+local function getIsCloseToAnyBone(coords, entity, bones, maxDistance)
     for i = 1, #bones do
         local boneCoords = getBoneCoords(entity, bones[i])
-        if isCloseToCoords(coords, boneCoords, maxDistance) then
+        if getIsCloseToCoords(coords, boneCoords, maxDistance) then
             return true
         end
     end
@@ -95,13 +94,13 @@ local doorBones = {'door_dside_f', 'door_dside_r', 'door_pside_f', 'door_pside_r
 ---@param vehicle number The entity number of the vehicle.
 ---@param maxDistance number The max distance to check.
 ---@return boolean? `true` if the player ped is next to an open vehicle, `nil` otherwise.
-local function isVehicleInRange(vehicle, maxDistance)
+local function getIsVehicleInRange(vehicle, maxDistance)
     local vehicles = GetGamePool('CVehicle')
     local pedCoords = GetEntityCoords(cache.ped)
     for i = 1, #vehicles do
         local v = vehicles[i]
         if not cache.vehicle or v ~= cache.vehicle then
-            if vehicle == v and isCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) then
+            if vehicle == v and getIsCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) then
                 return true
             end
         end
@@ -173,7 +172,7 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     if not isDriverSeatFree -- no one in the driver's seat
         or public.hasKeys(plate) -- player does not have keys to the vehicle
         or Entity(vehicle).state.isOpen -- the lock is locked
-        or not isCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
+        or not getIsCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
         or GetVehicleDoorLockStatus(vehicle) < 2 -- the vehicle is locked
         or (not isAdvancedLockedpick and config.advancedLockpickVehicleClasses[class])
     then return end
@@ -185,7 +184,7 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
         lib.playAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
         local isSuccess = customChallenge or lib.skillCheck({ 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' })
 
-        if isVehicleInRange(vehicle, maxDistance) then -- the action will be aborted if the opened vehicle is too far.
+        if getIsVehicleInRange(vehicle, maxDistance) then -- the action will be aborted if the opened vehicle is too far.
             lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
         end
 

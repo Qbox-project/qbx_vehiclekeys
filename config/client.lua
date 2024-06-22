@@ -178,16 +178,6 @@ return {
         }
     },
 
-    -- Vehicles that cannot be jacked
-    immuneVehicles = {
-        'stockade'
-    },
-
-    -- Vehicles that will never lock example:
-    noLockVehicles = {
-        -- 'stockade' -- example
-    },
-
     -- Weapons that cannot be used for carjacking
     noCarjackWeapons = {
         "WEAPON_UNARMED",
