@@ -53,14 +53,12 @@ AddEventHandler('playerDropped', function()
     removePlayer(source --[[@as integer]])
 end)
 
-if config.lockNPCDrivenCars or config.lockNPCParkedCars then
-    ---Lock every spawned vehicle
-    ---@param vehicle number The entity number of the vehicle.
-    AddEventHandler('entityCreated', function (vehicle)
-        if not vehicle or GetEntityType(vehicle) ~= 2 or GetEntityPopulationType(vehicle) > 5 then return end
-        local isDriver = GetPedInVehicleSeat(vehicle, -1) ~= 0
-        local isLocked = (config.lockNPCDrivenCars and isDriver) or (config.lockNPCParkedCars and not isDriver)
-                            and GetVehicleType(vehicle) ~= 'bike' and not getIsVehicleBlacklisted(vehicle)
-        SetVehicleDoorsLocked(vehicle, isLocked and 2 or 1)
-    end)
-end
+---Lock every spawned vehicle
+---@param vehicle number The entity number of the vehicle.
+AddEventHandler('entityCreated', function (vehicle)
+    if not vehicle or GetEntityType(vehicle) ~= 2 or GetEntityPopulationType(vehicle) > 5 then return end
+    local isDriver = GetPedInVehicleSeat(vehicle, -1) ~= 0
+    local isLocked = (config.lockNPCDrivenCars and isDriver) or (config.lockNPCParkedCars and not isDriver)
+                        and GetVehicleType(vehicle) ~= 'bike' and not getIsVehicleBlacklisted(vehicle)
+    SetVehicleDoorsLocked(vehicle, isLocked and 2 or 1)
+end)
