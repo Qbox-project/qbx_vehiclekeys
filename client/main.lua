@@ -266,6 +266,7 @@ local function carjackVehicle(target)
                     end)
                 end
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+                TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
                 exports.qbx_core:Notify(locale('notify.carjack_failed'), 'error')
@@ -388,29 +389,7 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
                 end
                 isTakingKeys = false
             end
-        elseif config.lockNPCDrivenCars then
-            TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 2)
-        else
-            TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
-            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
-
-            --Make passengers flee
-            local pedsInVehicle = getPedsInVehicle(data.vehicle)
-            for i = 1, #pedsInVehicle do
-                local pedInVehicle = pedsInVehicle[i]
-                if pedInVehicle ~= GetPedInVehicleSeat(data.vehicle, -1) then
-                    makePedFlee(pedInVehicle)
-                end
-            end
         end
-        -- Parked car logic
-    elseif driver == 0 and
-        not (isTakingKeys
-        or Entity(data.vehicle).state.isOpen
-        or Entity(data.vehicle).state.vehicleid
-        or hasKeys(plate))
-    then
-        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, config.lockNPCParkedCars and 2 or 1)
     end
 end)
 
@@ -461,7 +440,7 @@ if config.carjackEnable then
     end)
 end
 
-AddEventHandler('onResourceStart', function (resourceName)
+AddEventHandler('onResourceStart', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then return end
 
     showHotwiringLabel()
