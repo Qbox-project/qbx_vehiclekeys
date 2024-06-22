@@ -26,8 +26,9 @@ end
 ---@param vehicle any
 ---@return boolean? `true` if the vehicle is immune, `nil` otherwise.
 function public.getIsVehicleImmune(vehicle)
+    local vehicleHash = GetEntityModel(vehicle)
     for i = 1, #config.immuneVehicles do
-        if GetEntityModel(vehicle) == joaat(config.immuneVehicles[i]) then
+        if vehicleHash == joaat(config.immuneVehicles[i]) then
             return true
         end
     end
