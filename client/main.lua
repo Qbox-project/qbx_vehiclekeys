@@ -10,7 +10,7 @@ local hotwire = functions.hotwire
 local lockpickDoor = functions.lockpickDoor
 local attemptPoliceAlert = functions.attemptPoliceAlert
 local isBlacklistedWeapon = functions.isBlacklistedWeapon
-local getIsVehicleBlacklisted = functions.getIsVehicleBlacklisted
+local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local getVehicleByPlate = functions.getVehicleByPlate
 local areKeysJobShared = functions.areKeysJobShared
 local getIsVehicleImmune = functions.getIsVehicleImmune
@@ -73,7 +73,7 @@ end
 ---@param anim any Aniation
 local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle then return end
-    if not getIsVehicleBlacklisted(vehicle) then
+    if not getIsVehicleAlwaysUnlocked(vehicle) then
         if hasKeys(qbx.getVehiclePlate(vehicle)) or areKeysJobShared(vehicle) then
 
             if anim then
@@ -181,7 +181,7 @@ local function showHotwiringLabel()
             local plate = qbx.getVehiclePlate(cache.vehicle)
             if cache.seat == -1
                 and not hasKeys(plate)
-                and not getIsVehicleBlacklisted(cache.vehicle)
+                and not getIsVehicleAlwaysUnlocked(cache.vehicle)
                 and not areKeysJobShared(cache.vehicle)
             then
                 local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
@@ -364,7 +364,7 @@ engineBind = lib.addKeybind({
 
 RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
     if not LocalPlayer.state.isLoggedIn and data.event ~= 'Entering' then return end
-    if getIsVehicleBlacklisted(data.vehicle) then return end
+    if getIsVehicleAlwaysUnlocked(data.vehicle) then return end
     local isVehicleImmune = getIsVehicleImmune(data.vehicle)
     local driver = GetPedInVehicleSeat(data.vehicle, -1)
     local plate = qbx.getVehiclePlate(data.vehicle)

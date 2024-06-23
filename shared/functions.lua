@@ -22,7 +22,7 @@ end
 ---Checking vehicle on the blacklist.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
-function public.getIsVehicleBlacklisted(vehicle)
+function public.getIsVehicleAlwaysUnlocked(vehicle)
     return getIsVehicleOnList(vehicle, config.noLockVehicles)
 end
 

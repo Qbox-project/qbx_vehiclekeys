@@ -1,7 +1,7 @@
 local config = require 'config.client'
 local functions = require 'shared.functions'
 local getIsCloseToCoords = functions.getIsCloseToCoords
-local getIsVehicleBlacklisted = functions.getIsVehicleBlacklisted
+local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local getIsVehicleImmune = functions.getIsVehicleImmune
 
 local alertSend = false
@@ -32,12 +32,12 @@ end
 ---Checking vehicle on the blacklist.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
-function public.getIsVehicleBlacklisted(vehicle)
+function public.getIsVehicleAlwaysUnlocked(vehicle)
     if Entity(vehicle).state.ignoreLocks or GetVehicleClass(vehicle) == 13 then
         return true
     end
 
-    return getIsVehicleBlacklisted(vehicle)
+    return getIsVehicleAlwaysUnlocked(vehicle)
 end
 
 function public.attemptPoliceAlert(type)
