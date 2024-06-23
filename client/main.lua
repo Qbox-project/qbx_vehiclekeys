@@ -13,7 +13,7 @@ local isBlacklistedWeapon = functions.isBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local getVehicleByPlate = functions.getVehicleByPlate
 local areKeysJobShared = functions.areKeysJobShared
-local getIsVehicleImmune = functions.getIsVehicleImmune
+local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 
 -----------------------
 ----   Variables   ----
@@ -313,7 +313,7 @@ local function watchCarjackingAttempts()
                     and not IsPedAPlayer(target)
                 then
                     local targetveh = GetVehiclePedIsIn(target, false)
-                    local isVehicleImmune = getIsVehicleImmune(targetveh)
+                    local isVehicleImmune = getIsVehicleCarjackingImmune(targetveh)
 
                     if not isVehicleImmune
                         and GetPedInVehicleSeat(targetveh, -1) == target
@@ -365,7 +365,7 @@ engineBind = lib.addKeybind({
 RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
     if not LocalPlayer.state.isLoggedIn and data.event ~= 'Entering' then return end
     if getIsVehicleAlwaysUnlocked(data.vehicle) then return end
-    local isVehicleImmune = getIsVehicleImmune(data.vehicle)
+    local isVehicleImmune = getIsVehicleCarjackingImmune(data.vehicle)
     local driver = GetPedInVehicleSeat(data.vehicle, -1)
     local plate = qbx.getVehiclePlate(data.vehicle)
 

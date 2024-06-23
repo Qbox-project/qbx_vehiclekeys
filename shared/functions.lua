@@ -29,7 +29,7 @@ end
 ---Checking vehicle on the immunes list.
 ---@param vehicle any
 ---@return boolean? `true` if the vehicle is immune, `nil` otherwise.
-function public.getIsVehicleImmune(vehicle)
+function public.getIsVehicleCarjackingImmune(vehicle)
     return getIsVehicleOnList(vehicle, config.immuneVehicles)
 end
 

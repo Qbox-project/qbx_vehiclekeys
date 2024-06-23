@@ -2,12 +2,12 @@ local config = require 'config.client'
 local functions = require 'shared.functions'
 local getIsCloseToCoords = functions.getIsCloseToCoords
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
-local getIsVehicleImmune = functions.getIsVehicleImmune
+local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 
 local alertSend = false
 local public = {}
 
-public.getIsVehicleImmune = getIsVehicleImmune -- to prevent circular-dependency error
+public.getIsVehicleCarjackingImmune = getIsVehicleCarjackingImmune -- to prevent circular-dependency error
 
 ---Checks if player has vehicle keys
 ---@param plate string The plate number of the vehicle.
