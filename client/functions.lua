@@ -1,13 +1,13 @@
 local config = require 'config.client'
 local functions = require 'shared.functions'
 local getIsCloseToCoords = functions.getIsCloseToCoords
-local getIsVehicleBlacklisted = functions.getIsVehicleBlacklisted
-local getIsVehicleImmune = functions.getIsVehicleImmune
+local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
+local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 
 local alertSend = false
 local public = {}
 
-public.getIsVehicleImmune = getIsVehicleImmune -- to prevent circular-dependency error
+public.getIsVehicleCarjackingImmune = getIsVehicleCarjackingImmune -- to prevent circular-dependency error
 
 ---Checks if player has vehicle keys
 ---@param plate string The plate number of the vehicle.
@@ -32,12 +32,12 @@ end
 ---Checking vehicle on the blacklist.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
-function public.getIsVehicleBlacklisted(vehicle)
+function public.getIsVehicleAlwaysUnlocked(vehicle)
     if Entity(vehicle).state.ignoreLocks or GetVehicleClass(vehicle) == 13 then
         return true
     end
 
-    return getIsVehicleBlacklisted(vehicle)
+    return getIsVehicleAlwaysUnlocked(vehicle)
 end
 
 function public.attemptPoliceAlert(type)

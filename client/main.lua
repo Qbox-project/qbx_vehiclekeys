@@ -10,10 +10,10 @@ local hotwire = functions.hotwire
 local lockpickDoor = functions.lockpickDoor
 local attemptPoliceAlert = functions.attemptPoliceAlert
 local isBlacklistedWeapon = functions.isBlacklistedWeapon
-local getIsVehicleBlacklisted = functions.getIsVehicleBlacklisted
+local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local getVehicleByPlate = functions.getVehicleByPlate
 local areKeysJobShared = functions.areKeysJobShared
-local getIsVehicleImmune = functions.getIsVehicleImmune
+local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 
 -----------------------
 ----   Variables   ----
@@ -74,7 +74,7 @@ end
 ---@param anim any Aniation
 local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle then return end
-    if not getIsVehicleBlacklisted(vehicle) then
+    if not getIsVehicleAlwaysUnlocked(vehicle) then
         if hasKeys(qbx.getVehiclePlate(vehicle)) or areKeysJobShared(vehicle) then
 
             if anim then
@@ -182,7 +182,7 @@ local function showHotwiringLabel()
             local plate = qbx.getVehiclePlate(cache.vehicle)
             if cache.seat == -1
                 and not hasKeys(plate)
-                and not getIsVehicleBlacklisted(cache.vehicle)
+                and not getIsVehicleAlwaysUnlocked(cache.vehicle)
                 and not areKeysJobShared(cache.vehicle)
             then
                 local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
@@ -267,6 +267,7 @@ local function carjackVehicle(target)
                     end)
                 end
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+                TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
                 exports.qbx_core:Notify(locale('notify.carjack_failed'), 'error')
@@ -313,7 +314,7 @@ local function watchCarjackingAttempts()
                     and not IsPedAPlayer(target)
                 then
                     local targetveh = GetVehiclePedIsIn(target, false)
-                    local isVehicleImmune = getIsVehicleImmune(targetveh)
+                    local isVehicleImmune = getIsVehicleCarjackingImmune(targetveh)
 
                     if not isVehicleImmune
                         and GetPedInVehicleSeat(targetveh, -1) == target
@@ -364,8 +365,8 @@ engineBind = lib.addKeybind({
 
 RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
     if not LocalPlayer.state.isLoggedIn and data.event ~= 'Entering' then return end
-    if getIsVehicleBlacklisted(data.vehicle) then return end
-    local isVehicleImmune = getIsVehicleImmune(data.vehicle)
+    if getIsVehicleAlwaysUnlocked(data.vehicle) then return end
+    local isVehicleImmune = getIsVehicleCarjackingImmune(data.vehicle)
     local driver = GetPedInVehicleSeat(data.vehicle, -1)
     local plate = qbx.getVehiclePlate(data.vehicle)
 
@@ -389,29 +390,7 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
                 end
                 isTakingKeys = false
             end
-        elseif config.lockNPCDrivenCars then
-            TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 2)
-        else
-            TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
-            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
-
-            --Make passengers flee
-            local pedsInVehicle = getPedsInVehicle(data.vehicle)
-            for i = 1, #pedsInVehicle do
-                local pedInVehicle = pedsInVehicle[i]
-                if pedInVehicle ~= GetPedInVehicleSeat(data.vehicle, -1) then
-                    makePedFlee(pedInVehicle)
-                end
-            end
         end
-        -- Parked car logic
-    elseif driver == 0 and
-        not (isTakingKeys
-        or Entity(data.vehicle).state.isOpen
-        or Entity(data.vehicle).state.vehicleid
-        or hasKeys(plate))
-    then
-        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, config.lockNPCParkedCars and 2 or 1)
     end
 end)
 
@@ -462,7 +441,7 @@ if config.carjackEnable then
     end)
 end
 
-AddEventHandler('onResourceStart', function (resourceName)
+AddEventHandler('onResourceStart', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then return end
 
     showHotwiringLabel()

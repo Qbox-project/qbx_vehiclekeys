@@ -45,10 +45,6 @@ return {
 
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
-    -- NPC Vehicle Lock States
-    lockNPCDrivenCars = true, -- Lock state for NPC cars being driven by NPCs [true = locked, false = unlocked]
-    lockNPCParkedCars = true, -- Lock state for NPC parked cars [true = locked, false = unlocked]
-
     -- Lockpick Settings
     removeNormalLockpickChance = { -- Chance to remove lockpick on fail by vehicle class
         [VehicleClasses.COMPACTS] = 0.5,
