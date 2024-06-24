@@ -9,7 +9,7 @@ local hasKeys = functions.hasKeys
 local hotwire = functions.hotwire
 local lockpickDoor = functions.lockpickDoor
 local attemptPoliceAlert = functions.attemptPoliceAlert
-local isBlacklistedWeapon = functions.isBlacklistedWeapon
+local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local getVehicleByPlate = functions.getVehicleByPlate
 local areKeysJobShared = functions.areKeysJobShared
@@ -271,7 +271,7 @@ local function carjackVehicle(target)
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
                 exports.qbx_core:Notify(locale('notify.carjack_failed'), 'error')
-                ClearPedTasksImmediately(target)
+                ClearPedTasks(target)
                 makePedFlee(target)
                 TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             end
@@ -280,7 +280,7 @@ local function carjackVehicle(target)
             attemptPoliceAlert('carjack')
         end
     else
-        ClearPedTasksImmediately(target)
+        ClearPedTasks(target)
         makePedFlee(target)
         isCarjacking = false
     end
@@ -316,9 +316,9 @@ local function watchCarjackingAttempts()
                     local targetveh = GetVehiclePedIsIn(target, false)
                     local isVehicleImmune = getIsVehicleCarjackingImmune(targetveh)
 
-                    if not isVehicleImmune
+                    if not(isVehicleImmune
+                        or getIsBlacklistedWeapon(cache.weapon))
                         and GetPedInVehicleSeat(targetveh, -1) == target
-                        and not isBlacklistedWeapon()
                     then
                         local pos = GetEntityCoords(cache.ped)
                         local targetpos = GetEntityCoords(target)
