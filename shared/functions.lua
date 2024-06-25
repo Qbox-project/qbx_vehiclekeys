@@ -27,10 +27,21 @@ function public.getIsVehicleAlwaysUnlocked(vehicle)
 end
 
 ---Checking vehicle on the immunes list.
----@param vehicle any
+---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is immune, `nil` otherwise.
 function public.getIsVehicleCarjackingImmune(vehicle)
     return getIsVehicleOnList(vehicle, config.immuneVehicles)
+end
+
+---Checking weapon on the carjacking blacklist.
+---@param weapon number The current weapon hash.
+---@return boolean? `true` if the weapon cannot be used to carjacking, `nil` otherwise.
+function public.getIsBlacklistedWeapon(weapon)
+    for i = 1, #config.noCarjackWeapons do
+        if weapon == joaat(config.noCarjackWeapons[i]) then
+            return true
+        end
+    end
 end
 
 return public

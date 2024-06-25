@@ -1,6 +1,7 @@
 local config = require 'config.client'
 local functions = require 'shared.functions'
 local getIsCloseToCoords = functions.getIsCloseToCoords
+local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 
@@ -8,6 +9,7 @@ local alertSend = false
 local public = {}
 
 public.getIsVehicleCarjackingImmune = getIsVehicleCarjackingImmune -- to prevent circular-dependency error
+public.getIsBlacklistedWeapon = getIsBlacklistedWeapon
 
 ---Checks if player has vehicle keys
 ---@param plate string The plate number of the vehicle.
@@ -18,16 +20,6 @@ function public.hasKeys(plate)
 end
 
 exports('HasKeys', public.hasKeys)
-
----Checking weapon on the blacklist.
----@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
-function public.isBlacklistedWeapon()
-    for i = 1, #config.noCarjackWeapons do
-        if cache.weapon == joaat(config.noCarjackWeapons[i]) then
-            return true
-        end
-    end
-end
 
 ---Checking vehicle on the blacklist.
 ---@param vehicle number The entity number of the vehicle.
