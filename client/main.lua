@@ -13,6 +13,7 @@ local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local getVehicleByPlate = functions.getVehicleByPlate
 local areKeysJobShared = functions.areKeysJobShared
+local getIsVehicleLockpickImmune = functions.getIsVehicleLockpickImmune
 local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 
 -----------------------
@@ -172,8 +173,9 @@ local function showHotwiringLabel()
     isShowHotwiringLabelRunning = true
     CreateThread(function()
         -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
-        if cache.vehicle and not(getIsVehicleAlwaysUnlocked(cache.vehicle) or areKeysJobShared(cache.vehicle)) then
+        if cache.vehicle and not(getIsVehicleLockpickImmune(cache.vehicle) or getIsVehicleAlwaysUnlocked(cache.vehicle) or areKeysJobShared(cache.vehicle)) then
             SetVehicleNeedsToBeHotwired(cache.vehicle, false)
+            SetVehicleKeepEngineOnWhenAbandoned(cache.vehicle, true)
             local plate = qbx.getVehiclePlate(cache.vehicle)
             local isSearchAllowed = true
             while cache.vehicle and not hasKeys(plate) do
@@ -201,6 +203,9 @@ local function showHotwiringLabel()
 
                     Wait(0)
                 else
+                    if lib.progressActive() then
+                        lib.cancelProgress()
+                    end
                     Wait(1000)
                 end
             end

@@ -3,12 +3,14 @@ local functions = require 'shared.functions'
 local getIsCloseToCoords = functions.getIsCloseToCoords
 local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
+local getIsVehicleLockpickImmune = functions.getIsVehicleLockpickImmune
 local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 
 local alertSend = false
 local public = {}
 
 public.getIsVehicleCarjackingImmune = getIsVehicleCarjackingImmune -- to prevent circular-dependency error
+public.getIsVehicleLockpickImmune = getIsVehicleLockpickImmune
 public.getIsBlacklistedWeapon = getIsBlacklistedWeapon
 
 ---Checks if player has vehicle keys
