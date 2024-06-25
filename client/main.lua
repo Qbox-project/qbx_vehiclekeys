@@ -138,7 +138,7 @@ local function makePedFlee(ped)
     TaskReactAndFleePed(ped, cache.ped)
 end
 
-local function findKeys(vehicle, plate)
+local function findKeys(vehicleClass, plate)
     local hotwireTime = math.random(config.minHotwireTime, config.maxHotwireTime)
 
     if lib.progressCircle({
@@ -157,19 +157,13 @@ local function findKeys(vehicle, plate)
             combat = true,
         }
     }) then
-        if math.random() <= config.hotwireChance[GetVehicleClass(vehicle)] then
+        if math.random() <= config.hotwireChance[vehicleClass] then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             exports.qbx_core:Notify(locale("notify.failed_keys"), 'error')
         end
-
-        Wait(config.timeBetweenHotwires)
     end
-
-    SetTimeout(10000, function()
-        attemptPoliceAlert('steal')
-    end)
 end
 
 local isShowHotwiringLabelRunning = false
@@ -178,23 +172,37 @@ local function showHotwiringLabel()
     isShowHotwiringLabelRunning = true
     CreateThread(function()
         -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
-        while cache.vehicle do
+        if cache.vehicle and not(getIsVehicleAlwaysUnlocked(cache.vehicle) or areKeysJobShared(cache.vehicle)) then
+            SetVehicleNeedsToBeHotwired(cache.vehicle, false)
             local plate = qbx.getVehiclePlate(cache.vehicle)
-            if cache.seat == -1
-                and not hasKeys(plate)
-                and not getIsVehicleAlwaysUnlocked(cache.vehicle)
-                and not areKeysJobShared(cache.vehicle)
-            then
-                local vehiclePos = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
-                qbx.drawText3d({ text = locale('info.search_keys'), coords = vehiclePos })
-                SetVehicleEngineOn(cache.vehicle, false, false, true)
+            local isSearchAllowed = true
+            while cache.vehicle and not hasKeys(plate) do
+                if cache.seat == -1 then
+                    SetVehicleEngineOn(cache.vehicle, false, true, true)
 
-                if IsControlJustPressed(0, 74) then
-                    findKeys(cache.vehicle, plate)
+                    if isSearchAllowed then
+                        if IsControlJustPressed(0, 74) then
+                            isSearchAllowed = false
+                            CreateThread(function ()
+                                findKeys(GetVehicleClass(cache.vehicle), plate)
+                                Wait(config.timeBetweenHotwires)
+                                SetTimeout(10000, function()
+                                    attemptPoliceAlert('steal')
+                                end)
+                                isSearchAllowed = true
+                            end)
+                        end
+
+                        qbx.drawText3d({
+                            text = locale('info.search_keys'),
+                            coords = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
+                        })
+                    end
+
+                    Wait(0)
+                else
+                    Wait(1000)
                 end
-                Wait(0)
-            else
-                Wait(1000)
             end
         end
     end)
@@ -352,7 +360,7 @@ togglelocksBind = lib.addKeybind({
 
 local engineBind
 engineBind = lib.addKeybind({
-    name = 'engine',
+    name = 'toggleengine',
     description = locale('info.engine'),
     defaultKey = 'G',
     onPressed = function()
@@ -395,30 +403,28 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
-    local targetVehicle = plate and getVehicleByPlate(plate) or cache.vehicle or getVehicle()
+    local vehicle = plate and getVehicleByPlate(plate) or cache.vehicle or getVehicle()
+    if not vehicle then return end
+    plate = plate or qbx.getVehiclePlate(vehicle)
+    if not hasKeys(plate) then
+        return exports.qbx_core:Notify(locale('notify.no_keys'), 'error')
+    end
 
-    if targetVehicle then
-        local targetPlate = qbx.getVehiclePlate(targetVehicle)
-        if not hasKeys(targetPlate) then
-            return exports.qbx_core:Notify(locale('notify.no_keys'), 'error')
+    if id and type(id) == 'number' then                         -- Give keys to specific ID
+        giveKeys(id, plate)
+    elseif IsPedSittingInVehicle(cache.ped, vehicle) then -- Give keys to everyone in vehicle
+        local otherOccupants = getOtherPlayersInVehicle(vehicle)
+        if not hasKeys(qbx.getVehiclePlate(vehicle)) then
+            return exports.qbx_core:Notify(locale('notify.no_keys'))
         end
 
-        if id and type(id) == 'number' then                         -- Give keys to specific ID
-            giveKeys(id, targetPlate)
-        elseif IsPedSittingInVehicle(cache.ped, targetVehicle) then -- Give keys to everyone in vehicle
-            local otherOccupants = getOtherPlayersInVehicle(targetVehicle)
-            if not hasKeys(qbx.getVehiclePlate(targetVehicle)) then
-                return exports.qbx_core:Notify(locale('notify.no_keys'))
-            end
-
-            for p = 1, #otherOccupants do
-                TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', otherOccupants[p], targetPlate)
-            end
-            exports.qbx_core:Notify(locale('notify.gave_keys'))
-        else                                                        -- Give keys to closest player
-            local playerId = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
-            giveKeys(playerId, targetPlate)
+        for p = 1, #otherOccupants do
+            TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', otherOccupants[p], plate)
         end
+        exports.qbx_core:Notify(locale('notify.gave_keys'))
+    else                                                        -- Give keys to closest player
+        local playerId = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
+        giveKeys(playerId, plate)
     end
 end)
 
@@ -454,9 +460,6 @@ end)
 --#region Backwards Compatibility ONLY -- Remove at some point --
 RegisterNetEvent('qb-vehiclekeys:client:AddKeys', function(plate)
     TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
-    if cache.vehicle and plate == qbx.getVehiclePlate(cache.vehicle) then
-        SetVehicleEngineOn(cache.vehicle, false, false, false)
-    end
 end)
 
 RegisterNetEvent('vehiclekeys:client:SetOwner', function(plate)

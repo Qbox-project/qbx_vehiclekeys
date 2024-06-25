@@ -44,4 +44,16 @@ function public.getIsBlacklistedWeapon(weapon)
     end
 end
 
+---Checking vehicle type on the blacklist.
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle type is blacklisted, `nil` otherwise.
+function public.getIsBlacklistedVehicleType(vehicle)
+    local type = GetVehicleType(vehicle)
+    for i = 1, #config.noLockVehicleTypes do
+        if type == config.noLockVehicleTypes[i] then
+            return true
+        end
+    end
+end
+
 return public
