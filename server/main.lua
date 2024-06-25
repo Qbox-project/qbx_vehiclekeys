@@ -10,6 +10,7 @@ local giveKeys = functions.giveKeys
 local addPlayer = functions.addPlayer
 local removePlayer = functions.removePlayer
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
+local getIsBlacklistedVehicleType = sharedFunctions.getIsBlacklistedVehicleType
 
 -----------------------
 ----    Events     ----
@@ -57,11 +58,13 @@ end)
 ---@param vehicle number The entity number of the vehicle.
 AddEventHandler('entityCreated', function (vehicle)
     if not vehicle
-        or GetEntityType(vehicle) ~= 2
+        or type(vehicle) ~= 'number'
+        or not DoesEntityExist(vehicle)
         or GetEntityPopulationType(vehicle) > 5
+        or GetEntityType(vehicle) ~= 2
     then return end
     local isDriver = GetPedInVehicleSeat(vehicle, -1) ~= 0
     local isLocked = (config.lockNPCDrivenCars and isDriver) or (config.lockNPCParkedCars and not isDriver)
-                        and GetVehicleType(vehicle) ~= 'bike' and not getIsVehicleAlwaysUnlocked(vehicle)
+                        and not(getIsBlacklistedVehicleType(vehicle) or getIsVehicleAlwaysUnlocked(vehicle))
     SetVehicleDoorsLocked(vehicle, isLocked and 2 or 1)
 end)

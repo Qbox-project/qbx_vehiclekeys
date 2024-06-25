@@ -214,12 +214,7 @@ local isHotwiringProcessLocked = false -- lock flag
 ---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
 ---@param customChallenge boolean? lockpick challenge
 function public.hotwire(isAdvancedLockedpick, customChallenge)
-    if not(cache.vehicle
-       and cache.seat
-       and cache.seat == -1)
-    then return end
-
-    if isHotwiringProcessLocked then return end -- start of the critical section
+    if cache.seat ~= -1 or isHotwiringProcessLocked then return end -- start of the critical section
     isHotwiringProcessLocked = true -- one call per player at a time
 
     CreateThread(function()
