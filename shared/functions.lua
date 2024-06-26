@@ -30,7 +30,14 @@ end
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is immune, `nil` otherwise.
 function public.getIsVehicleCarjackingImmune(vehicle)
-    return getIsVehicleOnList(vehicle, config.immuneVehicles)
+    return getIsVehicleOnList(vehicle, config.carjackingImmuneVehicles)
+end
+
+---Checking vehicle on the immunes list.
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle is immune, `nil` otherwise.
+function public.getIsVehicleLockpickImmune(vehicle)
+    return getIsVehicleOnList(vehicle, config.lockpickImmuneVehicles)
 end
 
 ---Checking weapon on the carjacking blacklist.
@@ -47,7 +54,7 @@ end
 ---Checking vehicle type on the blacklist.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle type is blacklisted, `nil` otherwise.
-function public.getIsBlacklistedVehicleType(vehicle)
+function public.getIsVehicleTypeAlwaysUnlocked(vehicle)
     local type = GetVehicleType(vehicle)
     for i = 1, #config.noLockVehicleTypes do
         if type == config.noLockVehicleTypes[i] then

@@ -5,8 +5,12 @@ return {
     },
 
     -- Vehicles that cannot be jacked
-    immuneVehicles = {
+    carjackingImmuneVehicles = {
         'stockade'
+    },
+
+    lockpickImmuneVehicles = {
+
     },
 
     -- Weapons that cannot be used for carjacking

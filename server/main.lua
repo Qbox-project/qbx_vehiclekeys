@@ -9,8 +9,9 @@ local sharedFunctions = require 'shared.functions'
 local giveKeys = functions.giveKeys
 local addPlayer = functions.addPlayer
 local removePlayer = functions.removePlayer
+local getIsVehicleLockpickImmune = sharedFunctions.getIsVehicleLockpickImmune
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
-local getIsBlacklistedVehicleType = sharedFunctions.getIsBlacklistedVehicleType
+local getIsVehicleTypeAlwaysUnlocked = sharedFunctions.getIsVehicleTypeAlwaysUnlocked
 
 -----------------------
 ----    Events     ----
@@ -64,7 +65,9 @@ AddEventHandler('entityCreated', function (vehicle)
         or GetEntityType(vehicle) ~= 2
     then return end
     local isDriver = GetPedInVehicleSeat(vehicle, -1) ~= 0
-    local isLocked = (config.lockNPCDrivenCars and isDriver) or (config.lockNPCParkedCars and not isDriver)
-                        and not(getIsBlacklistedVehicleType(vehicle) or getIsVehicleAlwaysUnlocked(vehicle))
+    local isLocked = getIsVehicleLockpickImmune(vehicle)
+        or (config.lockNPCDrivenCars and isDriver) or (config.lockNPCParkedCars and not isDriver)
+        and not(getIsVehicleTypeAlwaysUnlocked(vehicle) or getIsVehicleAlwaysUnlocked(vehicle))
+        and math.random() < config.lockedVehicleChance
     SetVehicleDoorsLocked(vehicle, isLocked and 2 or 1)
 end)
