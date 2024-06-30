@@ -18,7 +18,7 @@
   },
   "info": {
     "engine": "Motoru aç/kapat",
-    "search_keys": "[H] - Anahtarları ara",
+    "search_keys_dispatch": "[H] - Anahtarları ara",
     "toggle_locks": "Araç kilidini aç/kapat",
     "vehicle_theft": "Araç hırsızlığı devam ediyor. Tür: "
   },

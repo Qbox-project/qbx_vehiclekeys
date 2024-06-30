@@ -10,57 +10,61 @@ function public.getIsCloseToCoords(coord1, coord2, distance)
     return #(coord1 - coord2) < distance
 end
 
-local function getIsVehicleOnList(vehicle, list)
-    local vehicleHash = GetEntityModel(vehicle)
+local function getIsOnList(item, list)
     for i = 1, #list do
-        if vehicleHash == joaat(list[i]) then
+        if item == list[i] then
             return true
         end
     end
 end
 
----Checking vehicle on the blacklist.
+---Checks if the vehicle has no locks and is accessible to everyone.
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
+function public.getIsVehicleShared(vehicle)
+    return getIsOnList(GetEntityModel(vehicle), config.sharedVehicles)
+end
+
+---Checks if the vehicle cannot be locked.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
 function public.getIsVehicleAlwaysUnlocked(vehicle)
-    return getIsVehicleOnList(vehicle, config.noLockVehicles)
+    return getIsOnList(GetEntityModel(vehicle), config.noLockVehicles)
 end
 
----Checking vehicle on the immunes list.
+---Checks the vehicle is carjacking immune.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is immune, `nil` otherwise.
 function public.getIsVehicleCarjackingImmune(vehicle)
-    return getIsVehicleOnList(vehicle, config.carjackingImmuneVehicles)
+    return getIsOnList(GetEntityModel(vehicle), config.carjackingImmuneVehicles)
 end
 
----Checking vehicle on the immunes list.
+---Checks the vehicle is lockpicking immune.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is immune, `nil` otherwise.
 function public.getIsVehicleLockpickImmune(vehicle)
-    return getIsVehicleOnList(vehicle, config.lockpickImmuneVehicles)
+    return getIsOnList(GetEntityModel(vehicle), config.lockpickImmuneVehicles)
 end
 
----Checking weapon on the carjacking blacklist.
----@param weapon number The current weapon hash.
+---Checks if the weapon cannot be used to steal keys from drivers.
+---@param weaponHash number The current weapon hash.
 ---@return boolean? `true` if the weapon cannot be used to carjacking, `nil` otherwise.
-function public.getIsBlacklistedWeapon(weapon)
-    for i = 1, #config.noCarjackWeapons do
-        if weapon == joaat(config.noCarjackWeapons[i]) then
-            return true
-        end
-    end
+function public.getIsBlacklistedWeapon(weaponHash)
+    return getIsOnList(weaponHash, config.noCarjackWeapons)
 end
 
----Checking vehicle type on the blacklist.
+---Checks if the vehicle type has no locks and is accessible to everyone.
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle type is accessible, `nil` otherwise.
+function public.getIsVehicleTypeShared(vehicle)
+    return getIsOnList(GetVehicleType(vehicle), config.sharedVehicleTypes)
+end
+
+---Checks if the vehicle type cannot be locked.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle type is blacklisted, `nil` otherwise.
 function public.getIsVehicleTypeAlwaysUnlocked(vehicle)
-    local type = GetVehicleType(vehicle)
-    for i = 1, #config.noLockVehicleTypes do
-        if type == config.noLockVehicleTypes[i] then
-            return true
-        end
-    end
+    return getIsOnList(GetVehicleType(vehicle), config.noLockVehicleTypes)
 end
 
 return public

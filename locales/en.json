@@ -21,7 +21,8 @@
   },
   "info": {
     "engine": "Toggle Engine",
-    "search_keys": "~g~[H]~w~ - Search for Keys",
+    "search_keys_dispatch": "[H] - Search for Keys",
+    "search_keys": "Search for vehicle keys",
     "toggle_locks": "Toggle Vehicle Locks",
     "vehicle_theft": "Vehicle theft in progress. Type: "
   },

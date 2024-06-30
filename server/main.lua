@@ -66,7 +66,7 @@ AddEventHandler('entityCreated', function (vehicle)
     then return end
     local isDriver = GetPedInVehicleSeat(vehicle, -1) ~= 0
     local isLocked = getIsVehicleLockpickImmune(vehicle)
-        or (config.lockNPCDrivenCars and isDriver) or (config.lockNPCParkedCars and not isDriver)
+        or ((config.lockNPCDrivenCars and isDriver) or (config.lockNPCParkedCars and not isDriver))
         and not(getIsVehicleTypeAlwaysUnlocked(vehicle) or getIsVehicleAlwaysUnlocked(vehicle))
         and math.random() < config.lockedVehicleChance
     SetVehicleDoorsLocked(vehicle, isLocked and 2 or 1)
