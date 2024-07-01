@@ -56,6 +56,14 @@ end
 
 exports('HasAccess', public.getIsVehicleAccessible)
 
+function public.toggleEngine(vehicle)
+    if not public.getIsVehicleAccessible(vehicle) then return end
+    local engineOn = GetIsVehicleEngineRunning(vehicle)
+    SetVehicleEngineOn(vehicle, not engineOn, false, true)
+end
+
+exports('ToggleEngine', public.toggleEngine)
+
 ---Checking vehicle on the blacklist.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.

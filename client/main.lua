@@ -6,6 +6,7 @@ local config = require 'config.client'
 local functions = require 'client.functions'
 
 local hotwire = functions.hotwire
+local toggleEngine = functions.toggleEngine
 local lockpickDoor = functions.lockpickDoor
 local getVehicleInFront = functions.getVehicleInFront
 local getIsCloseToCoords = functions.getIsCloseToCoords
@@ -26,15 +27,12 @@ local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 ---@param state boolean? State of the vehicle lock.
 ---@param anim any Aniation
 local function setVehicleDoorLock(vehicle, state, anim)
-    if not vehicle then return end
-    if getIsVehicleAlwaysUnlocked(vehicle) or getIsVehicleShared(vehicle) then return end
+    if not vehicle or getIsVehicleAlwaysUnlocked(vehicle) or getIsVehicleShared(vehicle) then return end
     if getIsVehicleAccessible(vehicle) then
+
         if anim then
             lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
         end
-
-        qbx.playAudio({ audioName = 'Door_Close', audioRef = 'GTAO_EXEC_WH_GARAGE_DOOR_SOUNDS', source = vehicle })
-        NetworkRequestControlOfEntity(vehicle)
 
         local lockstate
         if state ~= nil then
@@ -46,6 +44,7 @@ local function setVehicleDoorLock(vehicle, state, anim)
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
         exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
 
+        qbx.playAudio({ audioName = 'Door_Close', audioRef = 'GTAO_EXEC_WH_GARAGE_DOOR_SOUNDS', source = vehicle })
         SetVehicleLights(vehicle, 2)
         Wait(250)
         SetVehicleLights(vehicle, 1)
@@ -159,7 +158,7 @@ local function carjackVehicle(target)
         end)
     end
 
-    -- Cancel progress bar if: Ped dies during robbery, car gets too far away
+    --Cancel progress bar if: Ped dies during robbery, car gets too far away
     CreateThread(function()
         while isCarjacking do
             local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(target))
@@ -218,14 +217,8 @@ local function carjackVehicle(target)
         makePedFlee(target)
     end
 
-    isCarjacking = false
     Wait(config.delayBetweenCarjackingsInMs)
-end
-
-local function toggleEngine(vehicle)
-    if not getIsVehicleAccessible(vehicle, qbx.getVehiclePlate(vehicle)) then return end
-    local engineOn = GetIsVehicleEngineRunning(vehicle)
-    SetVehicleEngineOn(vehicle, not engineOn, false, true)
+    isCarjacking = false
 end
 
 local isWatchCarjackingAttemptRunning = false
@@ -359,6 +352,10 @@ RegisterNetEvent('qbx_vehiclekeys:client:OnLostKeys', function()
 end)
 
 AddEventHandler('ox_lib:cache:seat', function()
+    showHotwiringLabel(cache.vehicle)
+end)
+
+AddEventHandler('ox_lib:cache:vehicle', function()
     showHotwiringLabel(cache.vehicle)
 end)
 
