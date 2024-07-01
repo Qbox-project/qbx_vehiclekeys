@@ -101,6 +101,7 @@ function public.removeKeys(source, plate)
 
     Player(source).state:set('keysList', keys, true)
 
+    TriggerClientEvent('qbx_vehiclekeys:client:OnLostKeys', source)
     exports.qbx_core:Notify(source, locale('notify.keys_removed'))
 
     return true

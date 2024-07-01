@@ -18,7 +18,7 @@
   },
   "info": {
     "engine": "Porneste/Opreste motorul",
-    "skeys": "~g~[H]~w~ - Cloneaza cheile",
+    "search_keys_dispatch": "[H] - Cloneaza cheile",
     "toggle_locks": "Blocheaza/Deblocheaza vehiculul",
     "vehicle_theft": "Furt auto in desfasurare. Tip: "
   },

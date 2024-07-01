@@ -18,7 +18,7 @@
   },
   "info": {
     "engine": "Mootori sisse- ja väljalülitamine",
-    "skeys": "~g~[H]~w~ – Võtmete otsimine",
+    "search_keys_dispatch": "[H] - Võtmete otsimine",
     "toggle_locks": "Lülitage sõiduki lukud sisse",
     "vehicle_theft": "Sõiduki vargus käsil. Tüüp:"
   },

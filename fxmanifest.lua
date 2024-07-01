@@ -29,10 +29,5 @@ files {
     'config/shared.lua'
 }
 
-dependencies {
-    'ox_lib',
-    'qbx_core'
-}
-
 lua54 'yes'
 use_experimental_fxv2_oal 'yes'

@@ -40,9 +40,6 @@ WeaponTypeGroups = {
 }
 
 return {
-
-    debug = false, -- Set to true for development purposes only. Used for zones, and essential prints. Will be removed upon release
-
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
     -- Lockpick Settings
@@ -103,10 +100,10 @@ return {
     },
 
     -- Carjack Settings
-    carjackEnable = true, -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
-    carjackingTimeInMs = 7500, -- Time it takes to successfully carjack in miliseconds
+    carjackEnable = true,                -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
+    carjackingTimeInMs = 7500,           -- Time it takes to successfully carjack in miliseconds
     delayBetweenCarjackingsInMs = 10000, -- Time before you can attempt another carjack in miliseconds
-    carjackChance = { -- Probability of successful carjacking based on weapon used
+    carjackChance = {                    -- Probability of successful carjacking based on weapon used
         [WeaponTypeGroups.MELEE] = 0.0,
         [WeaponTypeGroups.HANDGUN] = 0.5,
         [WeaponTypeGroups.SMG] = 0.75,
@@ -146,23 +143,26 @@ return {
         [VehicleClasses.OPEN_WHEEL] = 0.5
     },
     timeBetweenHotwires = 5000, -- Time in milliseconds between hotwire attempts
-    minHotwireTime = 20000, -- Minimum hotwire time in milliseconds
-    maxHotwireTime = 40000, -- Maximum hotwire time in milliseconds
+    minHotwireTime = 20000,     -- Minimum hotwire time in milliseconds
+    maxHotwireTime = 40000,     -- Maximum hotwire time in milliseconds
 
     -- Police Alert Settings
-    alertCooldown = 10000, -- Cooldown period in milliseconds (10 seconds)
-    policeAlertChance = 0.75, -- Chance of alerting the police during the day
+    alertCooldown = 10000,         -- Cooldown period in milliseconds (10 seconds)
+    policeAlertChance = 0.75,      -- Chance of alerting the police during the day
     policeNightAlertChance = 0.50, -- Chance of alerting the police at night (times: 01-06)
+    policeAlertNightStartHour = 1,
+    policeAlertNightDuration = 5,
 
     vehicleAlarmDuration = 10000,
     lockpickCooldown = 1000,
+    hotwireCooldown = 1000,
 
     -- Job Settings
     sharedKeys = { -- Share keys amongst employees. Employees can lock/unlock any job-listed vehicle
         police = { -- Job name
             requireOnduty = false,
             vehicles = {
-                [`police`] = true, -- Vehicle model
+                [`police`] = true,  -- Vehicle model
                 [`police2`] = true, -- Vehicle model
             }
         },
@@ -173,4 +173,19 @@ return {
             }
         }
     },
+
+    skillCheck = {
+        lockpick = {
+            { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } },
+            { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } }
+        },
+        hotwire = {
+            { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } },
+            { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } }
+        }
+    },
+
+    sharedVehicleClasses = {
+        [VehicleClasses.CYCLES] = true
+    }
 }

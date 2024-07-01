@@ -18,7 +18,7 @@
   },
   "info": {
     "engine": "Motor ein-/ausschalten",
-    "skeys": "~g~[H]~w~ - Nach Schlüssel suchen",
+    "search_keys_dispatch": "[H] - Nach Schlüssel suchen",
     "toggle_locks": "Fahrzeug auf-/zuschließen",
     "vehicle_theft": "Fahrzeugdiebstahl im Gange. Typ: "
   },

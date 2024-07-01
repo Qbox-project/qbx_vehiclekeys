@@ -18,7 +18,7 @@
   },
   "info": {
     "engine": "Zapnout motor",
-    "search_keys": "~g~[H]~w~ - Hledat klíče",
+    "search_keys_dispatch": "[H] - Hledat klíče",
     "toggle_locks": "Zámek od vozidla",
     "vehicle_theft": "Probíhající krádež vozidla. Typ: "
   },
