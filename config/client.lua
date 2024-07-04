@@ -47,6 +47,8 @@ return {
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
     -- Lockpick Settings
+    isSharedVehicleAutolock = true,
+
     removeNormalLockpickChance = { -- Chance to remove lockpick on fail by vehicle class
         [VehicleClasses.COMPACTS] = 0.5,
         [VehicleClasses.SEDANS] = 0.5,

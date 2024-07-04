@@ -8,6 +8,7 @@ local functions = require 'client.functions'
 local hotwire = functions.hotwire
 local toggleEngine = functions.toggleEngine
 local lockpickDoor = functions.lockpickDoor
+local areKeysJobShared = functions.areKeysJobShared
 local getVehicleInFront = functions.getVehicleInFront
 local getIsCloseToCoords = functions.getIsCloseToCoords
 local getIsVehicleShared = functions.getIsVehicleShared
@@ -358,6 +359,17 @@ end)
 AddEventHandler('ox_lib:cache:vehicle', function()
     showHotwiringLabel(cache.vehicle)
 end)
+
+if config.isSharedVehicleAutolock then
+    lib.onCache('vehicle', function (vehicle)
+        if not vehicle then
+            local isShared = areKeysJobShared(cache.vehicle)
+            if isShared then
+                TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(cache.vehicle), 2)
+            end
+        end
+    end)
+end
 
 if config.carjackEnable then
     AddEventHandler('ox_lib:cache:weapon', function()

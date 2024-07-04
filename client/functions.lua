@@ -24,7 +24,7 @@ end
 ---Grants keys for job shared vehicles
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is shared for a player's job, `nil` otherwise.
-local function areKeysJobShared(vehicle)
+function public.areKeysJobShared(vehicle)
     local job = QBX.PlayerData.job.name
     local jobInfo = config.sharedKeys[job]
 
@@ -51,7 +51,7 @@ exports('HasKeys', public.hasKeys)
 ---@return boolean? `true` if player has access to the vehicle, `nil` otherwise.
 function public.getIsVehicleAccessible(vehicle, plate)
     plate = plate or qbx.getVehiclePlate(vehicle)
-    return public.hasKeys(plate) or areKeysJobShared(vehicle)
+    return public.hasKeys(plate) or public.areKeysJobShared(vehicle)
 end
 
 exports('HasAccess', public.getIsVehicleAccessible)
