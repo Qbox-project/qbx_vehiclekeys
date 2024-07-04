@@ -48,6 +48,7 @@ return {
 
     -- Lockpick Settings
     isSharedVehicleAutolock = true,
+    keepVehicleRunning = true,
 
     removeNormalLockpickChance = { -- Chance to remove lockpick on fail by vehicle class
         [VehicleClasses.COMPACTS] = 0.5,

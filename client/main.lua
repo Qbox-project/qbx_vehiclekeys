@@ -114,19 +114,24 @@ local function showHotwiringLabel(vehicle)
         local isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
         -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
         if not (isVehicleAccessible or cache.seat ~= -1) then
-            SetVehicleNeedsToBeHotwired(vehicle, false)
-            setSearchLabelState(true)
-            while not isVehicleAccessible and cache.seat == -1 do
-                SetVehicleEngineOn(cache.vehicle, false, true, true)
-                Wait(0)
-                isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
-            end
+            local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
+            if config.keepVehicleRunning and isVehicleRunning then
+                TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', qbx.getVehiclePlate(vehicle))
+            else
+                SetVehicleNeedsToBeHotwired(vehicle, false)
+                setSearchLabelState(true)
+                while not isVehicleAccessible and cache.seat == -1 do
+                    SetVehicleEngineOn(cache.vehicle, false, true, true)
+                    Wait(0)
+                    isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
+                end
 
-            if lib.progressActive() then
-                lib.cancelProgress()
-            end
+                if lib.progressActive() then
+                    lib.cancelProgress()
+                end
 
-            setSearchLabelState(false)
+                setSearchLabelState(false)
+            end
         end
 
         isShowHotwiringLabelRunning = false
