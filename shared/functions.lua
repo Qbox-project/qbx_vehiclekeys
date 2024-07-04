@@ -46,6 +46,13 @@ function public.getIsVehicleLockpickImmune(vehicle)
     return getIsOnList(GetEntityModel(vehicle), config.lockpickImmuneVehicles)
 end
 
+---Checks the vehicle is always locked at spawn.
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle is locked, `nil` otherwise.
+function public.getIsVehicleInitiallyLocked(vehicle)
+    return getIsOnList(GetEntityModel(vehicle), config.lockedVehicles)
+end
+
 ---Checks if the weapon cannot be used to steal keys from drivers.
 ---@param weaponHash number The current weapon hash.
 ---@return boolean? `true` if the weapon cannot be used to carjacking, `nil` otherwise.

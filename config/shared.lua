@@ -17,6 +17,10 @@ return {
 
     },
 
+    lockedVehicles = {
+
+    },
+
     -- Weapons that cannot be used for carjacking
     noCarjackWeapons = {
         `WEAPON_UNARMED`,
