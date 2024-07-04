@@ -205,7 +205,7 @@ return {
                 [VehicleClasses.EMERGENCY]       = HardLockpickSkillCheck,
                 [VehicleClasses.MILITARY]        = {},                          -- The vehicle class can only be opened with an advanced lockpick
                 [VehicleClasses.COMMERCIAL]      = NormalLockpickSkillCheck,
-                [VehicleClasses.TRAINS]          = {}, 
+                [VehicleClasses.TRAINS]          = {},
                 [VehicleClasses.OPEN_WHEEL]      = EasyLockpickSkillCheck,
             },
             model = {
