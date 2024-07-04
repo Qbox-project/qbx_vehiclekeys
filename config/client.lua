@@ -39,6 +39,10 @@ WeaponTypeGroups = {
     MISC = 4257178988,
 }
 
+EasyLockpickSkillCheck = { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3' } }
+NormalLockpickSkillCheck = { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } }
+HardLockpickSkillCheck = { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 2 }, 'medium' }, { '1', '2', '3', '4' } }
+
 return {
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
@@ -94,11 +98,6 @@ return {
         [VehicleClasses.OPEN_WHEEL] = 0.5
     },
 
-    advancedLockpickVehicleClasses = { -- The vehicle classes can only be opened with an advanced lockpick
-        [VehicleClasses.HELICOPTERS] = true,
-        [VehicleClasses.MILITARY] = true
-    },
-
     -- Carjack Settings
     carjackEnable = true,                -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
     carjackingTimeInMs = 7500,           -- Time it takes to successfully carjack in miliseconds
@@ -117,7 +116,7 @@ return {
     },
 
     -- Hotwire Settings
-    hotwireChance = { -- Chance for a successful hotwire by vehicle Class
+    findKeysChance = { -- Chance for a successful hotwire by vehicle Class
         [VehicleClasses.COMPACTS] = 0.5,
         [VehicleClasses.SEDANS] = 0.5,
         [VehicleClasses.SUVS] = 0.5,
@@ -143,8 +142,8 @@ return {
         [VehicleClasses.OPEN_WHEEL] = 0.5
     },
     timeBetweenHotwires = 5000, -- Time in milliseconds between hotwire attempts
-    minHotwireTime = 20000,     -- Minimum hotwire time in milliseconds
-    maxHotwireTime = 40000,     -- Maximum hotwire time in milliseconds
+    minKeysSearchTime = 20000,  -- Minimum hotwire time in milliseconds
+    maxKeysSearchTime = 40000,  -- Maximum hotwire time in milliseconds
 
     -- Police Alert Settings
     alertCooldown = 10000,         -- Cooldown period in milliseconds (10 seconds)
@@ -174,18 +173,138 @@ return {
         }
     },
 
-    skillCheck = {
-        lockpick = {
-            { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } },
-            { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } }
-        },
-        hotwire = {
-            { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } },
-            { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } }
-        }
-    },
-
     sharedVehicleClasses = {
         [VehicleClasses.CYCLES] = true
+    },
+
+    skillCheck = {
+        lockpick = {
+            default = NormalLockpickSkillCheck,
+            class = {
+                [VehicleClasses.COMPACTS]        = NormalLockpickSkillCheck,
+                [VehicleClasses.SEDANS]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SUVS]            = NormalLockpickSkillCheck,
+                [VehicleClasses.COUPES]          = NormalLockpickSkillCheck,
+                [VehicleClasses.COMPACTS]        = NormalLockpickSkillCheck,
+                [VehicleClasses.SEDANS]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SUVS]            = NormalLockpickSkillCheck,
+                [VehicleClasses.COUPES]          = NormalLockpickSkillCheck,
+                [VehicleClasses.MUSCLE]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SPORTS_CLASSICS] = NormalLockpickSkillCheck,
+                [VehicleClasses.SPORTS]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SUPER]           = NormalLockpickSkillCheck,
+                [VehicleClasses.MOTORCYCLES]     = NormalLockpickSkillCheck,
+                [VehicleClasses.OFF_ROAD]        = NormalLockpickSkillCheck,
+                [VehicleClasses.INDUSTRIAL]      = NormalLockpickSkillCheck,
+                [VehicleClasses.UTILITY]         = NormalLockpickSkillCheck,
+                [VehicleClasses.VANS]            = NormalLockpickSkillCheck,
+                [VehicleClasses.BOATS]           = NormalLockpickSkillCheck,
+                [VehicleClasses.HELICOPTERS]     = {},
+                [VehicleClasses.PLANES]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SERVICE]         = NormalLockpickSkillCheck,
+                [VehicleClasses.EMERGENCY]       = HardLockpickSkillCheck,
+                [VehicleClasses.MILITARY]        = {},                          -- The vehicle class can only be opened with an advanced lockpick
+                [VehicleClasses.COMMERCIAL]      = NormalLockpickSkillCheck,
+                [VehicleClasses.TRAINS]          = {}, 
+                [VehicleClasses.OPEN_WHEEL]      = EasyLockpickSkillCheck,
+            },
+            model = {
+                [`zombiea`] = NormalLockpickSkillCheck
+            }
+        },
+        advancedLockpick = {
+            default = EasyLockpickSkillCheck,
+            class = {
+                [VehicleClasses.COMPACTS]        = EasyLockpickSkillCheck,
+                [VehicleClasses.SEDANS]          = EasyLockpickSkillCheck,
+                [VehicleClasses.SUVS]            = EasyLockpickSkillCheck,
+                [VehicleClasses.COUPES]          = EasyLockpickSkillCheck,
+                [VehicleClasses.MUSCLE]          = EasyLockpickSkillCheck,
+                [VehicleClasses.SPORTS_CLASSICS] = EasyLockpickSkillCheck,
+                [VehicleClasses.SPORTS]          = EasyLockpickSkillCheck,
+                [VehicleClasses.SUPER]           = EasyLockpickSkillCheck,
+                [VehicleClasses.MOTORCYCLES]     = EasyLockpickSkillCheck,
+                [VehicleClasses.OFF_ROAD]        = EasyLockpickSkillCheck,
+                [VehicleClasses.INDUSTRIAL]      = EasyLockpickSkillCheck,
+                [VehicleClasses.UTILITY]         = EasyLockpickSkillCheck,
+                [VehicleClasses.VANS]            = EasyLockpickSkillCheck,
+                [VehicleClasses.BOATS]           = EasyLockpickSkillCheck,
+                [VehicleClasses.HELICOPTERS]     = HardLockpickSkillCheck,
+                [VehicleClasses.PLANES]          = HardLockpickSkillCheck,
+                [VehicleClasses.SERVICE]         = EasyLockpickSkillCheck,
+                [VehicleClasses.EMERGENCY]       = EasyLockpickSkillCheck,
+                [VehicleClasses.MILITARY]        = HardLockpickSkillCheck,
+                [VehicleClasses.COMMERCIAL]      = EasyLockpickSkillCheck,
+                [VehicleClasses.TRAINS]          = {},                         -- The vehicle class can't be opened with an lockpick
+                [VehicleClasses.OPEN_WHEEL]      = EasyLockpickSkillCheck,
+            },
+            model = {
+                [`zombiea`] = EasyLockpickSkillCheck
+            }
+        },
+        hotwire = {
+            default = NormalLockpickSkillCheck,
+            class = {
+                [VehicleClasses.COMPACTS]        = NormalLockpickSkillCheck,
+                [VehicleClasses.SEDANS]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SUVS]            = NormalLockpickSkillCheck,
+                [VehicleClasses.COUPES]          = NormalLockpickSkillCheck,
+                [VehicleClasses.COMPACTS]        = NormalLockpickSkillCheck,
+                [VehicleClasses.SEDANS]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SUVS]            = NormalLockpickSkillCheck,
+                [VehicleClasses.COUPES]          = NormalLockpickSkillCheck,
+                [VehicleClasses.MUSCLE]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SPORTS_CLASSICS] = NormalLockpickSkillCheck,
+                [VehicleClasses.SPORTS]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SUPER]           = NormalLockpickSkillCheck,
+                [VehicleClasses.MOTORCYCLES]     = NormalLockpickSkillCheck,
+                [VehicleClasses.OFF_ROAD]        = NormalLockpickSkillCheck,
+                [VehicleClasses.INDUSTRIAL]      = NormalLockpickSkillCheck,
+                [VehicleClasses.UTILITY]         = NormalLockpickSkillCheck,
+                [VehicleClasses.VANS]            = NormalLockpickSkillCheck,
+                [VehicleClasses.BOATS]           = NormalLockpickSkillCheck,
+                [VehicleClasses.HELICOPTERS]     = {},
+                [VehicleClasses.PLANES]          = NormalLockpickSkillCheck,
+                [VehicleClasses.SERVICE]         = NormalLockpickSkillCheck,
+                [VehicleClasses.EMERGENCY]       = HardLockpickSkillCheck,
+                [VehicleClasses.MILITARY]        = {},
+                [VehicleClasses.COMMERCIAL]      = NormalLockpickSkillCheck,
+                [VehicleClasses.TRAINS]          = {},
+                [VehicleClasses.OPEN_WHEEL]      = EasyLockpickSkillCheck,
+            },
+            model = {
+                [`zombiea`] = NormalLockpickSkillCheck
+            }
+        },
+        advancedHotwire = {
+            default = EasyLockpickSkillCheck,
+            class = {
+                [VehicleClasses.COMPACTS]        = EasyLockpickSkillCheck,
+                [VehicleClasses.SEDANS]          = EasyLockpickSkillCheck,
+                [VehicleClasses.SUVS]            = EasyLockpickSkillCheck,
+                [VehicleClasses.COUPES]          = EasyLockpickSkillCheck,
+                [VehicleClasses.MUSCLE]          = EasyLockpickSkillCheck,
+                [VehicleClasses.SPORTS_CLASSICS] = EasyLockpickSkillCheck,
+                [VehicleClasses.SPORTS]          = EasyLockpickSkillCheck,
+                [VehicleClasses.SUPER]           = EasyLockpickSkillCheck,
+                [VehicleClasses.MOTORCYCLES]     = EasyLockpickSkillCheck,
+                [VehicleClasses.OFF_ROAD]        = EasyLockpickSkillCheck,
+                [VehicleClasses.INDUSTRIAL]      = EasyLockpickSkillCheck,
+                [VehicleClasses.UTILITY]         = EasyLockpickSkillCheck,
+                [VehicleClasses.VANS]            = EasyLockpickSkillCheck,
+                [VehicleClasses.BOATS]           = EasyLockpickSkillCheck,
+                [VehicleClasses.HELICOPTERS]     = HardLockpickSkillCheck,
+                [VehicleClasses.PLANES]          = HardLockpickSkillCheck,
+                [VehicleClasses.SERVICE]         = EasyLockpickSkillCheck,
+                [VehicleClasses.EMERGENCY]       = EasyLockpickSkillCheck,
+                [VehicleClasses.MILITARY]        = HardLockpickSkillCheck,
+                [VehicleClasses.COMMERCIAL]      = EasyLockpickSkillCheck,
+                [VehicleClasses.TRAINS]          = {},                         -- The vehicle class can't be hotwired
+                [VehicleClasses.OPEN_WHEEL]      = EasyLockpickSkillCheck,
+            },
+            model = {
+                [`zombiea`] = EasyLockpickSkillCheck
+            }
+        }
     }
 }

@@ -60,7 +60,7 @@ end
 exports('SetVehicleDoorLock', setVehicleDoorLock)
 
 local function findKeys(vehicleClass, plate)
-    local hotwireTime = math.random(config.minHotwireTime, config.maxHotwireTime)
+    local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
 
     if lib.progressCircle({
         duration = hotwireTime,
@@ -78,7 +78,7 @@ local function findKeys(vehicleClass, plate)
             combat = true,
         }
     }) then
-        if math.random() <= config.hotwireChance[vehicleClass] then
+        if math.random() <= config.findKeysChance[vehicleClass] then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
         else
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
