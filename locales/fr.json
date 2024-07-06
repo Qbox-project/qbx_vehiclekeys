@@ -18,7 +18,7 @@
   },
   "info": {
     "engine": "Allumer/Eteindre le moteur",
-    "skeys": "~g~[H]~w~ - Chercher les clés",
+    "search_keys_dispatch": "[H] - Chercher les clés",
     "toggle_locks": "Verrouiller/Déverrouiller le véhicule",
     "vehicle_theft": "Vol de véhicule en cours. Type: "
   },
