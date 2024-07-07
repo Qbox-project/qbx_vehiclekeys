@@ -365,15 +365,21 @@ AddEventHandler('ox_lib:cache:vehicle', function()
     showHotwiringLabel(cache.vehicle)
 end)
 
-if config.isSharedVehicleAutolock then
-    lib.onCache('vehicle', function (vehicle)
-        if not vehicle then
-            local isShared = areKeysJobShared(cache.vehicle)
-            if isShared then
-                TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(cache.vehicle), 2)
+for _, info in pairs(config.sharedKeys) do
+    if info.enableAutolock then
+        lib.onCache('vehicle', function (vehicle)
+            local leftVehicle = cache.vehicle
+            if not vehicle and leftVehicle then
+                local isShared = areKeysJobShared(leftVehicle)
+                local isAutolockEnabled = config.sharedKeys[QBX.PlayerData.job.name].enableAutolock
+
+                if isShared and isAutolockEnabled then
+                    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(leftVehicle), 2)
+                end
             end
-        end
-    end)
+        end)
+        break;
+    end
 end
 
 if config.carjackEnable then

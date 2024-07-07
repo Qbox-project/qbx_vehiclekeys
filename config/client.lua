@@ -47,7 +47,6 @@ return {
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
     -- Lockpick Settings
-    isSharedVehicleAutolock = true,
     keepVehicleRunning = true,
 
     removeNormalLockpickChance = { -- Chance to remove lockpick on fail by vehicle class
@@ -162,6 +161,7 @@ return {
     -- Job Settings
     sharedKeys = { -- Share keys amongst employees. Employees can lock/unlock any job-listed vehicle
         police = { -- Job name
+            enableAutolock = true,
             requireOnduty = false,
             vehicles = {
                 [`police`] = true,  -- Vehicle model
