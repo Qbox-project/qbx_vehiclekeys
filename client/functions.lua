@@ -13,6 +13,35 @@ public.getIsVehicleCarjackingImmune = getIsVehicleCarjackingImmune -- to prevent
 public.getIsVehicleLockpickImmune = getIsVehicleLockpickImmune
 public.getIsBlacklistedWeapon = getIsBlacklistedWeapon
 
+local function getVehicleInDirection(coordFromOffset, coordToOffset)
+    local coordFrom = GetOffsetFromEntityInWorldCoords(cache.ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
+    local coordTo = GetOffsetFromEntityInWorldCoords(cache.ped, coordToOffset.x, coordToOffset.y, coordToOffset.z)
+    local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, cache.ped, 0)
+    local _, _, _, _, vehicle = GetShapeTestResult(rayHandle)
+    return vehicle
+end
+
+-- If in vehicle returns that, otherwise tries 3 different raycasts to get the vehicle they are facing.
+-- Raycasts picture: https://i.imgur.com/FRED0kV.png
+function public.getVehicleInFront()
+    if cache.vehicle then
+        return cache.vehicle
+    end
+    local raycastOffsetTable = {
+        { fromOffset = vec3(0.0, 0.0, 0.0), toOffset = vec3(0.0, 20.0, -10.0) }, -- Waist to ground 45 degree angle
+        { fromOffset = vec3(0.0, 0.0, 0.7), toOffset = vec3(0.0, 10.0, -10.0) }, -- Head to ground 30 degree angle
+        { fromOffset = vec3(0.0, 0.0, 0.7), toOffset = vec3(0.0, 10.0, -20.0) }, -- Head to ground 15 degree angle
+    }
+
+    for i = 1, #raycastOffsetTable do
+        local vehicle = getVehicleInDirection(raycastOffsetTable[i]['fromOffset'], raycastOffsetTable[i]['toOffset'])
+
+        if IsEntityAVehicle(vehicle) then
+            return vehicle
+        end
+    end
+end
+
 ---Checks if player has vehicle keys
 ---@param plate string The plate number of the vehicle.
 ---@return boolean? `true` if player has vehicle keys, `nil` otherwise.
@@ -227,19 +256,6 @@ function public.hotwire(isAdvancedLockedpick, customChallenge)
     end)
 
     isHotwiringProcessLocked = false -- end of the critical section
-end
-
----Get a vehicle in the players scope by the plate
----@param plate string
----@return integer?
-function public.getVehicleByPlate(plate)
-    local vehicles = GetGamePool('CVehicle')
-    for i = 1, #vehicles do
-        local vehicle = vehicles[i]
-        if qbx.getVehiclePlate(vehicle) == plate then
-            return vehicle
-        end
-    end
 end
 
 ---Grants keys for job shared vehicles

@@ -8,10 +8,10 @@ local functions = require 'client.functions'
 local hasKeys = functions.hasKeys
 local hotwire = functions.hotwire
 local lockpickDoor = functions.lockpickDoor
+local getVehicleInFront = functions.getVehicleInFront
 local attemptPoliceAlert = functions.attemptPoliceAlert
 local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
-local getVehicleByPlate = functions.getVehicleByPlate
 local areKeysJobShared = functions.areKeysJobShared
 local getIsVehicleLockpickImmune = functions.getIsVehicleLockpickImmune
 local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
@@ -26,48 +26,6 @@ local isCarjackingAvailable = true
 -----------------------
 ----   Functions   ----
 -----------------------
-
-local function giveKeys(id, plate)
-    local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(id))))
-    if distance < 3 then
-        if not hasKeys(plate) then
-            return exports.qbx_core:Notify(locale('notify.no_keys'))
-        end
-        TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
-        exports.qbx_core:Notify(locale('notify.gave_keys'))
-    else
-        exports.qbx_core:Notify(locale('notify.not_near'), 'error')
-    end
-end
-
-local function getVehicleInDirection(coordFromOffset, coordToOffset)
-    local coordFrom = GetOffsetFromEntityInWorldCoords(cache.ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
-    local coordTo = GetOffsetFromEntityInWorldCoords(cache.ped, coordToOffset.x, coordToOffset.y, coordToOffset.z)
-    local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, cache.ped, 0)
-    local _, _, _, _, vehicle = GetShapeTestResult(rayHandle)
-    return vehicle
-end
-
--- If in vehicle returns that, otherwise tries 3 different raycasts to get the vehicle they are facing.
--- Raycasts picture: https://i.imgur.com/FRED0kV.png
-local function getVehicle()
-    if cache.vehicle then
-        return cache.vehicle
-    end
-    local raycastOffsetTable = {
-        { fromOffset = vec3(0.0, 0.0, 0.0), toOffset = vec3(0.0, 20.0, -10.0) }, -- Waist to ground 45 degree angle
-        { fromOffset = vec3(0.0, 0.0, 0.7), toOffset = vec3(0.0, 10.0, -10.0) }, -- Head to ground 30 degree angle
-        { fromOffset = vec3(0.0, 0.0, 0.7), toOffset = vec3(0.0, 10.0, -20.0) }, -- Head to ground 15 degree angle
-    }
-
-    for i = 1, #raycastOffsetTable do
-        local vehicle = getVehicleInDirection(raycastOffsetTable[i]['fromOffset'], raycastOffsetTable[i]['toOffset'])
-
-        if IsEntityAVehicle(vehicle) then
-            return vehicle
-        end
-    end
-end
 
 ---manages the opening of locks
 ---@param vehicle number? The entity number of the vehicle.
@@ -111,17 +69,6 @@ local function setVehicleDoorLock(vehicle, state, anim)
 end
 
 exports('SetVehicleDoorLock', setVehicleDoorLock)
-
-local function getOtherPlayersInVehicle(vehicle)
-    local otherPlayers = {}
-    for seat = -1, GetVehicleModelNumberOfSeats(GetEntityModel(vehicle)) - 2 do
-        local pedInSeat = GetPedInVehicleSeat(vehicle, seat)
-        if pedInSeat ~= cache.ped and IsPedAPlayer(pedInSeat) then
-            otherPlayers[#otherPlayers + 1] = GetPlayerServerId(NetworkGetPlayerIndexFromPed(pedInSeat))
-        end
-    end
-    return otherPlayers
-end
 
 local function getPedsInVehicle(vehicle)
     local otherPeds = {}
@@ -357,7 +304,7 @@ togglelocksBind = lib.addKeybind({
     defaultKey = 'L',
     onPressed = function()
         togglelocksBind:disable(true)
-        setVehicleDoorLock(getVehicle(), nil, true)
+        setVehicleDoorLock(getVehicleInFront(), nil, true)
         Wait(1000)
         togglelocksBind:disable(false)
     end
@@ -404,32 +351,6 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
                 isTakingKeys = false
             end
         end
-    end
-end)
-
-RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
-    local vehicle = plate and getVehicleByPlate(plate) or cache.vehicle or getVehicle()
-    if not vehicle then return end
-    plate = plate or qbx.getVehiclePlate(vehicle)
-    if not hasKeys(plate) then
-        return exports.qbx_core:Notify(locale('notify.no_keys'), 'error')
-    end
-
-    if id and type(id) == 'number' then                         -- Give keys to specific ID
-        giveKeys(id, plate)
-    elseif IsPedSittingInVehicle(cache.ped, vehicle) then -- Give keys to everyone in vehicle
-        local otherOccupants = getOtherPlayersInVehicle(vehicle)
-        if not hasKeys(qbx.getVehiclePlate(vehicle)) then
-            return exports.qbx_core:Notify(locale('notify.no_keys'))
-        end
-
-        for p = 1, #otherOccupants do
-            TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', otherOccupants[p], plate)
-        end
-        exports.qbx_core:Notify(locale('notify.gave_keys'))
-    else                                                        -- Give keys to closest player
-        local playerId = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
-        giveKeys(playerId, plate)
     end
 end)
 
