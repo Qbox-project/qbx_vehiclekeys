@@ -18,7 +18,7 @@
   },
   "info": {
     "engine": "Ativar/Desativar Motor",
-    "search_keys": "~g~[H]~w~ - Procurar por Chaves",
+    "search_keys_dispatch": "[H] - Procurar por Chaves",
     "toggle_locks": "Alternar Fechaduras do Veículo",
     "vehicle_theft": "Roubo de veículo em andamento. Tipo: "
   },

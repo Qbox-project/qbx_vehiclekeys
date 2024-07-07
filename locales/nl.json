@@ -18,7 +18,7 @@
   },
   "info": {
     "engine": "Zet motor aan/uit",
-    "search_keys": "~g~[H]~w~ - Zoek Sleutels",
+    "search_keys_dispatch": "[H] - Zoek Sleutels",
     "toggle_locks": "Zet auto op slot of haal hem van het slot af",
     "vehicle_theft": "Voertuigdiefstal bezig. Type: "
   },

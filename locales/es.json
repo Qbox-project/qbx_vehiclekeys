@@ -18,7 +18,7 @@
   },
   "info": {
     "engine": "Encender/apagar motor",
-    "search_keys": "[H] - Buscar llaves",
+    "search_keys_dispatch": "[H] - Buscar llaves",
     "toggle_locks": "Habilitar/deshabilitar seguro de carro",
     "vehicle_theft": "Robo de vehículo en progreso. Tipo: "
   },

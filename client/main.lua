@@ -196,7 +196,7 @@ local function showHotwiringLabel()
                         end
 
                         qbx.drawText3d({
-                            text = locale('info.search_keys'),
+                            text = locale('info.search_keys_dispatch'),
                             coords = GetOffsetFromEntityInWorldCoords(cache.vehicle, 0.0, 1.0, 0.5)
                         })
                     end
