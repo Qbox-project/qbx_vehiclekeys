@@ -368,6 +368,9 @@ AddEventHandler('ox_lib:cache:vehicle', function()
     showHotwiringLabel(cache.vehicle)
 end)
 
+lib.onCache('vehicle', function (vehicle) ---for some reason the autolock works with this
+end)
+
 for _, info in pairs(config.sharedKeys) do
     if info.enableAutolock then
         lib.onCache('vehicle', function (vehicle)
