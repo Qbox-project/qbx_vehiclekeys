@@ -120,7 +120,7 @@ return {
     },
 
     -- Hotwire Settings
-    hotwireChance = { -- Chance for a successful hotwire by vehicle Class
+    findKeysChance = { -- Chance for a successful hotwire by vehicle Class
         [VehicleClasses.COMPACTS] = 0.5,
         [VehicleClasses.SEDANS] = 0.5,
         [VehicleClasses.SUVS] = 0.5,
@@ -146,8 +146,8 @@ return {
         [VehicleClasses.OPEN_WHEEL] = 0.5
     },
     timeBetweenHotwires = 5000, -- Time in milliseconds between hotwire attempts
-    minHotwireTime = 20000, -- Minimum hotwire time in milliseconds
-    maxHotwireTime = 40000, -- Maximum hotwire time in milliseconds
+    minKeysSearchTime = 20000,  -- Minimum hotwire time in milliseconds
+    maxKeysSearchTime = 40000,  -- Maximum hotwire time in milliseconds
 
     -- Police Alert Settings
     alertCooldown = 10000, -- Cooldown period in milliseconds (10 seconds)
@@ -156,6 +156,7 @@ return {
 
     vehicleAlarmDuration = 10000,
     lockpickCooldown = 1000,
+    searchKeysCooldown = 1000,
 
     -- Job Settings
     sharedKeys = { -- Share keys amongst employees. Employees can lock/unlock any job-listed vehicle
@@ -173,4 +174,8 @@ return {
             }
         }
     },
+
+    sharedVehicleClasses = {
+        [VehicleClasses.CYCLES] = true
+    }
 }
