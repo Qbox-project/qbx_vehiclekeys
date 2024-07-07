@@ -253,7 +253,10 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     islockpickingProcessLocked = true -- one call per player at a time
 
     CreateThread(function()
-        lib.playAnim(cache.ped, 'veh@break_in@0h@p_m_one@', "low_force_entry_ds", 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
+        local anim = config.anims.lockpick.model[GetEntityModel(vehicle)]
+            or config.anims.lockpick.model[GetVehicleClass(vehicle)]
+            or config.anims.lockpick.default
+        lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
         local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig[1], skillCheckConfig[2])
 
         if getIsVehicleInRange(vehicle, maxDistance) then -- the action will be aborted if the opened vehicle is too far.
@@ -305,7 +308,10 @@ function public.hotwire(vehicle, isAdvancedLockedpick, customChallenge)
     isHotwiringProcessLocked = true -- one call per player at a time
 
     CreateThread(function()
-        lib.playAnim(cache.ped, 'anim@veh@plane@howard@front@ds@base', "hotwire", 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
+        local anim = config.anims.hotwire.model[GetEntityModel(vehicle)]
+        or config.anims.hotwire.model[GetVehicleClass(vehicle)]
+        or config.anims.hotwire.default
+        lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
         local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig[1], skillCheckConfig[2])
 
         hotwireCallback(vehicle, isAdvancedLockedpick, isSuccess)

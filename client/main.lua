@@ -60,19 +60,19 @@ end
 
 exports('SetVehicleDoorLock', setVehicleDoorLock)
 
-local function findKeys(vehicleClass, plate)
+local function findKeys(vehicleModel, vehicleClass, plate)
     local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
 
+    local anim = config.anims.lockpick.model[vehicleModel]
+        or config.anims.lockpick.model[vehicleClass]
+        or config.anims.lockpick.default
     if lib.progressCircle({
         duration = hotwireTime,
         label = locale('progress.searching_keys'),
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
-        anim = {
-            dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@',
-            clip = 'machinic_loop_mechandplayer'
-        },
+        anim = anim,
         disable = {
             move = true,
             car = true,
@@ -159,7 +159,10 @@ local function carjackVehicle(target)
         local occupant = occupants[p]
         CreateThread(function()
             Wait(math.random(100, 600)) --Random reaction time to increase realism
-            lib.playAnim(occupant, 'mp_am_hold_up', 'holdup_victim_20s', 8.0, -8.0, -1, 49, 0, false, false, false)
+            local anim = config.anims.holdup.model[GetEntityModel(vehicle)]
+                or config.anims.holdup.model[GetVehicleClass(vehicle)]
+                or config.anims.holdup.default
+            lib.playAnim(occupant, anim.dict, anim.clip, 8.0, -8.0, -1, 49, 0, false, false, false)
             PlayPain(occupant, 6, 0)
         end)
     end
@@ -298,7 +301,7 @@ lib.addKeybind({
             local vehicle = cache.vehicle
             local plate = qbx.getVehiclePlate(vehicle)
             if not getIsVehicleAccessible(vehicle, plate) then
-                findKeys(GetVehicleClass(vehicle), plate)
+                findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), plate)
                 SetTimeout(10000, function()
                     sendPoliceAlertAttempt('steal')
                 end)
