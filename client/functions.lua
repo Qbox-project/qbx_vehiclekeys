@@ -117,15 +117,11 @@ local alertSend = false --Variable strictly related to sendPoliceAlertAttempt, n
 function public.sendPoliceAlertAttempt(type)
     if alertSend then return end
     alertSend = true
-    local chance
+
     local hoursOffset = (24 + GetClockHours() - config.policeAlertNightStartHour) % 24; --Hour from the start of the night hours
-    if hoursOffset > config.policeAlertNightDuration then
-        chance = config.policeAlertChance
-        lib.print.debug('day hours')
-    else
-        chance = config.policeNightAlertChance
-        lib.print.debug('night hours')
-    end
+    local chance = hoursOffset > config.policeAlertNightDuration
+        and config.policeAlertChance
+        or config.policeNightAlertChance
 
     if math.random() <= chance then
         TriggerServerEvent('police:server:policeAlert', locale("info.vehicle_theft") .. type)
