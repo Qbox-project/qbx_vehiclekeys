@@ -1,7 +1,11 @@
 return {
-    sharedVehicles = {},
+    sharedVehicles = {
+        -- `stockade` -- example
+    },
 
-    sharedVehicleTypes = {},
+    sharedVehicleTypes = {
+        'bike'
+    },
 
     -- Vehicles that will never lock example:
     noLockVehicles = {
@@ -14,11 +18,11 @@ return {
     },
 
     lockpickImmuneVehicles = {
-
+        -- `stockade` -- example
     },
 
     lockedVehicles = {
-
+        -- `stockade` -- example
     },
 
     -- Weapons that cannot be used for carjacking
@@ -55,6 +59,6 @@ return {
     },
 
     noLockVehicleTypes = {
-        'bike'
+        -- 'boat' -- example
     }
 }
