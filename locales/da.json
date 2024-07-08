@@ -1,0 +1,51 @@
+{
+  "addcom": {
+    "addkeys": "tilføjnøgler",
+    "addkeys_help": "Tilføjer nøgler til et køretøj for nogen.",
+    "addkeys_id": "id",
+    "addkeys_id_help": "Spiller ID",
+    "addkeys_plate": "nummerplade",
+    "addkeys_plate_help": "Nummerplade",
+    "givekeys": "givede nøgler",
+    "givekeys_help": "Overlever nøglerne til nogen. Hvis der ikke er nogen ID, gives de til den nærmeste person eller alle i køretøjet.",
+    "givekeys_id": "id",
+    "givekeys_id_help": "Spiller ID",
+    "givekeys_plate": "nummerplade",
+    "givekeys_plate_help": "Nummerplade",
+    "removekeys": "fjernnøgler",
+    "removekeys_help": "Fjerner nøgler til et køretøj for nogen.",
+    "removekeys_id": "id",
+    "removekeys_id_help": "Spiller ID",
+    "removekeys_plate": "nummerplade",
+    "removekeys_plate_help": "Nummerplade"
+  },
+  "info": {
+    "engine": "Tænd/sluk motor",
+    "search_keys": "~g~[H]~w~ - Søg efter nøgler",
+    "toggle_locks": "Lås/oplås køretøj",
+    "vehicle_theft": "Køretøjstyveri i gang. Type: "
+  },
+  "notify": {
+    "carjack_failed": "Bilkapring mislykkedes!",
+    "failed_lockedpick": "Du kunne ikke dirke låsen op.",
+    "failed_keys": "Du kunne ikke finde nøglerne og bliver frustreret.",
+    "fpid": "Udfyld spiller ID og nummerplade argumenterne",
+    "gave_keys": "Du overleverer nøglerne.",
+    "added_keys": "Du gav en kopi af nøglerne til køretøj %s til spiller %s!",
+    "keys_taken": "Du får nøgler til køretøjet!",
+    "keys_removed": "Du har mistet nøglerne til køretøjet!",
+    "no_keys": "Du har ikke nøgler til dette køretøj.",
+    "not_near": "Der er ingen i nærheden at overlevere nøgler til",
+    "vehicle_locked": "Køretøj låst!",
+    "vehicle_lockedpick": "Du lykkedes med at dirke dørlåsen op!",
+    "vehicle_unlocked": "Køretøj oplåst!",
+    "removed_keys": "Nøglerne til nummerplade %s for spiller %s er blevet fjernet!",
+    "removed_keys_player": "Dine nøgler til nummerplade %s er blevet fjernet!",
+    "player_offline": "Denne spiller er ikke online!"
+  },
+  "progress": {
+    "attempting_carjack": "Forsøger bilkapring...",
+    "searching_keys": "Søger efter bilnøgler...",
+    "takekeys": "Tager nøgler fra kroppen..."
+  }
+}
