@@ -29,9 +29,6 @@ end
 local function giveKeys(id, plate)
     local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(id))))
     if distance < 3 then
-        if not hasKeys(plate) then
-            return exports.qbx_core:Notify(locale('notify.no_keys'))
-        end
         TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', id, plate)
         exports.qbx_core:Notify(locale('notify.gave_keys'))
     else
@@ -51,10 +48,6 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
         giveKeys(id, plate)
     elseif IsPedSittingInVehicle(cache.ped, vehicle) then -- Give keys to everyone in vehicle
         local otherOccupants = getOtherPlayersInVehicle(vehicle)
-        if not hasKeys(qbx.getVehiclePlate(vehicle)) then
-            return exports.qbx_core:Notify(locale('notify.no_keys'))
-        end
-
         for p = 1, #otherOccupants do
             TriggerServerEvent('qb-vehiclekeys:server:GiveVehicleKeys', otherOccupants[p], plate)
         end
