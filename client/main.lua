@@ -20,7 +20,6 @@ local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 ----   Variables   ----
 -----------------------
 
-local isTakingKeys = false
 local isCarjackingAvailable = true
 
 -----------------------
@@ -323,35 +322,30 @@ engineBind = lib.addKeybind({
     end
 })
 
+local isTakingKeys = false
 RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
-    if not LocalPlayer.state.isLoggedIn and data.event ~= 'Entering' then return end
-    if getIsVehicleAlwaysUnlocked(data.vehicle) then return end
+    if not LocalPlayer.state.isLoggedIn or data.event ~= 'Entering' then return end
+    if getIsVehicleAlwaysUnlocked(data.vehicle) or isTakingKeys then return end
+    isTakingKeys = true
     local isVehicleImmune = getIsVehicleCarjackingImmune(data.vehicle)
     local driver = GetPedInVehicleSeat(data.vehicle, -1)
-    local plate = qbx.getVehiclePlate(data.vehicle)
 
-    if driver ~= 0 and not (isVehicleImmune or IsPedAPlayer(driver) or hasKeys(plate)) then
-        if IsEntityDead(driver) then
-            if not isTakingKeys then
-                isTakingKeys = true
-
-                TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
-                if lib.progressCircle({
-                    duration = 2500,
-                    label = locale('progress.takekeys'),
-                    position = 'bottom',
-                    useWhileDead = false,
-                    canCancel = true,
-                    disable = {
-                        car = true,
-                    },
-                }) then
-                    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
-                end
-                isTakingKeys = false
-            end
+    if driver ~= 0 and IsEntityDead(driver) and not (isVehicleImmune or IsPedAPlayer(driver)) then
+        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
+        if lib.progressCircle({
+            duration = 2500,
+            label = locale('progress.takekeys'),
+            position = 'bottom',
+            useWhileDead = false,
+            canCancel = true,
+            disable = {
+                car = true,
+            },
+        }) then
+            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', qbx.getVehiclePlate(data.vehicle))
         end
     end
+    isTakingKeys = false
 end)
 
 RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
