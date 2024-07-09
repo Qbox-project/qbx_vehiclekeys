@@ -57,18 +57,25 @@ AddEventHandler('playerDropped', function()
 end)
 
 ---Lock every spawned vehicle
----@param vehicle number The entity number of the vehicle.
-AddEventHandler('entityCreated', function (vehicle)
-    if not vehicle
-        or type(vehicle) ~= 'number'
-        or not DoesEntityExist(vehicle)
-        or GetEntityPopulationType(vehicle) > 5
-        or GetEntityType(vehicle) ~= 2
+---@param entity number The entity number of the vehicle.
+AddEventHandler('entityCreated', function (entity)
+    if not entity
+        or type(entity) ~= 'number'
+        or not DoesEntityExist(entity)
+        or GetEntityPopulationType(entity) > 5
     then return end
-    local isDriver = GetPedInVehicleSeat(vehicle, -1) ~= 0
+
+    local type = GetEntityType(entity)
+
+    if type ~= 2 and type ~= 1 then
+        return
+    end
+
+    local vehicle = type == 1 and GetVehiclePedIsIn(entity, false) or entity
+
+    local chance = math.random()
     local isLocked = getIsVehicleLockpickImmune(vehicle)
-        or ((config.lockNPCDrivenCars and isDriver) or (config.lockNPCParkedCars and not isDriver))
+        or (getIsVehicleInitiallyLocked(vehicle) or (type == 1 and chance < config.lockNPCDrivenCarsChance) or (type == 2 and chance < config.lockNPCParkedCarsChance))
         and not(getIsVehicleTypeAlwaysUnlocked(vehicle) or getIsVehicleAlwaysUnlocked(vehicle))
-        and (math.random() < config.lockedVehicleChance or getIsVehicleInitiallyLocked(vehicle))
     SetVehicleDoorsLocked(vehicle, isLocked and 2 or 1)
 end)
