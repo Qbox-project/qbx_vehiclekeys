@@ -63,7 +63,7 @@ function public.getIsVehicleAlwaysUnlocked(vehicle)
     return getIsVehicleAlwaysUnlocked(vehicle)
 end
 
-function public.attemptPoliceAlert(type)
+function public.sendPoliceAlertAttempt(type)
     if not alertSend then
         alertSend = true
         local chance = config.policeAlertChance
@@ -163,7 +163,7 @@ local function lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
     if isSuccess then
         lockpickSuccessCallback(vehicle)
     else -- if player fails quickevent
-        public.attemptPoliceAlert('carjack')
+        public.sendPoliceAlertAttempt('carjack')
         SetVehicleAlarm(vehicle, false)
         SetVehicleAlarmTimeLeft(vehicle, config.vehicleAlarmDuration)
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
@@ -232,7 +232,7 @@ local function hotwireCallback(vehicle, isAdvancedLockedpick, isSuccess)
     if isSuccess then
         hotwireSuccessCallback(vehicle)
     else -- if player fails quickevent
-        public.attemptPoliceAlert('carjack')
+        public.sendPoliceAlertAttempt('carjack')
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         exports.qbx_core:Notify(locale('notify.failed_lockedpick'), 'error')
     end

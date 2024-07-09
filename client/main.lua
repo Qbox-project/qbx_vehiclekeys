@@ -9,7 +9,7 @@ local hasKeys = functions.hasKeys
 local hotwire = functions.hotwire
 local lockpickDoor = functions.lockpickDoor
 local getVehicleInFront = functions.getVehicleInFront
-local attemptPoliceAlert = functions.attemptPoliceAlert
+local sendPoliceAlertAttempt = functions.sendPoliceAlertAttempt
 local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local areKeysJobShared = functions.areKeysJobShared
@@ -136,7 +136,7 @@ local function showHotwiringLabel()
                                 findKeys(GetVehicleClass(cache.vehicle), plate)
                                 Wait(config.timeBetweenHotwires)
                                 SetTimeout(10000, function()
-                                    attemptPoliceAlert('steal')
+                                    sendPoliceAlertAttempt('steal')
                                 end)
                                 isSearchAllowed = true
                             end)
@@ -237,7 +237,7 @@ local function carjackVehicle(target)
             end
             isCarjacking = false
             Wait(2000)
-            attemptPoliceAlert('carjack')
+            sendPoliceAlertAttempt('carjack')
         end
     else
         ClearPedTasks(target)
