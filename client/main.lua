@@ -169,9 +169,9 @@ local function carjackVehicle(target)
 
     --Cancel progress bar if: Ped dies during robbery, car gets too far away
     CreateThread(function()
-        while isCarjacking and lib.progressActive() do
+        while isCarjacking do
             local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(target))
-            if IsPedDeadOrDying(target, false) or distance > 7.5 then
+            if (IsPedDeadOrDying(target, false) or distance > 7.5) and lib.progressActive() then
                 lib.cancelProgress()
             end
             Wait(100)
