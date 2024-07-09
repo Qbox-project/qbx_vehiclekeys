@@ -1,7 +1,3 @@
------------------------
-----    Imports    ----
------------------------
-
 local config = require 'config.server'
 local functions = require 'server.functions'
 local sharedFunctions = require 'shared.functions'
@@ -14,9 +10,13 @@ local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
 local getIsVehicleInitiallyLocked = sharedFunctions.getIsVehicleInitiallyLocked
 local getIsVehicleTypeAlwaysUnlocked = sharedFunctions.getIsVehicleTypeAlwaysUnlocked
 
------------------------
-----    Events     ----
------------------------
+---@enum EntityType
+local EntityType = {
+    NoEntity = 0,
+    Ped = 1,
+    Vehicle = 2,
+    Object = 3
+}
 
 -- Event to give keys. receiver can either be a single id, or a table of ids.
 -- Must already have keys to the vehicle, trigger the event from the server, or pass forcegive paramter as true.
@@ -67,15 +67,17 @@ AddEventHandler('entityCreated', function (entity)
 
     local type = GetEntityType(entity)
 
-    if type ~= 2 and type ~= 1 then
+    if type ~= EntityType.Ped and type ~= EntityType.Vehicle then
         return
     end
 
-    local vehicle = type == 1 and GetVehiclePedIsIn(entity, false) or entity
+    local vehicle = type == EntityType.Ped and GetVehiclePedIsIn(entity, false) or entity
 
     local chance = math.random()
     local isLocked = getIsVehicleLockpickImmune(vehicle)
-        or (getIsVehicleInitiallyLocked(vehicle) or (type == 1 and chance < config.lockNPCDrivenCarsChance) or (type == 2 and chance < config.lockNPCParkedCarsChance))
+        or (getIsVehicleInitiallyLocked(vehicle)
+            or (type == EntityType.Ped and chance < config.lockNPCDrivenCarsChance)
+            or (type == EntityType.Vehicle and chance < config.lockNPCParkedCarsChance))
         and not(getIsVehicleTypeAlwaysUnlocked(vehicle) or getIsVehicleAlwaysUnlocked(vehicle))
     SetVehicleDoorsLocked(vehicle, isLocked and 2 or 1)
 end)
