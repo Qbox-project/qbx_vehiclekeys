@@ -188,7 +188,7 @@ local function carjackVehicle(target)
     CreateThread(function()
         while isCarjacking do
             local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(target))
-            if IsPedDeadOrDying(target, false) or distance > 7.5 then
+            if (IsPedDeadOrDying(target, false) or distance > 7.5) and lib.progressActive() then
                 lib.cancelProgress()
             end
             Wait(100)
