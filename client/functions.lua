@@ -13,6 +13,69 @@ public.getIsVehicleCarjackingImmune = getIsVehicleCarjackingImmune -- to prevent
 public.getIsVehicleLockpickImmune = getIsVehicleLockpickImmune
 public.getIsBlacklistedWeapon = getIsBlacklistedWeapon
 
+---Grants keys for job shared vehicles
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle is shared for a player's job, `nil` otherwise.
+function public.areKeysJobShared(vehicle)
+    local job = QBX.PlayerData.job.name
+    local jobInfo = config.sharedKeys[job]
+
+    if not jobInfo or (jobInfo.requireOnduty and not QBX.PlayerData.job.onduty) then return end
+
+    assert(jobInfo.vehicles, string.format('Vehicles not configured for the %s job.', job))
+
+    if not jobInfo.vehicles[GetEntityModel(vehicle)] then return end
+
+    local vehPlate = qbx.getVehiclePlate(vehicle)
+    if not public.hasKeys(vehPlate) then
+        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', vehPlate)
+    end
+
+    return true
+end
+
+---Checks if player has vehicle keys
+---@param plate string The plate number of the vehicle.
+---@return boolean? `true` if player has vehicle keys, `nil` otherwise.
+function public.hasKeys(plate)
+    local keysList = LocalPlayer.state.keysList or {}
+    return keysList[plate]
+end
+
+exports('HasKeys', public.hasKeys)
+
+function public.toggleEngine()
+    local vehicle = cache.vehicle
+    if vehicle and public.hasKeys(qbx.getVehiclePlate(vehicle)) then
+        local engineOn = GetIsVehicleEngineRunning(vehicle)
+        SetVehicleEngineOn(vehicle, not engineOn, false, true)
+    end
+end
+
+exports('ToggleEngine', public.toggleEngine)
+
+---Checking vehicle on the blacklist.
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
+function public.getIsVehicleAlwaysUnlocked(vehicle)
+    if Entity(vehicle).state.ignoreLocks or GetVehicleClass(vehicle) == 13 then
+        return true
+    end
+
+    return getIsVehicleAlwaysUnlocked(vehicle)
+end
+
+function public.getNPCPedsInVehicle(vehicle)
+    local otherPeds = {}
+    for seat = -1, GetVehicleModelNumberOfSeats(GetEntityModel(vehicle)) - 2 do
+        local pedInSeat = GetPedInVehicleSeat(vehicle, seat)
+        if not IsPedAPlayer(pedInSeat) and pedInSeat ~= 0 then
+            otherPeds[#otherPeds + 1] = pedInSeat
+        end
+    end
+    return otherPeds
+end
+
 local function getVehicleInDirection(coordFromOffset, coordToOffset)
     local coordFrom = GetOffsetFromEntityInWorldCoords(cache.ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
     local coordTo = GetOffsetFromEntityInWorldCoords(cache.ped, coordToOffset.x, coordToOffset.y, coordToOffset.z)
@@ -40,27 +103,6 @@ function public.getVehicleInFront()
             return vehicle
         end
     end
-end
-
----Checks if player has vehicle keys
----@param plate string The plate number of the vehicle.
----@return boolean? `true` if player has vehicle keys, `nil` otherwise.
-function public.hasKeys(plate)
-    local keysList = LocalPlayer.state.keysList or {}
-    return keysList[plate]
-end
-
-exports('HasKeys', public.hasKeys)
-
----Checking vehicle on the blacklist.
----@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
-function public.getIsVehicleAlwaysUnlocked(vehicle)
-    if Entity(vehicle).state.ignoreLocks or GetVehicleClass(vehicle) == 13 then
-        return true
-    end
-
-    return getIsVehicleAlwaysUnlocked(vehicle)
 end
 
 function public.sendPoliceAlertAttempt(type)
@@ -256,27 +298,6 @@ function public.hotwire(isAdvancedLockedpick, customChallenge)
     end)
 
     isHotwiringProcessLocked = false -- end of the critical section
-end
-
----Grants keys for job shared vehicles
----@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle is shared for a player's job, `nil` otherwise.
-function public.areKeysJobShared(vehicle)
-    local job = QBX.PlayerData.job.name
-    local jobInfo = config.sharedKeys[job]
-
-    if not jobInfo or (jobInfo.requireOnduty and not QBX.PlayerData.job.onduty) then return end
-
-    assert(jobInfo.vehicles, string.format('Vehicles not configured for the %s job.', job))
-
-    if not jobInfo.vehicles[GetEntityModel(vehicle)] then return end
-
-    local vehPlate = qbx.getVehiclePlate(vehicle)
-    if not public.hasKeys(vehPlate) then
-        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', vehPlate)
-    end
-
-    return true
 end
 
 return public

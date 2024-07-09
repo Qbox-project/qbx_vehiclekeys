@@ -7,8 +7,10 @@ local functions = require 'client.functions'
 
 local hasKeys = functions.hasKeys
 local hotwire = functions.hotwire
+local toggleEngine = functions.toggleEngine
 local lockpickDoor = functions.lockpickDoor
 local getVehicleInFront = functions.getVehicleInFront
+local getNPCPedsInVehicle = functions.getNPCPedsInVehicle
 local sendPoliceAlertAttempt = functions.sendPoliceAlertAttempt
 local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
@@ -68,22 +70,6 @@ local function setVehicleDoorLock(vehicle, state, anim)
 end
 
 exports('SetVehicleDoorLock', setVehicleDoorLock)
-
-local function getPedsInVehicle(vehicle)
-    local otherPeds = {}
-    for seat = -1, GetVehicleModelNumberOfSeats(GetEntityModel(vehicle)) - 2 do
-        local pedInSeat = GetPedInVehicleSeat(vehicle, seat)
-        if not IsPedAPlayer(pedInSeat) and pedInSeat ~= 0 then
-            otherPeds[#otherPeds + 1] = pedInSeat
-        end
-    end
-    return otherPeds
-end
-
-local function makePedFlee(ped)
-    SetPedFleeAttributes(ped, 0, false)
-    TaskReactAndFleePed(ped, cache.ped)
-end
 
 local function findKeys(vehicleClass, plate)
     local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
@@ -160,12 +146,17 @@ local function showHotwiringLabel()
     isShowHotwiringLabelRunning = false
 end
 
+local function makePedFlee(ped)
+    SetPedFleeAttributes(ped, 0, false)
+    TaskReactAndFleePed(ped, cache.ped)
+end
+
 local function carjackVehicle(target)
     if not isCarjackingAvailable then return end
     isCarjackingAvailable = false
     local isCarjacking = true
     local vehicle = GetVehiclePedIsUsing(target)
-    local occupants = getPedsInVehicle(vehicle)
+    local occupants = getNPCPedsInVehicle(vehicle)
 
     CreateThread(function()
         while isCarjacking do
@@ -246,14 +237,6 @@ local function carjackVehicle(target)
 
     Wait(config.delayBetweenCarjackingsInMs)
     isCarjackingAvailable = true
-end
-
-local function toggleEngine()
-    local vehicle = cache.vehicle
-    if vehicle and hasKeys(qbx.getVehiclePlate(vehicle)) then
-        local engineOn = GetIsVehicleEngineRunning(vehicle)
-        SetVehicleEngineOn(vehicle, not engineOn, false, true)
-    end
 end
 
 local isWatchCarjackingAttemptsRunning = false
