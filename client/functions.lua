@@ -5,6 +5,7 @@ local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local getIsVehicleLockpickImmune = functions.getIsVehicleLockpickImmune
 local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
+local getIsVehicleTypeAlwaysUnlocked = functions.getIsVehicleTypeAlwaysUnlocked
 
 local alertSend = false
 local public = {}
@@ -44,12 +45,22 @@ end
 
 exports('HasKeys', public.hasKeys)
 
-function public.toggleEngine()
-    local vehicle = cache.vehicle
-    if vehicle and public.hasKeys(qbx.getVehiclePlate(vehicle)) then
-        local engineOn = GetIsVehicleEngineRunning(vehicle)
-        SetVehicleEngineOn(vehicle, not engineOn, false, true)
-    end
+---Checks if player has vehicle keys of or access to the vehicle is provided as part of his job.
+---@param vehicle number The entity number of the vehicle.
+---@param plate string? The plate number of the vehicle.
+---@return boolean? `true` if player has access to the vehicle, `nil` otherwise.
+function public.getIsVehicleAccessible(vehicle, plate)
+    plate = plate or qbx.getVehiclePlate(vehicle)
+    return public.hasKeys(plate) or public.areKeysJobShared(vehicle)
+end
+
+exports('HasAccess', public.getIsVehicleAccessible)
+
+function public.toggleEngine(vehicle)
+    local veh = vehicle or cache.vehicle
+    if not public.getIsVehicleAccessible(veh) then return end
+    local engineOn = GetIsVehicleEngineRunning(veh)
+    SetVehicleEngineOn(veh, not engineOn, false, true)
 end
 
 exports('ToggleEngine', public.toggleEngine)
@@ -58,18 +69,15 @@ exports('ToggleEngine', public.toggleEngine)
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
 function public.getIsVehicleAlwaysUnlocked(vehicle)
-    if Entity(vehicle).state.ignoreLocks or GetVehicleClass(vehicle) == 13 then
-        return true
-    end
-
     return getIsVehicleAlwaysUnlocked(vehicle)
+        or getIsVehicleTypeAlwaysUnlocked(vehicle)
 end
 
 function public.getNPCPedsInVehicle(vehicle)
     local otherPeds = {}
     for seat = -1, GetVehicleModelNumberOfSeats(GetEntityModel(vehicle)) - 2 do
         local pedInSeat = GetPedInVehicleSeat(vehicle, seat)
-        if not IsPedAPlayer(pedInSeat) and pedInSeat ~= 0 then
+        if pedInSeat ~= 0 and not IsPedAPlayer(pedInSeat) then
             otherPeds[#otherPeds + 1] = pedInSeat
         end
     end
