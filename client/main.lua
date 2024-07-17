@@ -277,8 +277,9 @@ local function watchCarjackingAttempts()
 end
 
 -----------------------
----- Client Events ----
+------ Key Binds ------
 -----------------------
+
 local togglelocksBind
 togglelocksBind = lib.addKeybind({
     name = 'togglelocks',
@@ -297,6 +298,7 @@ engineBind = lib.addKeybind({
     name = 'toggleengine',
     description = locale('info.engine'),
     defaultKey = 'G',
+    disabled = not cache.vehicle,
     onPressed = function()
         engineBind:disable(true)
         toggleEngine()
@@ -304,6 +306,10 @@ engineBind = lib.addKeybind({
         engineBind:disable(false)
     end
 })
+
+-----------------------
+---- Client Events ----
+-----------------------
 
 local isTakingKeys = false
 RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
@@ -337,6 +343,15 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
     else
         lockpickDoor(isAdvanced)
     end
+end)
+
+RegisterNetEvent('qbx_vehiclekeys:client:OnLostKeys', function()
+    Wait(0)
+    showHotwiringLabel()
+end)
+
+AddEventHandler('ox_lib:cache:seat', function()
+    showHotwiringLabel()
 end)
 
 AddEventHandler('ox_lib:cache:vehicle', function()

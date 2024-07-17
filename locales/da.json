@@ -21,7 +21,7 @@
   },
   "info": {
     "engine": "Tænd/sluk motor",
-    "search_keys": "~g~[H]~w~ - Søg efter nøgler",
+    "search_keys_dispatch": "[H] - Søg efter nøgler",
     "toggle_locks": "Lås/oplås køretøj",
     "vehicle_theft": "Køretøjstyveri i gang. Type: "
   },
