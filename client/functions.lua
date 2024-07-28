@@ -257,7 +257,7 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
             or config.anims.lockpick.model[GetVehicleClass(vehicle)]
             or config.anims.lockpick.default
         lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
-        local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig[1], skillCheckConfig[2])
+        local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs)
 
         if getIsVehicleInRange(vehicle, maxDistance) then -- the action will be aborted if the opened vehicle is too far.
             lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
@@ -312,7 +312,7 @@ function public.hotwire(vehicle, isAdvancedLockedpick, customChallenge)
         or config.anims.hotwire.model[GetVehicleClass(vehicle)]
         or config.anims.hotwire.default
         lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
-        local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig[1], skillCheckConfig[2])
+        local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs)
 
         hotwireCallback(vehicle, isAdvancedLockedpick, isSuccess)
 

@@ -1,6 +1,7 @@
 --- placeholder. Not yet implemented
 
-VehicleClasses = {
+---@enum VehicleClass
+local VehicleClass = {
     COMPACTS = 0,
     SEDANS = 1,
     SUVS = 2,
@@ -26,7 +27,8 @@ VehicleClasses = {
     OPEN_WHEEL = 22,
 }
 
-WeaponTypeGroups = {
+---@enum WeaponTypeGroup
+local WeaponTypeGroup = {
     MELEE = 2685387236,
     HANDGUN = 416676503,
     SMG = -957766203,
@@ -39,14 +41,44 @@ WeaponTypeGroups = {
     MISC = 4257178988,
 }
 
-EasyLockpickSkillCheck = { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3' } }
-NormalLockpickSkillCheck = { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' }, { '1', '2', '3', '4' } }
-HardLockpickSkillCheck = { { 'easy', 'easy', { areaSize = 60, speedMultiplier = 2 }, 'medium' }, { '1', '2', '3', '4' } }
+---@alias Difficulty 'easy' | 'medium' | 'hard' | {areaSize: number, speedMultiplier: number}
 
-DefaultHotwireAnim = { dict = 'anim@veh@plane@howard@front@ds@base', clip = 'hotwire' }
-DefaultSearchKeysAnim = { dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@', clip = 'machinic_loop_mechandplayer' }
-DefaultLockpickAnim = { dict = 'anim@mp_player_intmenu@key_fob@', clip = 'fob_click' }
-DefaultHoldupAnim = { dict = 'mp_am_hold_up', clip = 'holdup_victim_20s' }
+---Arguments of https://overextended.dev/ox_lib/Modules/Interface/Client/skillcheck
+---@class SkillCheckConfig
+---@field difficulty Difficulty[]
+---@field inputs? string[]
+
+---@type SkillCheckConfig
+local easyLockpickSkillCheck = {
+    difficulty = { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' },
+    inputs = { '1', '2', '3' }
+}
+
+---@type SkillCheckConfig
+local normalLockpickSkillCheck = {
+    difficulty = { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' },
+    inputs = { '1', '2', '3', '4' }
+}
+
+---@type SkillCheckConfig
+local hardLockpickSkillCheck = {
+    difficulty = { 'easy', 'easy', { areaSize = 60, speedMultiplier = 2 }, 'medium' },
+    inputs = { '1', '2', '3', '4' }
+}
+
+---@alias Anim {dict: string, clip: string}
+
+---@type Anim
+local defaultHotwireAnim = { dict = 'anim@veh@plane@howard@front@ds@base', clip = 'hotwire' }
+
+---@type Anim
+local defaultSearchKeysAnim = { dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@', clip = 'machinic_loop_mechandplayer' }
+
+---@type Anim
+local defaultLockpickAnim = { dict = 'anim@mp_player_intmenu@key_fob@', clip = 'fob_click' }
+
+---@type Anim
+local defaultHoldupAnim = { dict = 'mp_am_hold_up', clip = 'holdup_victim_20s' }
 
 return {
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
@@ -54,99 +86,104 @@ return {
     -- Lockpick Settings
     keepVehicleRunning = true,
 
+    ---@type table<VehicleClass, number>
     removeNormalLockpickChance = { -- Chance to remove lockpick on fail by vehicle class
-        [VehicleClasses.COMPACTS] = 0.5,
-        [VehicleClasses.SEDANS] = 0.5,
-        [VehicleClasses.SUVS] = 0.5,
-        [VehicleClasses.COUPES] = 0.5,
-        [VehicleClasses.MUSCLE] = 0.5,
-        [VehicleClasses.SPORTS_CLASSICS] = 0.5,
-        [VehicleClasses.SPORTS] = 0.5,
-        [VehicleClasses.SUPER] = 0.5,
-        [VehicleClasses.MOTORCYCLES] = 0.5,
-        [VehicleClasses.OFF_ROAD] = 0.5,
-        [VehicleClasses.INDUSTRIAL] = 0.5,
-        [VehicleClasses.UTILITY] = 0.5,
-        [VehicleClasses.VANS] = 0.5,
-        [VehicleClasses.CYCLES] = 0.5,
-        [VehicleClasses.BOATS] = 0.5,
-        [VehicleClasses.HELICOPTERS] = 0.5,
-        [VehicleClasses.PLANES] = 0.5,
-        [VehicleClasses.SERVICE] = 0.5,
-        [VehicleClasses.EMERGENCY] = 0.5,
-        [VehicleClasses.MILITARY] = 0.5,
-        [VehicleClasses.COMMERCIAL] = 0.5,
-        [VehicleClasses.TRAINS] = 0.5,
-        [VehicleClasses.OPEN_WHEEL] = 0.5
+        [VehicleClass.COMPACTS] = 0.5,
+        [VehicleClass.SEDANS] = 0.5,
+        [VehicleClass.SUVS] = 0.5,
+        [VehicleClass.COUPES] = 0.5,
+        [VehicleClass.MUSCLE] = 0.5,
+        [VehicleClass.SPORTS_CLASSICS] = 0.5,
+        [VehicleClass.SPORTS] = 0.5,
+        [VehicleClass.SUPER] = 0.5,
+        [VehicleClass.MOTORCYCLES] = 0.5,
+        [VehicleClass.OFF_ROAD] = 0.5,
+        [VehicleClass.INDUSTRIAL] = 0.5,
+        [VehicleClass.UTILITY] = 0.5,
+        [VehicleClass.VANS] = 0.5,
+        [VehicleClass.CYCLES] = 0.5,
+        [VehicleClass.BOATS] = 0.5,
+        [VehicleClass.HELICOPTERS] = 0.5,
+        [VehicleClass.PLANES] = 0.5,
+        [VehicleClass.SERVICE] = 0.5,
+        [VehicleClass.EMERGENCY] = 0.5,
+        [VehicleClass.MILITARY] = 0.5,
+        [VehicleClass.COMMERCIAL] = 0.5,
+        [VehicleClass.TRAINS] = 0.5,
+        [VehicleClass.OPEN_WHEEL] = 0.5
     },
+
+    ---@type table<VehicleClass, number>
     removeAdvancedLockpickChance = { -- Chance to remove advanced lockpick on fail by vehicle class
-        [VehicleClasses.COMPACTS] = 0.5,
-        [VehicleClasses.SEDANS] = 0.5,
-        [VehicleClasses.SUVS] = 0.5,
-        [VehicleClasses.COUPES] = 0.5,
-        [VehicleClasses.MUSCLE] = 0.5,
-        [VehicleClasses.SPORTS_CLASSICS] = 0.5,
-        [VehicleClasses.SPORTS] = 0.5,
-        [VehicleClasses.SUPER] = 0.5,
-        [VehicleClasses.MOTORCYCLES] = 0.5,
-        [VehicleClasses.OFF_ROAD] = 0.5,
-        [VehicleClasses.INDUSTRIAL] = 0.5,
-        [VehicleClasses.UTILITY] = 0.5,
-        [VehicleClasses.VANS] = 0.5,
-        [VehicleClasses.CYCLES] = 0.5,
-        [VehicleClasses.BOATS] = 0.5,
-        [VehicleClasses.HELICOPTERS] = 0.5,
-        [VehicleClasses.PLANES] = 0.5,
-        [VehicleClasses.SERVICE] = 0.5,
-        [VehicleClasses.EMERGENCY] = 0.5,
-        [VehicleClasses.MILITARY] = 0.5,
-        [VehicleClasses.COMMERCIAL] = 0.5,
-        [VehicleClasses.TRAINS] = 0.5,
-        [VehicleClasses.OPEN_WHEEL] = 0.5
+        [VehicleClass.COMPACTS] = 0.5,
+        [VehicleClass.SEDANS] = 0.5,
+        [VehicleClass.SUVS] = 0.5,
+        [VehicleClass.COUPES] = 0.5,
+        [VehicleClass.MUSCLE] = 0.5,
+        [VehicleClass.SPORTS_CLASSICS] = 0.5,
+        [VehicleClass.SPORTS] = 0.5,
+        [VehicleClass.SUPER] = 0.5,
+        [VehicleClass.MOTORCYCLES] = 0.5,
+        [VehicleClass.OFF_ROAD] = 0.5,
+        [VehicleClass.INDUSTRIAL] = 0.5,
+        [VehicleClass.UTILITY] = 0.5,
+        [VehicleClass.VANS] = 0.5,
+        [VehicleClass.CYCLES] = 0.5,
+        [VehicleClass.BOATS] = 0.5,
+        [VehicleClass.HELICOPTERS] = 0.5,
+        [VehicleClass.PLANES] = 0.5,
+        [VehicleClass.SERVICE] = 0.5,
+        [VehicleClass.EMERGENCY] = 0.5,
+        [VehicleClass.MILITARY] = 0.5,
+        [VehicleClass.COMMERCIAL] = 0.5,
+        [VehicleClass.TRAINS] = 0.5,
+        [VehicleClass.OPEN_WHEEL] = 0.5
     },
 
     -- Carjack Settings
     carjackEnable = true,                -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
     carjackingTimeInMs = 7500,           -- Time it takes to successfully carjack in miliseconds
     delayBetweenCarjackingsInMs = 10000, -- Time before you can attempt another carjack in miliseconds
+    ---@type table<VehicleClass, number>
     carjackChance = {                    -- Probability of successful carjacking based on weapon used
-        [WeaponTypeGroups.MELEE] = 0.0,
-        [WeaponTypeGroups.HANDGUN] = 0.5,
-        [WeaponTypeGroups.SMG] = 0.75,
-        [WeaponTypeGroups.SHOTGUN] = 0.90,
-        [WeaponTypeGroups.RIFLE] = 0.90,
-        [WeaponTypeGroups.LMG] = 0.99,
-        [WeaponTypeGroups.SNIPER] = 0.99,
-        [WeaponTypeGroups.HEAVY] = 0.99,
-        [WeaponTypeGroups.THROWABLE] = 0.0,
-        [WeaponTypeGroups.MISC] = 0.0,
+        [WeaponTypeGroup.MELEE] = 0.0,
+        [WeaponTypeGroup.HANDGUN] = 0.5,
+        [WeaponTypeGroup.SMG] = 0.75,
+        [WeaponTypeGroup.SHOTGUN] = 0.90,
+        [WeaponTypeGroup.RIFLE] = 0.90,
+        [WeaponTypeGroup.LMG] = 0.99,
+        [WeaponTypeGroup.SNIPER] = 0.99,
+        [WeaponTypeGroup.HEAVY] = 0.99,
+        [WeaponTypeGroup.THROWABLE] = 0.0,
+        [WeaponTypeGroup.MISC] = 0.0,
     },
 
     -- Hotwire Settings
+    ---@type table<VehicleClass, number>
     findKeysChance = { -- Chance for a successful hotwire by vehicle Class
-        [VehicleClasses.COMPACTS] = 0.5,
-        [VehicleClasses.SEDANS] = 0.5,
-        [VehicleClasses.SUVS] = 0.5,
-        [VehicleClasses.COUPES] = 0.5,
-        [VehicleClasses.MUSCLE] = 0.5,
-        [VehicleClasses.SPORTS_CLASSICS] = 0.5,
-        [VehicleClasses.SPORTS] = 0.5,
-        [VehicleClasses.SUPER] = 0.5,
-        [VehicleClasses.MOTORCYCLES] = 0.5,
-        [VehicleClasses.OFF_ROAD] = 0.5,
-        [VehicleClasses.INDUSTRIAL] = 0.5,
-        [VehicleClasses.UTILITY] = 0.5,
-        [VehicleClasses.VANS] = 0.5,
-        [VehicleClasses.CYCLES] = 0.5,
-        [VehicleClasses.BOATS] = 0.5,
-        [VehicleClasses.HELICOPTERS] = 0.5,
-        [VehicleClasses.PLANES] = 0.5,
-        [VehicleClasses.SERVICE] = 0.5,
-        [VehicleClasses.EMERGENCY] = 0.5,
-        [VehicleClasses.MILITARY] = 0.5,
-        [VehicleClasses.COMMERCIAL] = 0.5,
-        [VehicleClasses.TRAINS] = 0.5,
-        [VehicleClasses.OPEN_WHEEL] = 0.5
+        [VehicleClass.COMPACTS] = 0.5,
+        [VehicleClass.SEDANS] = 0.5,
+        [VehicleClass.SUVS] = 0.5,
+        [VehicleClass.COUPES] = 0.5,
+        [VehicleClass.MUSCLE] = 0.5,
+        [VehicleClass.SPORTS_CLASSICS] = 0.5,
+        [VehicleClass.SPORTS] = 0.5,
+        [VehicleClass.SUPER] = 0.5,
+        [VehicleClass.MOTORCYCLES] = 0.5,
+        [VehicleClass.OFF_ROAD] = 0.5,
+        [VehicleClass.INDUSTRIAL] = 0.5,
+        [VehicleClass.UTILITY] = 0.5,
+        [VehicleClass.VANS] = 0.5,
+        [VehicleClass.CYCLES] = 0.5,
+        [VehicleClass.BOATS] = 0.5,
+        [VehicleClass.HELICOPTERS] = 0.5,
+        [VehicleClass.PLANES] = 0.5,
+        [VehicleClass.SERVICE] = 0.5,
+        [VehicleClass.EMERGENCY] = 0.5,
+        [VehicleClass.MILITARY] = 0.5,
+        [VehicleClass.COMMERCIAL] = 0.5,
+        [VehicleClass.TRAINS] = 0.5,
+        [VehicleClass.OPEN_WHEEL] = 0.5
     },
     timeBetweenHotwires = 5000, -- Time in milliseconds between hotwire attempts
     minKeysSearchTime = 20000,  -- Minimum hotwire time in milliseconds
@@ -181,260 +218,279 @@ return {
         }
     },
 
+    ---@type table<VehicleClass, boolean>
     sharedVehicleClasses = {
-        [VehicleClasses.CYCLES] = true
+        [VehicleClass.CYCLES] = true
     },
 
+    ---@class SkillCheckConfigEntry
+    ---@field default SkillCheckConfig
+    ---@field class table<VehicleClass, SkillCheckConfig | {}>
+    ---@field model table<number, SkillCheckConfig>
+
+    ---@class AnimConfigEntry
+    ---@field default Anim
+    ---@field class table<VehicleClass, Anim | {}>
+    ---@field model table<number, Anim>
+
     skillCheck = {
+        ---@type SkillCheckConfigEntry
         lockpick = {
-            default = NormalLockpickSkillCheck,
+            default = normalLockpickSkillCheck,
             class = {
-                [VehicleClasses.COMPACTS]        = NormalLockpickSkillCheck,
-                [VehicleClasses.SEDANS]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SUVS]            = NormalLockpickSkillCheck,
-                [VehicleClasses.COUPES]          = NormalLockpickSkillCheck,
-                [VehicleClasses.COMPACTS]        = NormalLockpickSkillCheck,
-                [VehicleClasses.SEDANS]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SUVS]            = NormalLockpickSkillCheck,
-                [VehicleClasses.COUPES]          = NormalLockpickSkillCheck,
-                [VehicleClasses.MUSCLE]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SPORTS_CLASSICS] = NormalLockpickSkillCheck,
-                [VehicleClasses.SPORTS]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SUPER]           = NormalLockpickSkillCheck,
-                [VehicleClasses.MOTORCYCLES]     = NormalLockpickSkillCheck,
-                [VehicleClasses.OFF_ROAD]        = NormalLockpickSkillCheck,
-                [VehicleClasses.INDUSTRIAL]      = NormalLockpickSkillCheck,
-                [VehicleClasses.UTILITY]         = NormalLockpickSkillCheck,
-                [VehicleClasses.VANS]            = NormalLockpickSkillCheck,
-                [VehicleClasses.BOATS]           = NormalLockpickSkillCheck,
-                [VehicleClasses.HELICOPTERS]     = {},
-                [VehicleClasses.PLANES]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SERVICE]         = NormalLockpickSkillCheck,
-                [VehicleClasses.EMERGENCY]       = HardLockpickSkillCheck,
-                [VehicleClasses.MILITARY]        = {},                          -- The vehicle class can only be opened with an advanced lockpick
-                [VehicleClasses.COMMERCIAL]      = NormalLockpickSkillCheck,
-                [VehicleClasses.TRAINS]          = {},
-                [VehicleClasses.OPEN_WHEEL]      = EasyLockpickSkillCheck,
+                [VehicleClass.COMPACTS]        = normalLockpickSkillCheck,
+                [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
+                [VehicleClass.SUVS]            = normalLockpickSkillCheck,
+                [VehicleClass.COUPES]          = normalLockpickSkillCheck,
+                [VehicleClass.COMPACTS]        = normalLockpickSkillCheck,
+                [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
+                [VehicleClass.SUVS]            = normalLockpickSkillCheck,
+                [VehicleClass.COUPES]          = normalLockpickSkillCheck,
+                [VehicleClass.MUSCLE]          = normalLockpickSkillCheck,
+                [VehicleClass.SPORTS_CLASSICS] = normalLockpickSkillCheck,
+                [VehicleClass.SPORTS]          = normalLockpickSkillCheck,
+                [VehicleClass.SUPER]           = normalLockpickSkillCheck,
+                [VehicleClass.MOTORCYCLES]     = normalLockpickSkillCheck,
+                [VehicleClass.OFF_ROAD]        = normalLockpickSkillCheck,
+                [VehicleClass.INDUSTRIAL]      = normalLockpickSkillCheck,
+                [VehicleClass.UTILITY]         = normalLockpickSkillCheck,
+                [VehicleClass.VANS]            = normalLockpickSkillCheck,
+                [VehicleClass.BOATS]           = normalLockpickSkillCheck,
+                [VehicleClass.HELICOPTERS]     = {},
+                [VehicleClass.PLANES]          = normalLockpickSkillCheck,
+                [VehicleClass.SERVICE]         = normalLockpickSkillCheck,
+                [VehicleClass.EMERGENCY]       = hardLockpickSkillCheck,
+                [VehicleClass.MILITARY]        = {},                          -- The vehicle class can only be opened with an advanced lockpick
+                [VehicleClass.COMMERCIAL]      = normalLockpickSkillCheck,
+                [VehicleClass.TRAINS]          = {},
+                [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
             },
             model = {
-                [`zombiea`] = NormalLockpickSkillCheck
+                [`zombiea`] = normalLockpickSkillCheck
             }
         },
+        ---@type SkillCheckConfigEntry
         advancedLockpick = {
-            default = EasyLockpickSkillCheck,
+            default = easyLockpickSkillCheck,
             class = {
-                [VehicleClasses.COMPACTS]        = EasyLockpickSkillCheck,
-                [VehicleClasses.SEDANS]          = EasyLockpickSkillCheck,
-                [VehicleClasses.SUVS]            = EasyLockpickSkillCheck,
-                [VehicleClasses.COUPES]          = EasyLockpickSkillCheck,
-                [VehicleClasses.MUSCLE]          = EasyLockpickSkillCheck,
-                [VehicleClasses.SPORTS_CLASSICS] = EasyLockpickSkillCheck,
-                [VehicleClasses.SPORTS]          = EasyLockpickSkillCheck,
-                [VehicleClasses.SUPER]           = EasyLockpickSkillCheck,
-                [VehicleClasses.MOTORCYCLES]     = EasyLockpickSkillCheck,
-                [VehicleClasses.OFF_ROAD]        = EasyLockpickSkillCheck,
-                [VehicleClasses.INDUSTRIAL]      = EasyLockpickSkillCheck,
-                [VehicleClasses.UTILITY]         = EasyLockpickSkillCheck,
-                [VehicleClasses.VANS]            = EasyLockpickSkillCheck,
-                [VehicleClasses.BOATS]           = EasyLockpickSkillCheck,
-                [VehicleClasses.HELICOPTERS]     = HardLockpickSkillCheck,
-                [VehicleClasses.PLANES]          = HardLockpickSkillCheck,
-                [VehicleClasses.SERVICE]         = EasyLockpickSkillCheck,
-                [VehicleClasses.EMERGENCY]       = EasyLockpickSkillCheck,
-                [VehicleClasses.MILITARY]        = HardLockpickSkillCheck,
-                [VehicleClasses.COMMERCIAL]      = EasyLockpickSkillCheck,
-                [VehicleClasses.TRAINS]          = {},                         -- The vehicle class can't be opened with an lockpick
-                [VehicleClasses.OPEN_WHEEL]      = EasyLockpickSkillCheck,
+                [VehicleClass.COMPACTS]        = easyLockpickSkillCheck,
+                [VehicleClass.SEDANS]          = easyLockpickSkillCheck,
+                [VehicleClass.SUVS]            = easyLockpickSkillCheck,
+                [VehicleClass.COUPES]          = easyLockpickSkillCheck,
+                [VehicleClass.MUSCLE]          = easyLockpickSkillCheck,
+                [VehicleClass.SPORTS_CLASSICS] = easyLockpickSkillCheck,
+                [VehicleClass.SPORTS]          = easyLockpickSkillCheck,
+                [VehicleClass.SUPER]           = easyLockpickSkillCheck,
+                [VehicleClass.MOTORCYCLES]     = easyLockpickSkillCheck,
+                [VehicleClass.OFF_ROAD]        = easyLockpickSkillCheck,
+                [VehicleClass.INDUSTRIAL]      = easyLockpickSkillCheck,
+                [VehicleClass.UTILITY]         = easyLockpickSkillCheck,
+                [VehicleClass.VANS]            = easyLockpickSkillCheck,
+                [VehicleClass.BOATS]           = easyLockpickSkillCheck,
+                [VehicleClass.HELICOPTERS]     = hardLockpickSkillCheck,
+                [VehicleClass.PLANES]          = hardLockpickSkillCheck,
+                [VehicleClass.SERVICE]         = easyLockpickSkillCheck,
+                [VehicleClass.EMERGENCY]       = easyLockpickSkillCheck,
+                [VehicleClass.MILITARY]        = hardLockpickSkillCheck,
+                [VehicleClass.COMMERCIAL]      = easyLockpickSkillCheck,
+                [VehicleClass.TRAINS]          = {},                         -- The vehicle class can't be opened with an lockpick
+                [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
             },
             model = {
-                [`zombiea`] = EasyLockpickSkillCheck
+                [`zombiea`] = easyLockpickSkillCheck
             }
         },
+        ---@type SkillCheckConfigEntry
         hotwire = {
-            default = NormalLockpickSkillCheck,
+            default = normalLockpickSkillCheck,
             class = {
-                [VehicleClasses.COMPACTS]        = NormalLockpickSkillCheck,
-                [VehicleClasses.SEDANS]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SUVS]            = NormalLockpickSkillCheck,
-                [VehicleClasses.COUPES]          = NormalLockpickSkillCheck,
-                [VehicleClasses.COMPACTS]        = NormalLockpickSkillCheck,
-                [VehicleClasses.SEDANS]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SUVS]            = NormalLockpickSkillCheck,
-                [VehicleClasses.COUPES]          = NormalLockpickSkillCheck,
-                [VehicleClasses.MUSCLE]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SPORTS_CLASSICS] = NormalLockpickSkillCheck,
-                [VehicleClasses.SPORTS]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SUPER]           = NormalLockpickSkillCheck,
-                [VehicleClasses.MOTORCYCLES]     = NormalLockpickSkillCheck,
-                [VehicleClasses.OFF_ROAD]        = NormalLockpickSkillCheck,
-                [VehicleClasses.INDUSTRIAL]      = NormalLockpickSkillCheck,
-                [VehicleClasses.UTILITY]         = NormalLockpickSkillCheck,
-                [VehicleClasses.VANS]            = NormalLockpickSkillCheck,
-                [VehicleClasses.BOATS]           = NormalLockpickSkillCheck,
-                [VehicleClasses.HELICOPTERS]     = {},
-                [VehicleClasses.PLANES]          = NormalLockpickSkillCheck,
-                [VehicleClasses.SERVICE]         = NormalLockpickSkillCheck,
-                [VehicleClasses.EMERGENCY]       = HardLockpickSkillCheck,
-                [VehicleClasses.MILITARY]        = {},
-                [VehicleClasses.COMMERCIAL]      = NormalLockpickSkillCheck,
-                [VehicleClasses.TRAINS]          = {},
-                [VehicleClasses.OPEN_WHEEL]      = EasyLockpickSkillCheck,
+                [VehicleClass.COMPACTS]        = normalLockpickSkillCheck,
+                [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
+                [VehicleClass.SUVS]            = normalLockpickSkillCheck,
+                [VehicleClass.COUPES]          = normalLockpickSkillCheck,
+                [VehicleClass.COMPACTS]        = normalLockpickSkillCheck,
+                [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
+                [VehicleClass.SUVS]            = normalLockpickSkillCheck,
+                [VehicleClass.COUPES]          = normalLockpickSkillCheck,
+                [VehicleClass.MUSCLE]          = normalLockpickSkillCheck,
+                [VehicleClass.SPORTS_CLASSICS] = normalLockpickSkillCheck,
+                [VehicleClass.SPORTS]          = normalLockpickSkillCheck,
+                [VehicleClass.SUPER]           = normalLockpickSkillCheck,
+                [VehicleClass.MOTORCYCLES]     = normalLockpickSkillCheck,
+                [VehicleClass.OFF_ROAD]        = normalLockpickSkillCheck,
+                [VehicleClass.INDUSTRIAL]      = normalLockpickSkillCheck,
+                [VehicleClass.UTILITY]         = normalLockpickSkillCheck,
+                [VehicleClass.VANS]            = normalLockpickSkillCheck,
+                [VehicleClass.BOATS]           = normalLockpickSkillCheck,
+                [VehicleClass.HELICOPTERS]     = {},
+                [VehicleClass.PLANES]          = normalLockpickSkillCheck,
+                [VehicleClass.SERVICE]         = normalLockpickSkillCheck,
+                [VehicleClass.EMERGENCY]       = hardLockpickSkillCheck,
+                [VehicleClass.MILITARY]        = {},
+                [VehicleClass.COMMERCIAL]      = normalLockpickSkillCheck,
+                [VehicleClass.TRAINS]          = {},
+                [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
             },
             model = {
-                [`zombiea`] = NormalLockpickSkillCheck
+                [`zombiea`] = normalLockpickSkillCheck
             }
         },
+        ---@type SkillCheckConfigEntry
         advancedHotwire = {
-            default = EasyLockpickSkillCheck,
+            default = easyLockpickSkillCheck,
             class = {
-                [VehicleClasses.COMPACTS]        = EasyLockpickSkillCheck,
-                [VehicleClasses.SEDANS]          = EasyLockpickSkillCheck,
-                [VehicleClasses.SUVS]            = EasyLockpickSkillCheck,
-                [VehicleClasses.COUPES]          = EasyLockpickSkillCheck,
-                [VehicleClasses.MUSCLE]          = EasyLockpickSkillCheck,
-                [VehicleClasses.SPORTS_CLASSICS] = EasyLockpickSkillCheck,
-                [VehicleClasses.SPORTS]          = EasyLockpickSkillCheck,
-                [VehicleClasses.SUPER]           = EasyLockpickSkillCheck,
-                [VehicleClasses.MOTORCYCLES]     = EasyLockpickSkillCheck,
-                [VehicleClasses.OFF_ROAD]        = EasyLockpickSkillCheck,
-                [VehicleClasses.INDUSTRIAL]      = EasyLockpickSkillCheck,
-                [VehicleClasses.UTILITY]         = EasyLockpickSkillCheck,
-                [VehicleClasses.VANS]            = EasyLockpickSkillCheck,
-                [VehicleClasses.BOATS]           = EasyLockpickSkillCheck,
-                [VehicleClasses.HELICOPTERS]     = HardLockpickSkillCheck,
-                [VehicleClasses.PLANES]          = HardLockpickSkillCheck,
-                [VehicleClasses.SERVICE]         = EasyLockpickSkillCheck,
-                [VehicleClasses.EMERGENCY]       = EasyLockpickSkillCheck,
-                [VehicleClasses.MILITARY]        = HardLockpickSkillCheck,
-                [VehicleClasses.COMMERCIAL]      = EasyLockpickSkillCheck,
-                [VehicleClasses.TRAINS]          = {},                         -- The vehicle class can't be hotwired
-                [VehicleClasses.OPEN_WHEEL]      = EasyLockpickSkillCheck,
+                [VehicleClass.COMPACTS]        = easyLockpickSkillCheck,
+                [VehicleClass.SEDANS]          = easyLockpickSkillCheck,
+                [VehicleClass.SUVS]            = easyLockpickSkillCheck,
+                [VehicleClass.COUPES]          = easyLockpickSkillCheck,
+                [VehicleClass.MUSCLE]          = easyLockpickSkillCheck,
+                [VehicleClass.SPORTS_CLASSICS] = easyLockpickSkillCheck,
+                [VehicleClass.SPORTS]          = easyLockpickSkillCheck,
+                [VehicleClass.SUPER]           = easyLockpickSkillCheck,
+                [VehicleClass.MOTORCYCLES]     = easyLockpickSkillCheck,
+                [VehicleClass.OFF_ROAD]        = easyLockpickSkillCheck,
+                [VehicleClass.INDUSTRIAL]      = easyLockpickSkillCheck,
+                [VehicleClass.UTILITY]         = easyLockpickSkillCheck,
+                [VehicleClass.VANS]            = easyLockpickSkillCheck,
+                [VehicleClass.BOATS]           = easyLockpickSkillCheck,
+                [VehicleClass.HELICOPTERS]     = hardLockpickSkillCheck,
+                [VehicleClass.PLANES]          = hardLockpickSkillCheck,
+                [VehicleClass.SERVICE]         = easyLockpickSkillCheck,
+                [VehicleClass.EMERGENCY]       = easyLockpickSkillCheck,
+                [VehicleClass.MILITARY]        = hardLockpickSkillCheck,
+                [VehicleClass.COMMERCIAL]      = easyLockpickSkillCheck,
+                [VehicleClass.TRAINS]          = {},                         -- The vehicle class can't be hotwired
+                [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
             },
             model = {
-                [`zombiea`] = EasyLockpickSkillCheck
+                [`zombiea`] = easyLockpickSkillCheck
             }
         }
     },
 
     anims = {
+        ---@type AnimConfigEntry
         hotwire = {
-            default = DefaultHotwireAnim,
+            default = defaultHotwireAnim,
             class = {
-                [VehicleClasses.COMPACTS]        = DefaultHotwireAnim,
-                [VehicleClasses.SEDANS]          = DefaultHotwireAnim,
-                [VehicleClasses.SUVS]            = DefaultHotwireAnim,
-                [VehicleClasses.COUPES]          = DefaultHotwireAnim,
-                [VehicleClasses.MUSCLE]          = DefaultHotwireAnim,
-                [VehicleClasses.SPORTS_CLASSICS] = DefaultHotwireAnim,
-                [VehicleClasses.SPORTS]          = DefaultHotwireAnim,
-                [VehicleClasses.SUPER]           = DefaultHotwireAnim,
-                [VehicleClasses.MOTORCYCLES]     = DefaultHotwireAnim,
-                [VehicleClasses.OFF_ROAD]        = DefaultHotwireAnim,
-                [VehicleClasses.INDUSTRIAL]      = DefaultHotwireAnim,
-                [VehicleClasses.UTILITY]         = DefaultHotwireAnim,
-                [VehicleClasses.VANS]            = DefaultHotwireAnim,
-                [VehicleClasses.BOATS]           = DefaultHotwireAnim,
-                [VehicleClasses.HELICOPTERS]     = DefaultHotwireAnim,
-                [VehicleClasses.PLANES]          = DefaultHotwireAnim,
-                [VehicleClasses.SERVICE]         = DefaultHotwireAnim,
-                [VehicleClasses.EMERGENCY]       = DefaultHotwireAnim,
-                [VehicleClasses.MILITARY]        = DefaultHotwireAnim,
-                [VehicleClasses.COMMERCIAL]      = DefaultHotwireAnim,
-                [VehicleClasses.TRAINS]          = DefaultHotwireAnim,
-                [VehicleClasses.OPEN_WHEEL]      = DefaultHotwireAnim,
+                [VehicleClass.COMPACTS]        = defaultHotwireAnim,
+                [VehicleClass.SEDANS]          = defaultHotwireAnim,
+                [VehicleClass.SUVS]            = defaultHotwireAnim,
+                [VehicleClass.COUPES]          = defaultHotwireAnim,
+                [VehicleClass.MUSCLE]          = defaultHotwireAnim,
+                [VehicleClass.SPORTS_CLASSICS] = defaultHotwireAnim,
+                [VehicleClass.SPORTS]          = defaultHotwireAnim,
+                [VehicleClass.SUPER]           = defaultHotwireAnim,
+                [VehicleClass.MOTORCYCLES]     = defaultHotwireAnim,
+                [VehicleClass.OFF_ROAD]        = defaultHotwireAnim,
+                [VehicleClass.INDUSTRIAL]      = defaultHotwireAnim,
+                [VehicleClass.UTILITY]         = defaultHotwireAnim,
+                [VehicleClass.VANS]            = defaultHotwireAnim,
+                [VehicleClass.BOATS]           = defaultHotwireAnim,
+                [VehicleClass.HELICOPTERS]     = defaultHotwireAnim,
+                [VehicleClass.PLANES]          = defaultHotwireAnim,
+                [VehicleClass.SERVICE]         = defaultHotwireAnim,
+                [VehicleClass.EMERGENCY]       = defaultHotwireAnim,
+                [VehicleClass.MILITARY]        = defaultHotwireAnim,
+                [VehicleClass.COMMERCIAL]      = defaultHotwireAnim,
+                [VehicleClass.TRAINS]          = defaultHotwireAnim,
+                [VehicleClass.OPEN_WHEEL]      = defaultHotwireAnim,
             },
             model = {
-                [`zombiea`] = DefaultHotwireAnim
+                [`zombiea`] = defaultHotwireAnim
             }
         },
+        ---@type AnimConfigEntry
         searchKeys = {
-            default = DefaultSearchKeysAnim,
+            default = defaultSearchKeysAnim,
             class = {
-                [VehicleClasses.COMPACTS]        = DefaultSearchKeysAnim,
-                [VehicleClasses.SEDANS]          = DefaultSearchKeysAnim,
-                [VehicleClasses.SUVS]            = DefaultSearchKeysAnim,
-                [VehicleClasses.COUPES]          = DefaultSearchKeysAnim,
-                [VehicleClasses.MUSCLE]          = DefaultSearchKeysAnim,
-                [VehicleClasses.SPORTS_CLASSICS] = DefaultSearchKeysAnim,
-                [VehicleClasses.SPORTS]          = DefaultSearchKeysAnim,
-                [VehicleClasses.SUPER]           = DefaultSearchKeysAnim,
-                [VehicleClasses.MOTORCYCLES]     = DefaultSearchKeysAnim,
-                [VehicleClasses.OFF_ROAD]        = DefaultSearchKeysAnim,
-                [VehicleClasses.INDUSTRIAL]      = DefaultSearchKeysAnim,
-                [VehicleClasses.UTILITY]         = DefaultSearchKeysAnim,
-                [VehicleClasses.VANS]            = DefaultSearchKeysAnim,
-                [VehicleClasses.BOATS]           = DefaultSearchKeysAnim,
-                [VehicleClasses.HELICOPTERS]     = DefaultSearchKeysAnim,
-                [VehicleClasses.PLANES]          = DefaultSearchKeysAnim,
-                [VehicleClasses.SERVICE]         = DefaultSearchKeysAnim,
-                [VehicleClasses.EMERGENCY]       = DefaultSearchKeysAnim,
-                [VehicleClasses.MILITARY]        = DefaultSearchKeysAnim,
-                [VehicleClasses.COMMERCIAL]      = DefaultSearchKeysAnim,
-                [VehicleClasses.TRAINS]          = DefaultSearchKeysAnim,
-                [VehicleClasses.OPEN_WHEEL]      = DefaultSearchKeysAnim,
+                [VehicleClass.COMPACTS]        = defaultSearchKeysAnim,
+                [VehicleClass.SEDANS]          = defaultSearchKeysAnim,
+                [VehicleClass.SUVS]            = defaultSearchKeysAnim,
+                [VehicleClass.COUPES]          = defaultSearchKeysAnim,
+                [VehicleClass.MUSCLE]          = defaultSearchKeysAnim,
+                [VehicleClass.SPORTS_CLASSICS] = defaultSearchKeysAnim,
+                [VehicleClass.SPORTS]          = defaultSearchKeysAnim,
+                [VehicleClass.SUPER]           = defaultSearchKeysAnim,
+                [VehicleClass.MOTORCYCLES]     = defaultSearchKeysAnim,
+                [VehicleClass.OFF_ROAD]        = defaultSearchKeysAnim,
+                [VehicleClass.INDUSTRIAL]      = defaultSearchKeysAnim,
+                [VehicleClass.UTILITY]         = defaultSearchKeysAnim,
+                [VehicleClass.VANS]            = defaultSearchKeysAnim,
+                [VehicleClass.BOATS]           = defaultSearchKeysAnim,
+                [VehicleClass.HELICOPTERS]     = defaultSearchKeysAnim,
+                [VehicleClass.PLANES]          = defaultSearchKeysAnim,
+                [VehicleClass.SERVICE]         = defaultSearchKeysAnim,
+                [VehicleClass.EMERGENCY]       = defaultSearchKeysAnim,
+                [VehicleClass.MILITARY]        = defaultSearchKeysAnim,
+                [VehicleClass.COMMERCIAL]      = defaultSearchKeysAnim,
+                [VehicleClass.TRAINS]          = defaultSearchKeysAnim,
+                [VehicleClass.OPEN_WHEEL]      = defaultSearchKeysAnim,
             },
             model = {
-                [`zombiea`] = DefaultSearchKeysAnim
+                [`zombiea`] = defaultSearchKeysAnim
             }
         },
+        ---@type AnimConfigEntry
         lockpick = {
-            default = DefaultLockpickAnim,
+            default = defaultLockpickAnim,
             class = {
-                [VehicleClasses.COMPACTS]        = DefaultLockpickAnim,
-                [VehicleClasses.SEDANS]          = DefaultLockpickAnim,
-                [VehicleClasses.SUVS]            = DefaultLockpickAnim,
-                [VehicleClasses.COUPES]          = DefaultLockpickAnim,
-                [VehicleClasses.MUSCLE]          = DefaultLockpickAnim,
-                [VehicleClasses.SPORTS_CLASSICS] = DefaultLockpickAnim,
-                [VehicleClasses.SPORTS]          = DefaultLockpickAnim,
-                [VehicleClasses.SUPER]           = DefaultLockpickAnim,
-                [VehicleClasses.MOTORCYCLES]     = DefaultLockpickAnim,
-                [VehicleClasses.OFF_ROAD]        = DefaultLockpickAnim,
-                [VehicleClasses.INDUSTRIAL]      = DefaultLockpickAnim,
-                [VehicleClasses.UTILITY]         = DefaultLockpickAnim,
-                [VehicleClasses.VANS]            = DefaultLockpickAnim,
-                [VehicleClasses.BOATS]           = DefaultLockpickAnim,
-                [VehicleClasses.HELICOPTERS]     = DefaultLockpickAnim,
-                [VehicleClasses.PLANES]          = DefaultLockpickAnim,
-                [VehicleClasses.SERVICE]         = DefaultLockpickAnim,
-                [VehicleClasses.EMERGENCY]       = DefaultLockpickAnim,
-                [VehicleClasses.MILITARY]        = DefaultLockpickAnim,
-                [VehicleClasses.COMMERCIAL]      = DefaultLockpickAnim,
-                [VehicleClasses.TRAINS]          = DefaultLockpickAnim,
-                [VehicleClasses.OPEN_WHEEL]      = DefaultLockpickAnim,
+                [VehicleClass.COMPACTS]        = defaultLockpickAnim,
+                [VehicleClass.SEDANS]          = defaultLockpickAnim,
+                [VehicleClass.SUVS]            = defaultLockpickAnim,
+                [VehicleClass.COUPES]          = defaultLockpickAnim,
+                [VehicleClass.MUSCLE]          = defaultLockpickAnim,
+                [VehicleClass.SPORTS_CLASSICS] = defaultLockpickAnim,
+                [VehicleClass.SPORTS]          = defaultLockpickAnim,
+                [VehicleClass.SUPER]           = defaultLockpickAnim,
+                [VehicleClass.MOTORCYCLES]     = defaultLockpickAnim,
+                [VehicleClass.OFF_ROAD]        = defaultLockpickAnim,
+                [VehicleClass.INDUSTRIAL]      = defaultLockpickAnim,
+                [VehicleClass.UTILITY]         = defaultLockpickAnim,
+                [VehicleClass.VANS]            = defaultLockpickAnim,
+                [VehicleClass.BOATS]           = defaultLockpickAnim,
+                [VehicleClass.HELICOPTERS]     = defaultLockpickAnim,
+                [VehicleClass.PLANES]          = defaultLockpickAnim,
+                [VehicleClass.SERVICE]         = defaultLockpickAnim,
+                [VehicleClass.EMERGENCY]       = defaultLockpickAnim,
+                [VehicleClass.MILITARY]        = defaultLockpickAnim,
+                [VehicleClass.COMMERCIAL]      = defaultLockpickAnim,
+                [VehicleClass.TRAINS]          = defaultLockpickAnim,
+                [VehicleClass.OPEN_WHEEL]      = defaultLockpickAnim,
             },
             model = {
-                [`zombiea`] = DefaultLockpickAnim
+                [`zombiea`] = defaultLockpickAnim
             }
         },
+        ---@type AnimConfigEntry
         holdup = {
-            default = DefaultHoldupAnim,
+            default = defaultHoldupAnim,
             class = {
-                [VehicleClasses.COMPACTS]        = DefaultHoldupAnim,
-                [VehicleClasses.SEDANS]          = DefaultHoldupAnim,
-                [VehicleClasses.SUVS]            = DefaultHoldupAnim,
-                [VehicleClasses.COUPES]          = DefaultHoldupAnim,
-                [VehicleClasses.MUSCLE]          = DefaultHoldupAnim,
-                [VehicleClasses.SPORTS_CLASSICS] = DefaultHoldupAnim,
-                [VehicleClasses.SPORTS]          = DefaultHoldupAnim,
-                [VehicleClasses.SUPER]           = DefaultHoldupAnim,
-                [VehicleClasses.MOTORCYCLES]     = DefaultHoldupAnim,
-                [VehicleClasses.OFF_ROAD]        = DefaultHoldupAnim,
-                [VehicleClasses.INDUSTRIAL]      = DefaultHoldupAnim,
-                [VehicleClasses.UTILITY]         = DefaultHoldupAnim,
-                [VehicleClasses.VANS]            = DefaultHoldupAnim,
-                [VehicleClasses.BOATS]           = DefaultHoldupAnim,
-                [VehicleClasses.HELICOPTERS]     = DefaultHoldupAnim,
-                [VehicleClasses.PLANES]          = DefaultHoldupAnim,
-                [VehicleClasses.SERVICE]         = DefaultHoldupAnim,
-                [VehicleClasses.EMERGENCY]       = DefaultHoldupAnim,
-                [VehicleClasses.MILITARY]        = DefaultHoldupAnim,
-                [VehicleClasses.COMMERCIAL]      = DefaultHoldupAnim,
-                [VehicleClasses.TRAINS]          = DefaultHoldupAnim,
-                [VehicleClasses.OPEN_WHEEL]      = DefaultHoldupAnim,
+                [VehicleClass.COMPACTS]        = defaultHoldupAnim,
+                [VehicleClass.SEDANS]          = defaultHoldupAnim,
+                [VehicleClass.SUVS]            = defaultHoldupAnim,
+                [VehicleClass.COUPES]          = defaultHoldupAnim,
+                [VehicleClass.MUSCLE]          = defaultHoldupAnim,
+                [VehicleClass.SPORTS_CLASSICS] = defaultHoldupAnim,
+                [VehicleClass.SPORTS]          = defaultHoldupAnim,
+                [VehicleClass.SUPER]           = defaultHoldupAnim,
+                [VehicleClass.MOTORCYCLES]     = defaultHoldupAnim,
+                [VehicleClass.OFF_ROAD]        = defaultHoldupAnim,
+                [VehicleClass.INDUSTRIAL]      = defaultHoldupAnim,
+                [VehicleClass.UTILITY]         = defaultHoldupAnim,
+                [VehicleClass.VANS]            = defaultHoldupAnim,
+                [VehicleClass.BOATS]           = defaultHoldupAnim,
+                [VehicleClass.HELICOPTERS]     = defaultHoldupAnim,
+                [VehicleClass.PLANES]          = defaultHoldupAnim,
+                [VehicleClass.SERVICE]         = defaultHoldupAnim,
+                [VehicleClass.EMERGENCY]       = defaultHoldupAnim,
+                [VehicleClass.MILITARY]        = defaultHoldupAnim,
+                [VehicleClass.COMMERCIAL]      = defaultHoldupAnim,
+                [VehicleClass.TRAINS]          = defaultHoldupAnim,
+                [VehicleClass.OPEN_WHEEL]      = defaultHoldupAnim,
             },
             model = {
-                [`zombiea`] = DefaultHoldupAnim
+                [`zombiea`] = defaultHoldupAnim
             }
         }
     }
