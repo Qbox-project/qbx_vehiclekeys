@@ -377,14 +377,14 @@ for _, info in pairs(config.sharedKeys) do
             local leftVehicle = cache.vehicle
             if not vehicle and leftVehicle then
                 local isShared = areKeysJobShared(leftVehicle)
-                local isAutolockEnabled = config.sharedKeys[QBX.PlayerData.job.name].enableAutolock
+                local isAutolockEnabled = config.sharedKeys[QBX.PlayerData.job.name]?.enableAutolock
 
                 if isShared and isAutolockEnabled then
                     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(leftVehicle), 2)
                 end
             end
         end)
-        break;
+        break
     end
 end
 
