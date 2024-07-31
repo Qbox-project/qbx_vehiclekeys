@@ -280,14 +280,13 @@ engineBind = lib.addKeybind({
     name = 'toggleengine',
     description = locale('info.engine'),
     defaultKey = 'G',
-    disabled = function ()
-        return not cache.vehicle
-    end,
     onPressed = function()
-        engineBind:disable(true)
-        toggleEngine(cache.vehicle)
-        Wait(1000)
-        engineBind:disable(false)
+        if cache.vehicle then
+            engineBind:disable(true)
+            toggleEngine(cache.vehicle)
+            Wait(1000)
+            engineBind:disable(false)
+        end
     end
 })
 
