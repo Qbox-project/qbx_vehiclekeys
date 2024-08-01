@@ -249,7 +249,7 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
         or skillCheckConfig.class[GetVehicleClass(vehicle)]
         or skillCheckConfig.default
 
-    if #skillCheckConfig == 0 or islockpickingProcessLocked then return end -- start of the critical section
+    if islockpickingProcessLocked then return end -- start of the critical section
     islockpickingProcessLocked = true -- one call per player at a time
 
     CreateThread(function()
@@ -304,7 +304,7 @@ function public.hotwire(vehicle, isAdvancedLockedpick, customChallenge)
         or skillCheckConfig.class[GetVehicleClass(vehicle)]
         or skillCheckConfig.default
 
-    if #skillCheckConfig == 0 or isHotwiringProcessLocked then return end -- start of the critical section
+    if isHotwiringProcessLocked then return end -- start of the critical section
     isHotwiringProcessLocked = true -- one call per player at a time
 
     CreateThread(function()
