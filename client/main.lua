@@ -81,6 +81,7 @@ local function findKeys(vehicleModel, vehicleClass, plate)
     }) then
         if math.random() <= config.findKeysChance[vehicleClass] then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+            return true
         else
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             exports.qbx_core:Notify(locale("notify.failed_keys"), 'error')
@@ -300,14 +301,15 @@ lib.addKeybind({
             setSearchLabelState(false)
             local vehicle = cache.vehicle
             local plate = qbx.getVehiclePlate(vehicle)
+            local isFound
             if not getIsVehicleAccessible(vehicle, plate) then
-                findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), plate)
+                isFound = findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), plate)
                 SetTimeout(10000, function()
                     sendPoliceAlertAttempt('steal')
                 end)
             end
             Wait(config.timeBetweenHotwires)
-            setSearchLabelState(true)
+            setSearchLabelState(not isFound)
         end
     end
 })
