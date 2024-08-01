@@ -117,7 +117,7 @@ local function showHotwiringLabel(vehicle)
         if not (isVehicleAccessible or cache.seat ~= -1) then
             local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
             if config.keepVehicleRunning and isVehicleRunning then
-                TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', qbx.getVehiclePlate(vehicle))
+                TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
                 SetVehicleNeedsToBeHotwired(vehicle, false)
                 setSearchLabelState(true)
@@ -281,12 +281,13 @@ engineBind = lib.addKeybind({
     name = 'toggleengine',
     description = locale('info.engine'),
     defaultKey = 'G',
-    disabled = not cache.vehicle,
     onPressed = function()
-        engineBind:disable(true)
-        toggleEngine(cache.vehicle)
-        Wait(1000)
-        engineBind:disable(false)
+        if cache.vehicle then
+            engineBind:disable(true)
+            toggleEngine(cache.vehicle)
+            Wait(1000)
+            engineBind:disable(false)
+        end
     end
 })
 
