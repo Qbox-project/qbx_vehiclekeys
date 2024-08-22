@@ -2,10 +2,8 @@ local config = require 'config.client'
 local functions = require 'shared.functions'
 local getIsCloseToCoords = functions.getIsCloseToCoords
 local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
-local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
 local getIsVehicleLockpickImmune = functions.getIsVehicleLockpickImmune
 local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
-local getIsVehicleTypeAlwaysUnlocked = functions.getIsVehicleTypeAlwaysUnlocked
 local getIsVehicleTypeShared = functions.getIsVehicleTypeShared
 local getIsVehicleShared = functions.getIsVehicleShared
 
@@ -63,15 +61,6 @@ function public.toggleEngine(vehicle)
 end
 
 exports('ToggleEngine', public.toggleEngine)
-
----Checking vehicle on the blacklist.
----@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
-function public.getIsVehicleAlwaysUnlocked(vehicle)
-    return Entity(vehicle).state.ignoreLocks
-        or getIsVehicleAlwaysUnlocked(vehicle)
-        or getIsVehicleTypeAlwaysUnlocked(vehicle)
-end
 
 function public.getNPCPedsInVehicle(vehicle)
     local otherPeds = {}

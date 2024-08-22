@@ -29,7 +29,17 @@ end
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
 function public.getIsVehicleAlwaysUnlocked(vehicle)
-    return getIsOnList(GetEntityModel(vehicle), config.noLockVehicles)
+    return getIsOnList(GetEntityModel(vehicle), config.noLockVehicles.models)
+        or getIsOnList(GetVehicleType(vehicle), config.noLockVehicles.types)
+        or Entity(vehicle).state.ignoreLocks
+end
+
+---Checks the vehicle is always locked at spawn.
+---@param vehicle number The entity number of the vehicle.
+---@return boolean? `true` if the vehicle is locked, `nil` otherwise.
+function public.getIsVehicleInitiallyLocked(vehicle)
+    return getIsOnList(GetEntityModel(vehicle), config.lockedVehicles.models)
+        or getIsOnList(GetVehicleType(vehicle), config.lockedVehicles.types)
 end
 
 ---Checks the vehicle is carjacking immune.
@@ -46,13 +56,6 @@ function public.getIsVehicleLockpickImmune(vehicle)
     return getIsOnList(GetEntityModel(vehicle), config.lockpickImmuneVehicles)
 end
 
----Checks the vehicle is always locked at spawn.
----@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle is locked, `nil` otherwise.
-function public.getIsVehicleInitiallyLocked(vehicle)
-    return getIsOnList(GetEntityModel(vehicle), config.lockedVehicles)
-end
-
 ---Checks if the weapon cannot be used to steal keys from drivers.
 ---@param weaponHash number The current weapon hash.
 ---@return boolean? `true` if the weapon cannot be used to carjacking, `nil` otherwise.
@@ -65,13 +68,6 @@ end
 ---@return boolean? `true` if the vehicle type is accessible, `nil` otherwise.
 function public.getIsVehicleTypeShared(vehicle)
     return getIsOnList(GetVehicleType(vehicle), config.sharedVehicleTypes)
-end
-
----Checks if the vehicle type cannot be locked.
----@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle type is blacklisted, `nil` otherwise.
-function public.getIsVehicleTypeAlwaysUnlocked(vehicle)
-    return getIsOnList(GetVehicleType(vehicle), config.noLockVehicleTypes)
 end
 
 return public

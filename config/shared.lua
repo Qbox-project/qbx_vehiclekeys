@@ -7,9 +7,28 @@ return {
         'bike'
     },
 
-    -- Vehicles that will never lock example:
+    -- Vehicles that will never lock
+     ---@type VehicleSelection
     noLockVehicles = {
-        -- `stockade` -- example
+        models = {
+            -- `stockade` -- example
+        },
+
+        types = {
+
+        }
+    },
+
+    --- vehicles which spawn locked
+    ---@type VehicleSelection
+    lockedVehicles = {
+        models = {
+            -- `stockade` -- example
+        },
+
+        types = {
+
+        }
     },
 
     -- Vehicles that cannot be jacked
@@ -18,10 +37,6 @@ return {
     },
 
     lockpickImmuneVehicles = {
-        -- `stockade` -- example
-    },
-
-    lockedVehicles = {
         -- `stockade` -- example
     },
 
@@ -57,8 +72,4 @@ return {
         `WEAPON_SMOKEGRENADE`,
         -- Add more weapon names as needed
     },
-
-    noLockVehicleTypes = {
-        -- 'boat' -- example
-    }
 }
