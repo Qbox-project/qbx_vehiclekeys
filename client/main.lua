@@ -45,7 +45,7 @@ local function setVehicleDoorLock(vehicle, state, anim)
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
         exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
 
-        qbx.playAudio({ audioName = 'Door_Close', audioRef = 'GTAO_EXEC_WH_GARAGE_DOOR_SOUNDS', source = vehicle })
+        qbx.playAudio({ audioName = 'Remote_Control_Fob', audioRef = 'PI_Menu_Sounds', source = vehicle })
         SetVehicleLights(vehicle, 2)
         Wait(250)
         SetVehicleLights(vehicle, 1)
