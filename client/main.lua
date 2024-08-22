@@ -4,6 +4,7 @@
 
 local config = require 'config.client'
 local functions = require 'client.functions'
+local sharedFunctions = require 'shared.functions'
 
 local hotwire = functions.hotwire
 local toggleEngine = functions.toggleEngine
@@ -16,7 +17,7 @@ local getNPCPedsInVehicle = functions.getNPCPedsInVehicle
 local sendPoliceAlertAttempt = functions.sendPoliceAlertAttempt
 local getIsVehicleAccessible = functions.getIsVehicleAccessible
 local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
-local getIsVehicleAlwaysUnlocked = functions.getIsVehicleAlwaysUnlocked
+local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
 local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
 
 -----------------------
