@@ -141,22 +141,12 @@ local function showHotwiringLabel(vehicle)
 end
 
 local function makePedFlee(ped)
+    ClearPedTasks(ped)
     SetPedFleeAttributes(ped, 0, false)
     TaskReactAndFleePed(ped, cache.ped)
 end
 
-local function carjackVehicle(target)
-    local isCarjacking = true
-    local vehicle = GetVehiclePedIsUsing(target)
-    local occupants = getNPCPedsInVehicle(vehicle)
-
-    CreateThread(function()
-        while isCarjacking do
-            TaskVehicleTempAction(occupants[1], vehicle, 6, 1)
-            Wait(0)
-        end
-    end)
-
+local function makePedsPutHandsUpAndScream(occupants, vehicle)
     for p = 1, #occupants do
         local occupant = occupants[p]
         CreateThread(function()
@@ -168,12 +158,50 @@ local function carjackVehicle(target)
             PlayPain(occupant, 6, 0)
         end)
     end
+end
+
+local function onCarjackSuccess(occupants, vehicle)
+    local plate = qbx.getVehiclePlate(vehicle)
+    for p = 1, #occupants do
+        local ped = occupants[p]
+        CreateThread(function()
+            Wait(math.random(100, 500))
+            TaskLeaveVehicle(ped, vehicle, 0)
+            PlayPain(ped, 6, 0)
+            Wait(1250)
+            PlayPain(ped, math.random(7, 8), 0)
+            makePedFlee(ped)
+        end)
+    end
+    TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
+    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+end
+
+local function onCarjackFail(driver)
+    exports.qbx_core:Notify(locale('notify.carjack_failed'), 'error')
+    makePedFlee(driver)
+    TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+end
+
+local function carjackVehicle(driver, vehicle)
+    local isCarjacking = true
+    local occupants = getNPCPedsInVehicle(vehicle)
+
+    CreateThread(function()
+        while isCarjacking do
+            TaskVehicleTempAction(occupants[1], vehicle, 6, 1)
+            Wait(0)
+        end
+    end)
+
+    makePedsPutHandsUpAndScream(occupants, vehicle)
 
     --Cancel progress bar if: Ped dies during robbery, car gets too far away
     CreateThread(function()
         while isCarjacking do
-            local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(target))
-            if (IsPedDeadOrDying(target, false) or distance > 7.5) and lib.progressActive() then
+            local distance = #(GetEntityCoords(cache.ped) - GetEntityCoords(driver))
+            if (IsPedDeadOrDying(driver, false) or distance > 7.5) and lib.progressActive() then
                 lib.cancelProgress()
             end
             Wait(100)
@@ -191,41 +219,18 @@ local function carjackVehicle(target)
         },
     }) then
         if cache.weapon and isCarjacking then
-            local carjackChance = 0.5
-            local chance = config.carjackChance[GetWeapontypeGroup(cache.weapon) --[[@as string]]]
-            if chance then
-                carjackChance = chance
-            end
+            local carjackChance = config.carjackChance[GetWeapontypeGroup(cache.weapon) --[[@as string]]] or 0.5
 
             if math.random() <= carjackChance then
-                local plate = qbx.getVehiclePlate(vehicle)
-                for p = 1, #occupants do
-                    local ped = occupants[p]
-                    CreateThread(function()
-                        Wait(math.random(100, 500))
-                        TaskLeaveVehicle(ped, vehicle, 0)
-                        PlayPain(ped, 6, 0)
-                        Wait(1250)
-                        ClearPedTasks(ped)
-                        PlayPain(ped, math.random(7, 8), 0)
-                        makePedFlee(ped)
-                    end)
-                end
-                TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-                TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
-                TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+                onCarjackSuccess(occupants, vehicle)
             else
-                exports.qbx_core:Notify(locale('notify.carjack_failed'), 'error')
-                ClearPedTasks(target)
-                makePedFlee(target)
-                TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+                onCarjackFail(driver)
             end
             Wait(2000)
             sendPoliceAlertAttempt('carjack')
         end
     else
-        ClearPedTasks(target)
-        makePedFlee(target)
+        makePedFlee(driver)
     end
 
     Wait(config.delayBetweenCarjackingsInMs)
@@ -247,11 +252,11 @@ local function watchCarjackingAttempts()
             then
                 local targetveh = GetVehiclePedIsIn(target, false)
 
-                if not (GetPedInVehicleSeat(targetveh, -1) ~= target
-                    or getIsVehicleCarjackingImmune(targetveh))
+                if GetPedInVehicleSeat(targetveh, -1) == target
+                    and not getIsVehicleCarjackingImmune(targetveh)
                     and getIsCloseToCoords(GetEntityCoords(cache.ped), GetEntityCoords(target), 5.0)
                 then
-                    carjackVehicle(target)
+                    carjackVehicle(target, targetveh)
                 end
             end
             Wait(100)
