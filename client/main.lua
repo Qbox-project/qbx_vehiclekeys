@@ -106,7 +106,7 @@ end
 
 local isShowHotwiringLabelRunning = false
 local function showHotwiringLabel(vehicle)
-    if not (vehicle and DoesEntityExist(vehicle)) then return end
+    if not vehicle or not DoesEntityExist(vehicle) then return end
     SetVehicleKeepEngineOnWhenAbandoned(vehicle, true)
     if getIsVehicleShared(vehicle)
         or isShowHotwiringLabelRunning then return end
@@ -115,7 +115,7 @@ local function showHotwiringLabel(vehicle)
         local plate = qbx.getVehiclePlate(vehicle)
         local isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
         -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
-        if not (isVehicleAccessible or cache.seat ~= -1) then
+        if not isVehicleAccessible and cache.seat == -1 then
             local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
             if config.keepVehicleRunning and isVehicleRunning then
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
