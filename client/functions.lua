@@ -4,7 +4,6 @@ local getIsCloseToCoords = functions.getIsCloseToCoords
 local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
 local getIsVehicleLockpickImmune = functions.getIsVehicleLockpickImmune
 local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
-local getIsVehicleTypeShared = functions.getIsVehicleTypeShared
 local getIsVehicleShared = functions.getIsVehicleShared
 
 local public = {}
@@ -15,7 +14,6 @@ public.getIsCloseToCoords = getIsCloseToCoords
 
 function public.getIsVehicleShared(vehicle)
     return config.sharedVehicleClasses[GetVehicleClass(vehicle)]
-        or getIsVehicleTypeShared(vehicle)
         or getIsVehicleShared(vehicle)
 end
 
