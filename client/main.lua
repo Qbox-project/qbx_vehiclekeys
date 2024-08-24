@@ -118,7 +118,7 @@ local function showHotwiringLabel(vehicle)
         -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
         if not isVehicleAccessible and cache.seat == -1 then
             local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
-            if config.keepVehicleRunning and isVehicleRunning then
+            if config.getKeysWhenEngineIsRunning and isVehicleRunning then
                 TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             else
                 SetVehicleNeedsToBeHotwired(vehicle, false)

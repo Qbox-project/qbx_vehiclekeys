@@ -83,8 +83,7 @@ local defaultHoldupAnim = { dict = 'mp_am_hold_up', clip = 'holdup_victim_20s' }
 return {
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
-    -- Lockpick Settings
-    keepVehicleRunning = true,
+    getKeysWhenEngineIsRunning = true, -- when enabled, gives keys to a player who doesn't have them if they enter the driver seat when the engine is running
 
     -- Carjack Settings
     carjackEnable = true,                -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
