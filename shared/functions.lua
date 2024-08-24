@@ -67,13 +67,13 @@ function public.getIsBlacklistedWeapon(weaponHash)
 end
 
 local function findConfigValue(filteredConfig, key, default)
-    if filteredConfig.modelConfig[key] ~= nil then
+    if filteredConfig.modelConfig?[key] ~= nil then
         return filteredConfig.modelConfig[key]
-    elseif filteredConfig.categoryConfig[key] ~= nil then
+    elseif filteredConfig.categoryConfig?[key] ~= nil then
         return filteredConfig.categoryConfig[key]
-    elseif filteredConfig.typeConfig[key] ~= nil then
+    elseif filteredConfig.typeConfig?[key] ~= nil then
         return filteredConfig.typeConfig[key]
-    elseif filteredConfig.defaultConfig[key] ~= nil then
+    elseif filteredConfig.defaultConfig?[key] ~= nil then
         return filteredConfig.defaultConfig[key]
     else
         return default
