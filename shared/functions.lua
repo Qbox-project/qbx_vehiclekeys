@@ -1,5 +1,6 @@
 local public = {}
 local config = require 'config.shared'
+local VEHICLES = exports.qbx_core:GetVehiclesByHash()
 
 --- Checks if the given two coordinates are close to each other based on distance.
 ---@param coord1 vector3[] The first set of coordinates.
@@ -68,6 +69,8 @@ end
 local function findConfigValue(filteredConfig, key, default)
     if filteredConfig.modelConfig[key] ~= nil then
         return filteredConfig.modelConfig[key]
+    elseif filteredConfig.categoryConfig[key] ~= nil then
+        return filteredConfig.categoryConfig[key]
     elseif filteredConfig.typeConfig[key] ~= nil then
         return filteredConfig.typeConfig[key]
     elseif filteredConfig.defaultConfig[key] ~= nil then
@@ -81,8 +84,10 @@ end
 ---@param vehicle number
 ---@return VehicleConfig
 function public.getVehicleConfig(vehicle)
+    local model = GetEntityModel(vehicle)
     local filteredConfig = {
-        modelConfig = config.vehicles.models[GetEntityModel(vehicle)],
+        modelConfig = config.vehicles.models[model],
+        categoryConfig = config.vehicles.categories[VEHICLES[model].category],
         typeConfig = config.vehicles.types[GetVehicleType(vehicle)],
         defaultConfig = config.vehicles.default
     }
@@ -92,6 +97,9 @@ function public.getVehicleConfig(vehicle)
     local carjackingImmune = findConfigValue(filteredConfig, 'carjackingImmune', false)
     local lockpickImmune = findConfigValue(filteredConfig, 'lockpickImmune', false)
     local shared = findConfigValue(filteredConfig, 'shared', false)
+    local removeNormalLockpickChance = findConfigValue(filteredConfig, 'removeNormalLockpickChance', 1.0)
+    local removeAdvancedLockpickChance = findConfigValue(filteredConfig, 'removeAdvancedLockpickChance', 1.0)
+    local findKeysChance = findConfigValue(filteredConfig, 'findKeysChance', 1.0)
 
     return {
         spawnLocked = spawnLocked,
@@ -99,6 +107,9 @@ function public.getVehicleConfig(vehicle)
         carjackingImmune = carjackingImmune,
         lockpickImmune = lockpickImmune,
         shared = shared,
+        removeNormalLockpickChance = removeNormalLockpickChance,
+        removeAdvancedLockpickChance = removeAdvancedLockpickChance,
+        findKeysChance = findKeysChance,
     }
 end
 

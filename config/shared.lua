@@ -1,22 +1,32 @@
 return {
     ---For a given vehicle, the config used is based on precendence of:
     ---1. model
-    ---2. type
-    ---3. default
+    ---2. category from qbx_core shared/vehicles.lua
+    ---3. type
+    ---4. default
     ---Each field falls back to its parent value if not specified.
     ---Example: model's shared value is nil, so the type's shared value is used.
-    ---@type VehiclesConfig
     vehicles = {
+        ---@type VehicleConfig
         default = {
             noLock = false,
             spawnLocked = 1.0,
             carjackingImmune = false,
             lockpickImmune = false,
             shared = false,
+            removeNormalLockpickChance = 1.0,
+            removeAdvancedLockpickChance = 1.0,
+            findKeysChance = 0.5,
         },
+        ---@type table<string, VehicleConfig>
+        categories = {
+
+        },
+        ---@type table<VehicleType, VehicleConfig>
         types = {
 
         },
+        ---@type table<Hash, VehicleConfig>
         models = {
             -- Example:
             -- [`stockade`] = {

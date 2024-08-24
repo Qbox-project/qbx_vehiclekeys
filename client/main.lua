@@ -61,7 +61,8 @@ end
 
 exports('SetVehicleDoorLock', setVehicleDoorLock)
 
-local function findKeys(vehicleModel, vehicleClass, plate)
+local function findKeys(vehicleModel, vehicleClass, plate, vehicle)
+    local vehicleConfig = sharedFunctions.getVehicleConfig(vehicle)
     local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
 
     local anim = config.anims.lockpick.model[vehicleModel]
@@ -80,7 +81,7 @@ local function findKeys(vehicleModel, vehicleClass, plate)
             combat = true,
         }
     }) then
-        if math.random() <= config.findKeysChance[vehicleClass] then
+        if math.random() <= vehicleConfig.findKeysChance[vehicle] then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             return true
         else
@@ -310,7 +311,7 @@ lib.addKeybind({
             local plate = qbx.getVehiclePlate(vehicle)
             local isFound
             if not getIsVehicleAccessible(vehicle, plate) then
-                isFound = findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), plate)
+                isFound = findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), plate, vehicle)
                 SetTimeout(10000, function()
                     sendPoliceAlertAttempt('steal')
                 end)

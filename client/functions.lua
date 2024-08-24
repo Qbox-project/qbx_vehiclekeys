@@ -13,8 +13,7 @@ public.getIsBlacklistedWeapon = getIsBlacklistedWeapon
 public.getIsCloseToCoords = getIsCloseToCoords
 
 function public.getIsVehicleShared(vehicle)
-    return config.sharedVehicleClasses[GetVehicleClass(vehicle)]
-        or getIsVehicleShared(vehicle)
+    return getIsVehicleShared(vehicle)
 end
 
 ---Grants keys for job shared vehicles
@@ -169,15 +168,16 @@ end
 
 ---Chance to destroy lockpick
 ---@param isAdvancedLockedpick any
----@param vehicleClass any
-local function breakLockpick(isAdvancedLockedpick, vehicleClass)
+---@param vehicle number
+local function breakLockpick(isAdvancedLockedpick, vehicle)
     local chance = math.random()
+    local vehicleConfig = functions.getVehicleConfig(vehicle)
     if isAdvancedLockedpick then -- there is no benefit to using an advanced tool in the default configuration.
-        if chance <= config.removeAdvancedLockpickChance[vehicleClass] then
+        if chance <= vehicleConfig.removeAdvancedLockpickChance then
             TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "advancedlockpick")
         end
     else
-        if chance <= config.removeNormalLockpickChance[vehicleClass] then
+        if chance <= vehicleConfig.removeNormalLockpickChance then
             TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "lockpick")
         end
     end
@@ -206,7 +206,7 @@ local function lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
         exports.qbx_core:Notify(locale('notify.failed_lockedpick'), 'error')
     end
 
-    breakLockpick(isAdvancedLockedpick, GetVehicleClass(vehicle))
+    breakLockpick(isAdvancedLockedpick, vehicle)
 end
 
 local islockpickingProcessLocked = false -- lock flag
@@ -275,7 +275,7 @@ local function hotwireCallback(vehicle, isAdvancedLockedpick, isSuccess)
         exports.qbx_core:Notify(locale('notify.failed_lockedpick'), 'error')
     end
 
-    breakLockpick(isAdvancedLockedpick, GetVehicleClass(vehicle))
+    breakLockpick(isAdvancedLockedpick, vehicle)
 end
 
 local isHotwiringProcessLocked = false -- lock flag
