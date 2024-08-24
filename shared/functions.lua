@@ -87,7 +87,7 @@ function public.getVehicleConfig(vehicle)
     local model = GetEntityModel(vehicle)
     local filteredConfig = {
         modelConfig = config.vehicles.models[model],
-        categoryConfig = config.vehicles.categories[VEHICLES[model].category],
+        categoryConfig = config.vehicles.categories[VEHICLES[model]?.category],
         typeConfig = config.vehicles.types[GetVehicleType(vehicle)],
         defaultConfig = config.vehicles.default
     }
