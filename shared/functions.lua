@@ -36,10 +36,14 @@ end
 
 ---Checks the vehicle is always locked at spawn.
 ---@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle is locked, `nil` otherwise.
+---@return boolean `true` if the vehicle is locked, `false` otherwise.
 function public.getIsVehicleInitiallyLocked(vehicle)
-    return getIsOnList(GetEntityModel(vehicle), config.lockedVehicles.models)
-        or getIsOnList(GetVehicleType(vehicle), config.lockedVehicles.types)
+    local isVehicleSpawnLocked = public.getVehicleConfig(vehicle).spawnLocked
+    if type(isVehicleSpawnLocked) == 'number' then
+        return math.random() < isVehicleSpawnLocked
+    else
+        return isVehicleSpawnLocked ~= nil
+    end
 end
 
 ---Checks the vehicle is carjacking immune.
@@ -68,6 +72,18 @@ end
 ---@return boolean? `true` if the vehicle type is accessible, `nil` otherwise.
 function public.getIsVehicleTypeShared(vehicle)
     return getIsOnList(GetVehicleType(vehicle), config.sharedVehicleTypes)
+end
+
+---Gets the vehicle's config
+---@param vehicle number
+---@return VehicleConfig
+function public.getVehicleConfig(vehicle)
+    local modelConfig = config.vehicles.models[GetEntityModel(vehicle)]
+    local typeConfig = config.vehicles.types[GetVehicleType(vehicle)]
+    local defaultConfig = config.vehicles.default
+    return {
+        spawnLocked = modelConfig.spawnLocked or typeConfig.spawnLocked or defaultConfig.spawnLocked or 1.0
+    }
 end
 
 return public
