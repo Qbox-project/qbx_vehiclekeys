@@ -86,60 +86,6 @@ return {
     -- Lockpick Settings
     keepVehicleRunning = true,
 
-    ---@type table<VehicleClass, number>
-    removeNormalLockpickChance = { -- Chance to remove lockpick on fail by vehicle class
-        [VehicleClass.COMPACTS] = 0.5,
-        [VehicleClass.SEDANS] = 0.5,
-        [VehicleClass.SUVS] = 0.5,
-        [VehicleClass.COUPES] = 0.5,
-        [VehicleClass.MUSCLE] = 0.5,
-        [VehicleClass.SPORTS_CLASSICS] = 0.5,
-        [VehicleClass.SPORTS] = 0.5,
-        [VehicleClass.SUPER] = 0.5,
-        [VehicleClass.MOTORCYCLES] = 0.5,
-        [VehicleClass.OFF_ROAD] = 0.5,
-        [VehicleClass.INDUSTRIAL] = 0.5,
-        [VehicleClass.UTILITY] = 0.5,
-        [VehicleClass.VANS] = 0.5,
-        [VehicleClass.CYCLES] = 0.5,
-        [VehicleClass.BOATS] = 0.5,
-        [VehicleClass.HELICOPTERS] = 0.5,
-        [VehicleClass.PLANES] = 0.5,
-        [VehicleClass.SERVICE] = 0.5,
-        [VehicleClass.EMERGENCY] = 0.5,
-        [VehicleClass.MILITARY] = 0.5,
-        [VehicleClass.COMMERCIAL] = 0.5,
-        [VehicleClass.TRAINS] = 0.5,
-        [VehicleClass.OPEN_WHEEL] = 0.5
-    },
-
-    ---@type table<VehicleClass, number>
-    removeAdvancedLockpickChance = { -- Chance to remove advanced lockpick on fail by vehicle class
-        [VehicleClass.COMPACTS] = 0.5,
-        [VehicleClass.SEDANS] = 0.5,
-        [VehicleClass.SUVS] = 0.5,
-        [VehicleClass.COUPES] = 0.5,
-        [VehicleClass.MUSCLE] = 0.5,
-        [VehicleClass.SPORTS_CLASSICS] = 0.5,
-        [VehicleClass.SPORTS] = 0.5,
-        [VehicleClass.SUPER] = 0.5,
-        [VehicleClass.MOTORCYCLES] = 0.5,
-        [VehicleClass.OFF_ROAD] = 0.5,
-        [VehicleClass.INDUSTRIAL] = 0.5,
-        [VehicleClass.UTILITY] = 0.5,
-        [VehicleClass.VANS] = 0.5,
-        [VehicleClass.CYCLES] = 0.5,
-        [VehicleClass.BOATS] = 0.5,
-        [VehicleClass.HELICOPTERS] = 0.5,
-        [VehicleClass.PLANES] = 0.5,
-        [VehicleClass.SERVICE] = 0.5,
-        [VehicleClass.EMERGENCY] = 0.5,
-        [VehicleClass.MILITARY] = 0.5,
-        [VehicleClass.COMMERCIAL] = 0.5,
-        [VehicleClass.TRAINS] = 0.5,
-        [VehicleClass.OPEN_WHEEL] = 0.5
-    },
-
     -- Carjack Settings
     carjackEnable = true,                -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
     carjackingTimeInMs = 7500,           -- Time it takes to successfully carjack in miliseconds
@@ -159,32 +105,6 @@ return {
     },
 
     -- Hotwire Settings
-    ---@type table<VehicleClass, number>
-    findKeysChance = { -- Chance for a successful hotwire by vehicle Class
-        [VehicleClass.COMPACTS] = 0.5,
-        [VehicleClass.SEDANS] = 0.5,
-        [VehicleClass.SUVS] = 0.5,
-        [VehicleClass.COUPES] = 0.5,
-        [VehicleClass.MUSCLE] = 0.5,
-        [VehicleClass.SPORTS_CLASSICS] = 0.5,
-        [VehicleClass.SPORTS] = 0.5,
-        [VehicleClass.SUPER] = 0.5,
-        [VehicleClass.MOTORCYCLES] = 0.5,
-        [VehicleClass.OFF_ROAD] = 0.5,
-        [VehicleClass.INDUSTRIAL] = 0.5,
-        [VehicleClass.UTILITY] = 0.5,
-        [VehicleClass.VANS] = 0.5,
-        [VehicleClass.CYCLES] = 0.5,
-        [VehicleClass.BOATS] = 0.5,
-        [VehicleClass.HELICOPTERS] = 0.5,
-        [VehicleClass.PLANES] = 0.5,
-        [VehicleClass.SERVICE] = 0.5,
-        [VehicleClass.EMERGENCY] = 0.5,
-        [VehicleClass.MILITARY] = 0.5,
-        [VehicleClass.COMMERCIAL] = 0.5,
-        [VehicleClass.TRAINS] = 0.5,
-        [VehicleClass.OPEN_WHEEL] = 0.5
-    },
     timeBetweenHotwires = 5000, -- Time in milliseconds between hotwire attempts
     minKeysSearchTime = 20000,  -- Minimum hotwire time in milliseconds
     maxKeysSearchTime = 40000,  -- Maximum hotwire time in milliseconds
@@ -216,11 +136,6 @@ return {
                 [`towtruck`] = true,
             }
         }
-    },
-
-    ---@type table<VehicleClass, boolean>
-    sharedVehicleClasses = {
-        [VehicleClass.CYCLES] = true
     },
 
     ---@class SkillCheckConfigEntry

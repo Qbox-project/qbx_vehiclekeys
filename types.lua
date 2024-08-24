@@ -1,11 +1,7 @@
 ---@meta
 
 ---@alias VehicleType 'automobile' | 'bike' | 'boat' | 'heli' | 'plane' | 'submarine' | 'trailer' | 'train'
-
----@class VehiclesConfig
----@field default VehicleConfig
----@field types table<VehicleType, VehicleConfig>
----@field models table<number, VehicleConfig>
+---@alias Hash number|string actually a number but `model` is treated as a string by language server
 
 ---@class VehicleConfig
 ---@field spawnLocked? boolean | number ratio 0.0 - 1.0
@@ -13,3 +9,6 @@
 ---@field carjackingImmune? boolean
 ---@field lockpickImmune? boolean
 ---@field shared? boolean
+---@field removeNormalLockpickChance number ratio
+---@field removeAdvancedLockpickChance number ratio
+---@field findKeysChance number ratio
