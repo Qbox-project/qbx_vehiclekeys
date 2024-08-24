@@ -3,11 +3,16 @@ return {
     ---1. model
     ---2. type
     ---3. default
-    ---Each field inherits from its parent if not specified.
+    ---Each field falls back to its parent value if not specified.
+    ---Example: model's shared value is nil, so the type's shared value is used.
     ---@type VehiclesConfig
     vehicles = {
         default = {
+            noLock = false,
             spawnLocked = 1.0,
+            carjackingImmune = false,
+            lockpickImmune = false,
+            shared = false,
         },
         types = {
 
@@ -18,34 +23,6 @@ return {
             --     spawnLocked = 0.5
             -- }
         }
-    },
-    sharedVehicles = {
-        -- `stockade` -- example
-    },
-
-    sharedVehicleTypes = {
-        'bike'
-    },
-
-    -- Vehicles that will never lock
-     ---@type VehicleSelection
-    noLockVehicles = {
-        models = {
-            -- `stockade` -- example
-        },
-
-        types = {
-
-        }
-    },
-
-    -- Vehicles that cannot be jacked
-    carjackingImmuneVehicles = {
-        `stockade`
-    },
-
-    lockpickImmuneVehicles = {
-        -- `stockade` -- example
     },
 
     -- Weapons that cannot be used for carjacking

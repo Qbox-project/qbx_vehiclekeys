@@ -20,18 +20,16 @@ end
 
 ---Checks if the vehicle has no locks and is accessible to everyone.
 ---@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
+---@return boolean `true` if the vehicle is blacklisted, `false` otherwise.
 function public.getIsVehicleShared(vehicle)
-    return getIsOnList(GetEntityModel(vehicle), config.sharedVehicles)
+    return public.getVehicleConfig(vehicle).shared
 end
 
 ---Checks if the vehicle cannot be locked.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is blacklisted, `nil` otherwise.
 function public.getIsVehicleAlwaysUnlocked(vehicle)
-    return getIsOnList(GetEntityModel(vehicle), config.noLockVehicles.models)
-        or getIsOnList(GetVehicleType(vehicle), config.noLockVehicles.types)
-        or Entity(vehicle).state.ignoreLocks
+    return public.getVehicleConfig(vehicle).noLock or Entity(vehicle).state.ignoreLocks
 end
 
 ---Checks the vehicle is always locked at spawn.
@@ -48,16 +46,16 @@ end
 
 ---Checks the vehicle is carjacking immune.
 ---@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle is immune, `nil` otherwise.
+---@return boolean `true` if the vehicle is immune, `false` otherwise.
 function public.getIsVehicleCarjackingImmune(vehicle)
-    return getIsOnList(GetEntityModel(vehicle), config.carjackingImmuneVehicles)
+    return public.getVehicleConfig(vehicle).carjackingImmune
 end
 
 ---Checks the vehicle is lockpicking immune.
 ---@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle is immune, `nil` otherwise.
+---@return boolean `true` if the vehicle is immune, `false` otherwise.
 function public.getIsVehicleLockpickImmune(vehicle)
-    return getIsOnList(GetEntityModel(vehicle), config.lockpickImmuneVehicles)
+    return public.getVehicleConfig(vehicle).lockpickImmune
 end
 
 ---Checks if the weapon cannot be used to steal keys from drivers.
@@ -67,22 +65,40 @@ function public.getIsBlacklistedWeapon(weaponHash)
     return getIsOnList(weaponHash, config.noCarjackWeapons)
 end
 
----Checks if the vehicle type has no locks and is accessible to everyone.
----@param vehicle number The entity number of the vehicle.
----@return boolean? `true` if the vehicle type is accessible, `nil` otherwise.
-function public.getIsVehicleTypeShared(vehicle)
-    return getIsOnList(GetVehicleType(vehicle), config.sharedVehicleTypes)
+local function findConfigValue(filteredConfig, key, default)
+    if filteredConfig.modelConfig[key] ~= nil then
+        return filteredConfig.modelConfig[key]
+    elseif filteredConfig.typeConfig[key] ~= nil then
+        return filteredConfig.typeConfig[key]
+    elseif filteredConfig.defaultConfig[key] ~= nil then
+        return filteredConfig.defaultConfig[key]
+    else
+        return default
+    end
 end
 
 ---Gets the vehicle's config
 ---@param vehicle number
 ---@return VehicleConfig
 function public.getVehicleConfig(vehicle)
-    local modelConfig = config.vehicles.models[GetEntityModel(vehicle)]
-    local typeConfig = config.vehicles.types[GetVehicleType(vehicle)]
-    local defaultConfig = config.vehicles.default
+    local filteredConfig = {
+        modelConfig = config.vehicles.models[GetEntityModel(vehicle)],
+        typeConfig = config.vehicles.types[GetVehicleType(vehicle)],
+        defaultConfig = config.vehicles.default
+    }
+
+    local noLock = findConfigValue(filteredConfig, 'noLock', false)
+    local spawnLocked = noLock and 0.0 or findConfigValue(filteredConfig, 'spawnLocked', 1.0)
+    local carjackingImmune = findConfigValue(filteredConfig, 'carjackingImmune', false)
+    local lockpickImmune = findConfigValue(filteredConfig, 'lockpickImmune', false)
+    local shared = findConfigValue(filteredConfig, 'shared', false)
+
     return {
-        spawnLocked = modelConfig.spawnLocked or typeConfig.spawnLocked or defaultConfig.spawnLocked or 1.0
+        spawnLocked = spawnLocked,
+        noLock = noLock,
+        carjackingImmune = carjackingImmune,
+        lockpickImmune = lockpickImmune,
+        shared = shared,
     }
 end
 

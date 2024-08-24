@@ -2,10 +2,6 @@
 
 ---@alias VehicleType 'automobile' | 'bike' | 'boat' | 'heli' | 'plane' | 'submarine' | 'trailer' | 'train'
 
----@class VehicleSelection
----@field types VehicleType[]
----@field models number[]
-
 ---@class VehiclesConfig
 ---@field default VehicleConfig
 ---@field types table<VehicleType, VehicleConfig>
@@ -13,3 +9,7 @@
 
 ---@class VehicleConfig
 ---@field spawnLocked? boolean | number ratio 0.0 - 1.0
+---@field noLock? boolean
+---@field carjackingImmune? boolean
+---@field lockpickImmune? boolean
+---@field shared? boolean
