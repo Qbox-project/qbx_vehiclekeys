@@ -1,4 +1,24 @@
 return {
+    ---For a given vehicle, the config used is based on precendence of:
+    ---1. model
+    ---2. type
+    ---3. default
+    ---Each field inherits from its parent if not specified.
+    ---@type VehiclesConfig
+    vehicles = {
+        default = {
+            spawnLocked = 1.0,
+        },
+        types = {
+
+        },
+        models = {
+            -- Example:
+            -- [`stockade`] = {
+            --     spawnLocked = 0.5
+            -- }
+        }
+    },
     sharedVehicles = {
         -- `stockade` -- example
     },
@@ -10,18 +30,6 @@ return {
     -- Vehicles that will never lock
      ---@type VehicleSelection
     noLockVehicles = {
-        models = {
-            -- `stockade` -- example
-        },
-
-        types = {
-
-        }
-    },
-
-    --- vehicles which spawn locked
-    ---@type VehicleSelection
-    lockedVehicles = {
         models = {
             -- `stockade` -- example
         },
