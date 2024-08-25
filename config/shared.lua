@@ -19,16 +19,33 @@ return {
             findKeysChance = 0.5,
         },
         ---@type table<string, VehicleConfig>
-        categories = {
-
+        categories = { -- known categories: super, service, utility, helicopters, motorcycles, suvs, planes, sports, emergency, military, sportsclassics, compacts, sedans
+            -- super = {
+            --     noLock = false,
+            --     spawnLocked = 1.0,
+            --     carjackingImmune = false,
+            --     lockpickImmune = false,
+            --     shared = false,
+            --     removeNormalLockpickChance = 1.0,
+            --     removeAdvancedLockpickChance = 1.0,
+            --     findKeysChance = 0.5,
+            -- }
         },
         ---@type table<VehicleType, VehicleConfig>
-        types = {
-
+        types = { -- known types: automobile, bike, boat, heli, plane, submarine, trailer, train
+            -- automobile = {
+            --     noLock = false,
+            --     spawnLocked = 1.0,
+            --     carjackingImmune = false,
+            --     lockpickImmune = false,
+            --     shared = false,
+            --     removeNormalLockpickChance = 1.0,
+            --     removeAdvancedLockpickChance = 1.0,
+            --     findKeysChance = 0.5,
+            -- }
         },
         ---@type table<Hash, VehicleConfig>
         models = {
-            -- Example:
             -- [`stockade`] = {
             --     spawnLocked = 0.5
             -- }
