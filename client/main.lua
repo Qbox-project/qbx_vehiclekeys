@@ -11,14 +11,15 @@ local toggleEngine = functions.toggleEngine
 local lockpickDoor = functions.lockpickDoor
 local areKeysJobShared = functions.areKeysJobShared
 local getVehicleInFront = functions.getVehicleInFront
-local getIsCloseToCoords = functions.getIsCloseToCoords
-local getIsVehicleShared = functions.getIsVehicleShared
 local getNPCPedsInVehicle = functions.getNPCPedsInVehicle
 local sendPoliceAlertAttempt = functions.sendPoliceAlertAttempt
 local getIsVehicleAccessible = functions.getIsVehicleAccessible
-local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
+
+local getIsVehicleShared = sharedFunctions.getIsVehicleShared
+local getIsCloseToCoords = sharedFunctions.getIsCloseToCoords
+local getIsBlacklistedWeapon = sharedFunctions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
-local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
+local getIsVehicleCarjackingImmune = sharedFunctions.getIsVehicleCarjackingImmune
 
 -----------------------
 ----   Functions   ----
@@ -36,12 +37,9 @@ local function setVehicleDoorLock(vehicle, state, anim)
             lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
         end
 
-        local lockstate
-        if state ~= nil then
-            lockstate = state and 2 or 1
-        else
-            lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- (1 % 2) + 1 -> 2  (2 % 2) + 1 -> 1
-        end
+        local lockstate = state ~= nil
+            and (state and 2 or 1)
+            or (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- use ternary
 
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
         exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
