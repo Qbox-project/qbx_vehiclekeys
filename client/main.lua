@@ -175,8 +175,7 @@ local function onCarjackSuccess(occupants, vehicle)
     for p = 1, #occupants do
         local ped = occupants[p]
         CreateThread(function()
-            Wait(math.random(100, 500))
-            TaskLeaveVehicle(ped, vehicle, 0)
+            TaskLeaveVehicle(ped, vehicle, 256) -- flag 256 to leave door open
             PlayPain(ped, 6, 0)
             Wait(1250)
             PlayPain(ped, math.random(7, 8), 0)
