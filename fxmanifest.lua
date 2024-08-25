@@ -10,20 +10,21 @@ ox_lib 'locale'
 shared_scripts {
     '@ox_lib/init.lua',
     '@qbx_core/modules/lib.lua',
-    'shared/*.lua'
 }
 
 client_scripts {
     '@qbx_core/modules/playerdata.lua',
-    'client/*.lua'
+    'client/main.lua'
 }
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server/*.lua'
+    'server/main.lua'
 }
 
 files {
+    'client/*.lua',
+    'shared/*.lua',
     'locales/*.json',
     'config/client.lua',
     'config/shared.lua'

@@ -11,14 +11,15 @@ local toggleEngine = functions.toggleEngine
 local lockpickDoor = functions.lockpickDoor
 local areKeysJobShared = functions.areKeysJobShared
 local getVehicleInFront = functions.getVehicleInFront
-local getIsCloseToCoords = functions.getIsCloseToCoords
-local getIsVehicleShared = functions.getIsVehicleShared
 local getNPCPedsInVehicle = functions.getNPCPedsInVehicle
 local sendPoliceAlertAttempt = functions.sendPoliceAlertAttempt
 local getIsVehicleAccessible = functions.getIsVehicleAccessible
-local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
+
+local getIsVehicleShared = sharedFunctions.getIsVehicleShared
+local getIsCloseToCoords = sharedFunctions.getIsCloseToCoords
+local getIsBlacklistedWeapon = sharedFunctions.getIsBlacklistedWeapon
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
-local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
+local getIsVehicleCarjackingImmune = sharedFunctions.getIsVehicleCarjackingImmune
 
 -----------------------
 ----   Functions   ----
@@ -36,12 +37,9 @@ local function setVehicleDoorLock(vehicle, state, anim)
             lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
         end
 
-        local lockstate
-        if state ~= nil then
-            lockstate = state and 2 or 1
-        else
-            lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- (1 % 2) + 1 -> 2  (2 % 2) + 1 -> 1
-        end
+        local lockstate = state ~= nil
+            and (state and 2 or 1)
+            or (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- use ternary
 
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
         exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
@@ -81,7 +79,7 @@ local function findKeys(vehicleModel, vehicleClass, plate, vehicle)
             combat = true,
         }
     }) then
-        if math.random() <= vehicleConfig.findKeysChance[vehicle] then
+        if math.random() <= vehicleConfig.findKeysChance then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             return true
         else
@@ -145,6 +143,8 @@ local function makePedFlee(ped)
     ClearPedTasks(ped)
     SetPedFleeAttributes(ped, 0, false)
     TaskReactAndFleePed(ped, cache.ped)
+    TaskSmartFleePed(ped, cache.ped, 100.0, -1, false, false)
+    ResetPedLastVehicle(ped) -- make ped forget about his last car, so he cant return to it
 end
 
 local function makePedsPutHandsUpAndScream(occupants, vehicle)
@@ -166,8 +166,7 @@ local function onCarjackSuccess(occupants, vehicle)
     for p = 1, #occupants do
         local ped = occupants[p]
         CreateThread(function()
-            Wait(math.random(100, 500))
-            TaskLeaveVehicle(ped, vehicle, 0)
+            TaskLeaveVehicle(ped, vehicle, 256) -- flag 256 to leave door open
             PlayPain(ped, 6, 0)
             Wait(1250)
             PlayPain(ped, math.random(7, 8), 0)
@@ -221,6 +220,7 @@ local function carjackVehicle(driver, vehicle)
     }) then
         if cache.weapon and isCarjacking then
             local carjackChance = config.carjackChance[GetWeapontypeGroup(cache.weapon) --[[@as string]]] or 0.5
+            isCarjacking = false -- make this false to stop TaskVehicleTempAction from preventing ped to leave the car
 
             if math.random() <= carjackChance then
                 onCarjackSuccess(occupants, vehicle)
@@ -378,8 +378,8 @@ AddEventHandler('ox_lib:cache:vehicle', function()
     showHotwiringLabel(cache.vehicle)
 end)
 
-lib.onCache('vehicle', function (vehicle) ---for some reason the autolock works with this
-end)
+-- lib.onCache('vehicle', function (vehicle) ---for some reason the autolock works with this
+-- end)
 
 for _, info in pairs(config.sharedKeys) do
     if info.enableAutolock then
@@ -412,6 +412,10 @@ AddEventHandler('onResourceStart', function(resourceName)
     if config.carjackEnable then
         watchCarjackingAttempts()
     end
+end)
+
+RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
+    require 'client.commands'(id, plate) -- we load command module when we actually need it
 end)
 
 --#region Backwards Compatibility ONLY -- Remove at some point --

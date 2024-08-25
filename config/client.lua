@@ -157,10 +157,6 @@ return {
                 [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
                 [VehicleClass.SUVS]            = normalLockpickSkillCheck,
                 [VehicleClass.COUPES]          = normalLockpickSkillCheck,
-                [VehicleClass.COMPACTS]        = normalLockpickSkillCheck,
-                [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
-                [VehicleClass.SUVS]            = normalLockpickSkillCheck,
-                [VehicleClass.COUPES]          = normalLockpickSkillCheck,
                 [VehicleClass.MUSCLE]          = normalLockpickSkillCheck,
                 [VehicleClass.SPORTS_CLASSICS] = normalLockpickSkillCheck,
                 [VehicleClass.SPORTS]          = normalLockpickSkillCheck,
@@ -219,10 +215,6 @@ return {
         hotwire = {
             default = normalLockpickSkillCheck,
             class = {
-                [VehicleClass.COMPACTS]        = normalLockpickSkillCheck,
-                [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
-                [VehicleClass.SUVS]            = normalLockpickSkillCheck,
-                [VehicleClass.COUPES]          = normalLockpickSkillCheck,
                 [VehicleClass.COMPACTS]        = normalLockpickSkillCheck,
                 [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
                 [VehicleClass.SUVS]            = normalLockpickSkillCheck,

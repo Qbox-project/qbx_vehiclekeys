@@ -1,20 +1,6 @@
 local config = require 'config.client'
 local functions = require 'shared.functions'
-local getIsCloseToCoords = functions.getIsCloseToCoords
-local getIsBlacklistedWeapon = functions.getIsBlacklistedWeapon
-local getIsVehicleLockpickImmune = functions.getIsVehicleLockpickImmune
-local getIsVehicleCarjackingImmune = functions.getIsVehicleCarjackingImmune
-local getIsVehicleShared = functions.getIsVehicleShared
-
 local public = {}
-
-public.getIsVehicleCarjackingImmune = getIsVehicleCarjackingImmune -- to prevent circular-dependency error
-public.getIsBlacklistedWeapon = getIsBlacklistedWeapon
-public.getIsCloseToCoords = getIsCloseToCoords
-
-function public.getIsVehicleShared(vehicle)
-    return getIsVehicleShared(vehicle)
-end
 
 ---Grants keys for job shared vehicles
 ---@param vehicle number The entity number of the vehicle.
@@ -125,11 +111,9 @@ end
 local function getBoneCoords(entity, boneName)
     local boneIndex = GetEntityBoneIndexByName(entity, boneName)
 
-    if boneIndex ~= -1 then
-        return GetWorldPositionOfEntityBone(entity, boneIndex)
-    else
-        return GetEntityCoords(entity)
-    end
+    return boneIndex ~= -1
+        and GetWorldPositionOfEntityBone(entity, boneIndex)
+        or GetEntityCoords(entity)
 end
 
 ---Checks if any of the bones are close enough to the coords
@@ -141,7 +125,7 @@ end
 local function getIsCloseToAnyBone(coords, entity, bones, maxDistance)
     for i = 1, #bones do
         local boneCoords = getBoneCoords(entity, bones[i])
-        if getIsCloseToCoords(coords, boneCoords, maxDistance) then
+        if functions.getIsCloseToCoords(coords, boneCoords, maxDistance) then
             return true
         end
     end
@@ -227,7 +211,7 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     if not isDriverSeatFree -- no one in the driver's seat
         or not getIsCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
         or GetVehicleDoorLockStatus(vehicle) < 2 -- the vehicle is locked
-        or getIsVehicleLockpickImmune(vehicle)
+        or functions.getIsVehicleLockpickImmune(vehicle)
     then return end
 
     local skillCheckConfig = config.skillCheck[isAdvancedLockedpick and 'advancedLockpick' or 'lockpick']
