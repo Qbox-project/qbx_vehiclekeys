@@ -62,14 +62,10 @@ exports('SetVehicleDoorLock', setVehicleDoorLock)
 local function findKeys(vehicleModel, vehicleClass, plate, vehicle)
     local vehicleConfig = sharedFunctions.getVehicleConfig(vehicle)
     local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
-    local scullyEmotes = GetResourceState('scully_emotemenu') == 'started'
 
     local anim = config.anims.lockpick.model[vehicleModel]
         or config.anims.lockpick.model[vehicleClass]
         or config.anims.lockpick.default
-    if scullyEmotes then
-        exports.scully_emotemenu:setLimitation(true)
-    end
     if lib.progressCircle({
         duration = hotwireTime,
         label = locale('progress.searching_keys'),
@@ -90,9 +86,6 @@ local function findKeys(vehicleModel, vehicleClass, plate, vehicle)
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             exports.qbx_core:Notify(locale("notify.failed_keys"), 'error')
         end
-    end
-    if scullyEmotes then
-        exports.scully_emotemenu:setLimitation(false)
     end
 end
 
