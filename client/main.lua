@@ -229,6 +229,7 @@ local function carjackVehicle(driver, vehicle)
     }) then
         if cache.weapon and isCarjacking then
             local carjackChance = config.carjackChance[GetWeapontypeGroup(cache.weapon) --[[@as string]]] or 0.5
+            isCarjacking = false -- make this false to stop TaskVehicleTempAction from preventing ped to leave the car
 
             if math.random() <= carjackChance then
                 onCarjackSuccess(occupants, vehicle)
