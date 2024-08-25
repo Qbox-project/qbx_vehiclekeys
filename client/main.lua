@@ -152,6 +152,8 @@ local function makePedFlee(ped)
     ClearPedTasks(ped)
     SetPedFleeAttributes(ped, 0, false)
     TaskReactAndFleePed(ped, cache.ped)
+    TaskSmartFleePed(ped, cache.ped, 100.0, -1, false, false)
+    ResetPedLastVehicle(ped) -- make ped forget about his last car, so he cant return to it
 end
 
 local function makePedsPutHandsUpAndScream(occupants, vehicle)
