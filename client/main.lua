@@ -83,7 +83,7 @@ local function findKeys(vehicleModel, vehicleClass, plate, vehicle)
             combat = true,
         }
     }) then
-        if math.random() <= vehicleConfig.findKeysChance[vehicle] then
+        if math.random() <= vehicleConfig.findKeysChance then
             TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
             return true
         else
