@@ -9,6 +9,6 @@
 ---@field carjackingImmune? boolean
 ---@field lockpickImmune? boolean
 ---@field shared? boolean
----@field removeNormalLockpickChance number ratio
----@field removeAdvancedLockpickChance number ratio
----@field findKeysChance number ratio
+---@field removeNormalLockpickChance? number ratio
+---@field removeAdvancedLockpickChance? number ratio
+---@field findKeysChance? number ratio
