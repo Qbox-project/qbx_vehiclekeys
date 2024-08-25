@@ -36,7 +36,7 @@ local function giveKeys(id, plate)
     end
 end
 
-RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
+local function handKeys(id, plate)
     local vehicle = plate and getVehicleByPlate(plate) or cache.vehicle or getVehicleInFront()
     if not vehicle then return end
     plate = plate or qbx.getVehiclePlate(vehicle)
@@ -56,4 +56,6 @@ RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
         local playerId = lib.getClosestPlayer(GetEntityCoords(cache.ped), 3, false)
         giveKeys(playerId, plate)
     end
-end)
+end
+
+return handKeys

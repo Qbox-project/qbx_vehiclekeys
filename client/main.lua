@@ -414,6 +414,10 @@ AddEventHandler('onResourceStart', function(resourceName)
     end
 end)
 
+RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
+    require 'client.commands'(id, plate) -- we load command module when we actually need it
+end)
+
 --#region Backwards Compatibility ONLY -- Remove at some point --
 RegisterNetEvent('qb-vehiclekeys:client:AddKeys', function(plate)
     TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
