@@ -33,6 +33,9 @@ return {
         },
         ---@type table<VehicleType, VehicleConfig>
         types = { -- known types: automobile, bike, boat, heli, plane, submarine, trailer, train
+            bike = {
+                noLock = true
+            },
             -- automobile = {
             --     noLock = false,
             --     spawnLocked = 1.0,
