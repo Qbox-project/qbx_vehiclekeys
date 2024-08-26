@@ -142,13 +142,14 @@ return {
     ---@field class table<VehicleClass, SkillCheckConfig | {}>
     ---@field model table<number, SkillCheckConfig>
 
-    ---@class AnimConfigEntry
-    ---@field default Anim
-    ---@field class table<VehicleClass, Anim | {}>
-    ---@field model table<number, Anim>
+    ---@class SkillCheckEntities
+    ---@field lockpick SkillCheckConfigEntry
+    ---@field advancedLockpick SkillCheckConfigEntry
+    ---@field hotwire SkillCheckConfigEntry
+    ---@field advancedHotwire SkillCheckConfigEntry
 
+    ---@type SkillCheckEntities
     skillCheck = {
-        ---@type SkillCheckConfigEntry
         lockpick = {
             default = normalLockpickSkillCheck,
             class = {
@@ -179,7 +180,6 @@ return {
                 [`zombiea`] = normalLockpickSkillCheck
             }
         },
-        ---@type SkillCheckConfigEntry
         advancedLockpick = {
             default = easyLockpickSkillCheck,
             class = {
@@ -210,7 +210,6 @@ return {
                 [`zombiea`] = easyLockpickSkillCheck
             }
         },
-        ---@type SkillCheckConfigEntry
         hotwire = {
             default = normalLockpickSkillCheck,
             class = {
@@ -241,7 +240,6 @@ return {
                 [`zombiea`] = normalLockpickSkillCheck
             }
         },
-        ---@type SkillCheckConfigEntry
         advancedHotwire = {
             default = easyLockpickSkillCheck,
             class = {
@@ -274,8 +272,19 @@ return {
         }
     },
 
+    ---@class AnimConfigEntry
+    ---@field default Anim
+    ---@field class table<VehicleClass, Anim | {}>
+    ---@field model table<number, Anim>
+
+    ---@class AnimConfigEntities
+    ---@field hotwire AnimConfigEntry
+    ---@field searchKeys AnimConfigEntry
+    ---@field lockpick AnimConfigEntry
+    ---@field holdup AnimConfigEntry
+
+    ---@type AnimConfigEntities
     anims = {
-        ---@type AnimConfigEntry
         hotwire = {
             default = defaultHotwireAnim,
             class = {
@@ -306,7 +315,6 @@ return {
                 [`zombiea`] = defaultHotwireAnim
             }
         },
-        ---@type AnimConfigEntry
         searchKeys = {
             default = defaultSearchKeysAnim,
             class = {
@@ -337,7 +345,6 @@ return {
                 [`zombiea`] = defaultSearchKeysAnim
             }
         },
-        ---@type AnimConfigEntry
         lockpick = {
             default = defaultLockpickAnim,
             class = {
@@ -368,7 +375,6 @@ return {
                 [`zombiea`] = defaultLockpickAnim
             }
         },
-        ---@type AnimConfigEntry
         holdup = {
             default = defaultHoldupAnim,
             class = {
