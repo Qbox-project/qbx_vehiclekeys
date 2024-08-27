@@ -35,13 +35,18 @@ end
 
 ---Checks the vehicle is always locked at spawn.
 ---@param vehicle number The entity number of the vehicle.
+---@param isDriven boolean 
 ---@return boolean `true` if the vehicle is locked, `false` otherwise.
-function public.getIsVehicleInitiallyLocked(vehicle)
-    local isVehicleSpawnLocked = public.getVehicleConfig(vehicle).spawnLocked
-    if type(isVehicleSpawnLocked) == 'number' then
-        return math.random() < isVehicleSpawnLocked
+function public.getIsVehicleInitiallyLocked(vehicle, isDriven)
+    local vehicleConfig = public.getVehicleConfig(vehicle)
+    local vehicleLockedChance = isDriven
+        and vehicleConfig.drivenSpawnLocked
+        or vehicleConfig.spawnLocked
+
+    if type(vehicleLockedChance) == 'number' then
+        return math.random() < vehicleLockedChance
     else
-        return isVehicleSpawnLocked ~= nil
+        return vehicleLockedChance ~= nil
     end
 end
 

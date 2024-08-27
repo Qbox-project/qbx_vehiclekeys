@@ -73,10 +73,7 @@ AddEventHandler('entityCreated', function (entity)
 
     if not DoesEntityExist(vehicle) then return end -- ped can be not in vehicle, so we need to check if vehicle is a entity, otherwise it will return 0
 
-    local chance = math.random()
-    local isLocked = (getIsVehicleInitiallyLocked(vehicle)
-            or (type == EntityType.Ped and chance < config.lockNPCDrivenCarsChance)
-            or (type == EntityType.Vehicle and chance < config.lockNPCParkedCarsChance))
+    local isLocked = getIsVehicleInitiallyLocked(vehicle, type == EntityType.Ped)
         and not getIsVehicleAlwaysUnlocked(vehicle)
     SetVehicleDoorsLocked(vehicle, isLocked and 2 or 1)
 end)

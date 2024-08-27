@@ -5,6 +5,7 @@
 
 ---@class VehicleConfig
 ---@field spawnLocked? boolean | number ratio 0.0 - 1.0
+---@field drivenSpawnLocked? boolean | number ratio 0.0 - 1.0
 ---@field noLock? boolean
 ---@field carjackingImmune? boolean
 ---@field lockpickImmune? boolean

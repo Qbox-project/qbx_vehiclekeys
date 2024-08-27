@@ -10,7 +10,8 @@ return {
         ---@type VehicleConfig
         default = {
             noLock = false,
-            spawnLocked = 1.0,
+            spawnLocked = .75,
+            drivenSpawnLocked = .75,
             carjackingImmune = false,
             lockpickImmune = false,
             shared = false,
