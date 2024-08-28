@@ -99,6 +99,7 @@ function public.getVehicleConfig(vehicle)
 
     local noLock = findConfigValue(filteredConfig, 'noLock', false)
     local spawnLocked = noLock and 0.0 or findConfigValue(filteredConfig, 'spawnLocked', 1.0)
+    local drivenSpawnLocked = noLock and 0.0 or findConfigValue(filteredConfig, 'drivenSpawnLocked', 1.0)
     local carjackingImmune = findConfigValue(filteredConfig, 'carjackingImmune', false)
     local lockpickImmune = findConfigValue(filteredConfig, 'lockpickImmune', false)
     local shared = findConfigValue(filteredConfig, 'shared', false)
@@ -108,6 +109,7 @@ function public.getVehicleConfig(vehicle)
 
     return {
         spawnLocked = spawnLocked,
+        drivenSpawnLocked = drivenSpawnLocked,
         noLock = noLock,
         carjackingImmune = carjackingImmune,
         lockpickImmune = lockpickImmune,
