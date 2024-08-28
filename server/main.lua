@@ -68,11 +68,12 @@ AddEventHandler('entityCreated', function (entity)
         return
     end
 
-    local vehicle = type == EntityType.Ped and GetVehiclePedIsIn(entity, false) or entity
+    local isPed = type == EntityType.Ped
+    local vehicle = isPed and GetVehiclePedIsIn(entity, false) or entity
 
     if not DoesEntityExist(vehicle) then return end -- ped can be not in vehicle, so we need to check if vehicle is a entity, otherwise it will return 0
 
-    local isLocked = getIsVehicleInitiallyLocked(vehicle, type == EntityType.Ped)
-        and not getIsVehicleAlwaysUnlocked(vehicle)
+    local isLocked = not getIsVehicleAlwaysUnlocked(vehicle)
+        and getIsVehicleInitiallyLocked(vehicle, isPed)
     SetVehicleDoorsLocked(vehicle, isLocked and 2 or 1)
 end)
