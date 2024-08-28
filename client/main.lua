@@ -123,6 +123,7 @@ local function showHotwiringLabel(vehicle)
                 setSearchLabelState(true)
                 while not isVehicleAccessible and cache.seat == -1 do
                     SetVehicleEngineOn(cache.vehicle, false, true, true)
+                    DisableControlAction(0, 71, true)
                     Wait(0)
                     isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
                 end
