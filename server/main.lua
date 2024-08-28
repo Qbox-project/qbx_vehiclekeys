@@ -1,4 +1,3 @@
-local config = require 'config.server'
 local functions = require 'server.functions'
 local sharedFunctions = require 'shared.functions'
 
