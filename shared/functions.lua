@@ -46,7 +46,7 @@ function public.getIsVehicleInitiallyLocked(vehicle, isDriven)
     if type(vehicleLockedChance) == 'number' then
         return math.random() < vehicleLockedChance
     else
-        return vehicleLockedChance ~= nil
+        return vehicleLockedChance == true
     end
 end
 
