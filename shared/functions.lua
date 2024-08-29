@@ -40,8 +40,8 @@ end
 function public.getIsVehicleInitiallyLocked(vehicle, isDriven)
     local vehicleConfig = public.getVehicleConfig(vehicle)
     local vehicleLockedChance = isDriven
-        and vehicleConfig.drivenSpawnLocked
-        or vehicleConfig.spawnLocked
+        and vehicleConfig.spawnLockedIfDriven
+         or vehicleConfig.spawnLockedIfParked
 
     if type(vehicleLockedChance) == 'number' then
         return math.random() < vehicleLockedChance
@@ -98,8 +98,8 @@ function public.getVehicleConfig(vehicle)
     }
 
     local noLock = findConfigValue(filteredConfig, 'noLock', false)
-    local spawnLocked = noLock and 0.0 or findConfigValue(filteredConfig, 'spawnLocked', 1.0)
-    local drivenSpawnLocked = noLock and 0.0 or findConfigValue(filteredConfig, 'drivenSpawnLocked', 1.0)
+    local spawnLockedIfParked = noLock and 0.0 or findConfigValue(filteredConfig, 'spawnLockedIfParked', 1.0)
+    local spawnLockedIfDriven = noLock and 0.0 or findConfigValue(filteredConfig, 'spawnLockedIfDriven', 1.0)
     local carjackingImmune = findConfigValue(filteredConfig, 'carjackingImmune', false)
     local lockpickImmune = findConfigValue(filteredConfig, 'lockpickImmune', false)
     local shared = findConfigValue(filteredConfig, 'shared', false)
@@ -108,8 +108,8 @@ function public.getVehicleConfig(vehicle)
     local findKeysChance = findConfigValue(filteredConfig, 'findKeysChance', 1.0)
 
     return {
-        spawnLocked = spawnLocked,
-        drivenSpawnLocked = drivenSpawnLocked,
+        spawnLockedIfParked = spawnLockedIfParked,
+        spawnLockedIfDriven = spawnLockedIfDriven,
         noLock = noLock,
         carjackingImmune = carjackingImmune,
         lockpickImmune = lockpickImmune,
