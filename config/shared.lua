@@ -10,7 +10,8 @@ return {
         ---@type VehicleConfig
         default = {
             noLock = false,
-            spawnLocked = 1.0,
+            spawnLockedIfParked = .75,
+            spawnLockedIfDriven = .75,
             carjackingImmune = false,
             lockpickImmune = false,
             shared = false,
@@ -22,7 +23,7 @@ return {
         categories = { -- known categories: super, service, utility, helicopters, motorcycles, suvs, planes, sports, emergency, military, sportsclassics, compacts, sedans
             -- super = {
             --     noLock = false,
-            --     spawnLocked = 1.0,
+            --     spawnLockedIfParked = 1.0,
             --     carjackingImmune = false,
             --     lockpickImmune = false,
             --     shared = false,
@@ -38,7 +39,7 @@ return {
             },
             -- automobile = {
             --     noLock = false,
-            --     spawnLocked = 1.0,
+            --     spawnLockedIfParked = 1.0,
             --     carjackingImmune = false,
             --     lockpickImmune = false,
             --     shared = false,
@@ -50,7 +51,7 @@ return {
         ---@type table<Hash, VehicleConfig>
         models = {
             -- [`stockade`] = {
-            --     spawnLocked = 0.5
+            --     spawnLockedIfParked = 0.5
             -- }
         }
     },
