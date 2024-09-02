@@ -85,6 +85,8 @@ return {
 
     getKeysWhenEngineIsRunning = true, -- when enabled, gives keys to a player who doesn't have them if they enter the driver seat when the engine is running
 
+    keepEngineOnWhenAbandoned = true, -- when enabled, keeps a vehicle's engine running after exiting
+
     -- Carjack Settings
     carjackEnable = true,                -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
     carjackingTimeInMs = 7500,           -- Time it takes to successfully carjack in miliseconds
