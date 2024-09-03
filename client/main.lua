@@ -106,7 +106,10 @@ end
 local isShowHotwiringLabelRunning = false
 local function showHotwiringLabel(vehicle)
     if not vehicle or not DoesEntityExist(vehicle) then return end
-    SetVehicleKeepEngineOnWhenAbandoned(vehicle, true)
+    if config.keepEngineOnWhenAbandoned then
+        SetVehicleKeepEngineOnWhenAbandoned(vehicle, true)
+    end
+
     if getIsVehicleShared(vehicle)
         or isShowHotwiringLabelRunning then return end
     isShowHotwiringLabelRunning = true
