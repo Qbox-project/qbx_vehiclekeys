@@ -89,8 +89,10 @@ local function findKeys(vehicleModel, vehicleClass, plate, vehicle)
     end
 end
 
+local isSearchLocked = false
 local isSearchAllowed = false
 local function setSearchLabelState(isAllowed)
+    if isSearchLocked and isAllowed then return end
     local isOpen, text = lib.isTextUIOpen()
     local newText = locale('info.search_keys_dispatch')
     local isValidMessage = text and text == newText
@@ -310,6 +312,7 @@ lib.addKeybind({
     secondaryKey = 'LRIGHT_INDEX',
     onPressed = function()
         if isSearchAllowed and cache.vehicle then
+            isSearchLocked = true
             setSearchLabelState(false)
             local vehicle = cache.vehicle
             local plate = qbx.getVehiclePlate(vehicle)
@@ -321,6 +324,7 @@ lib.addKeybind({
                 end)
             end
             Wait(config.timeBetweenHotwires)
+            isSearchLocked = false
             setSearchLabelState(not isFound)
         end
     end
