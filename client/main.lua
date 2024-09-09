@@ -94,13 +94,13 @@ local function setSearchLabelState(isAllowed)
     local isOpen, text = lib.isTextUIOpen()
     local newText = locale('info.search_keys_dispatch')
     local isValidMessage = text and text == newText
-    if isAllowed and not isValidMessage then
+    if isAllowed and not isValidMessage and cache.seat == -1 then
         lib.showTextUI(newText)
-    elseif not isAllowed and isOpen and isValidMessage then
+    elseif (not isAllowed or not cache.seat == -1) and isOpen and isValidMessage then
         lib.hideTextUI()
     end
 
-    isSearchAllowed = isAllowed
+    isSearchAllowed = isAllowed and cache.seat == -1
 end
 
 local isShowHotwiringLabelRunning = false
