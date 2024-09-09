@@ -98,7 +98,7 @@ local function setSearchLabelState(isAllowed)
     local isValidMessage = text and text == newText
     if isAllowed and not isValidMessage and cache.seat == -1 then
         lib.showTextUI(newText)
-    elseif (not isAllowed or not cache.seat == -1) and isOpen and isValidMessage then
+    elseif (not isAllowed or cache.seat ~= -1) and isOpen and isValidMessage then
         lib.hideTextUI()
     end
 
