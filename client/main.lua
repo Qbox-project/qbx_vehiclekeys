@@ -93,6 +93,10 @@ local isSearchLocked = false
 local isSearchAllowed = false
 local function setSearchLabelState(isAllowed)
     if isSearchLocked and isAllowed then return end
+    if isAllowed and cache.vehicle and sharedFunctions.getVehicleConfig(cache.vehicle).findKeysChance == 0.0 then
+        isSearchAllowed = false
+        return
+    end
     local isOpen, text = lib.isTextUIOpen()
     local newText = locale('info.search_keys_dispatch')
     local isValidMessage = text and text == newText
