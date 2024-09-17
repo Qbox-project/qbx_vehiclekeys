@@ -2,8 +2,9 @@ return {
     ---For a given vehicle, the config used is based on precendence of:
     ---1. model
     ---2. category from qbx_core shared/vehicles.lua
-    ---3. type
-    ---4. default
+    ---3. class
+    ---4. type
+    ---5. default
     ---Each field falls back to its parent value if not specified.
     ---Example: model's shared value is nil, so the type's shared value is used.
     vehicles = {
@@ -18,6 +19,12 @@ return {
             removeNormalLockpickChance = 1.0,
             removeAdvancedLockpickChance = 1.0,
             findKeysChance = 0.5,
+        },
+        ---@type table<VehicleClass, VehicleConfig>
+        classes = {
+            -- [VehicleClass.EMERGENCY] = {
+
+            -- }
         },
         ---@type table<string, VehicleConfig>
         categories = { -- known categories: super, service, utility, helicopters, motorcycles, suvs, planes, sports, emergency, military, sportsclassics, compacts, sedans

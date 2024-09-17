@@ -35,7 +35,7 @@ end
 
 ---Checks the vehicle is always locked at spawn.
 ---@param vehicle number The entity number of the vehicle.
----@param isDriven boolean 
+---@param isDriven boolean
 ---@return boolean `true` if the vehicle is locked, `false` otherwise.
 function public.getIsVehicleInitiallyLocked(vehicle, isDriven)
     local vehicleConfig = public.getVehicleConfig(vehicle)
@@ -76,6 +76,8 @@ local function findConfigValue(filteredConfig, key, default)
         return filteredConfig.modelConfig[key]
     elseif filteredConfig.categoryConfig?[key] ~= nil then
         return filteredConfig.categoryConfig[key]
+    elseif filteredConfig.classConfig?[key] ~= nil then
+        return filteredConfig.classConfig[key]
     elseif filteredConfig.typeConfig?[key] ~= nil then
         return filteredConfig.typeConfig[key]
     elseif filteredConfig.defaultConfig?[key] ~= nil then
@@ -90,9 +92,11 @@ end
 ---@return VehicleConfig
 function public.getVehicleConfig(vehicle)
     local model = GetEntityModel(vehicle)
+    local class = IsDuplicityVersion() and exports.qbx_core:GetVehicleClass(vehicle) or GetVehicleClass(vehicle)
     local filteredConfig = {
         modelConfig = config.vehicles.models[model],
         categoryConfig = config.vehicles.categories[VEHICLES[model]?.category],
+        classConfig = config.vehicles.classes[class],
         typeConfig = config.vehicles.types[GetVehicleType(vehicle)],
         defaultConfig = config.vehicles.default
     }
