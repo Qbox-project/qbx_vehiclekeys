@@ -92,7 +92,7 @@ end
 ---@return VehicleConfig
 function public.getVehicleConfig(vehicle)
     local model = GetEntityModel(vehicle)
-    local class = IsDuplicityVersion() and exports.qbx_core:GetVehicleClass(vehicle) or GetVehicleClass(vehicle)
+    local class = IsDuplicityVersion() and exports.qbx_core:GetVehicleClass(model) or GetVehicleClass(vehicle)
     local filteredConfig = {
         modelConfig = config.vehicles.models[model],
         categoryConfig = config.vehicles.categories[VEHICLES[model]?.category],
