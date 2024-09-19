@@ -207,10 +207,11 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
 
     local isDriverSeatFree = IsVehicleSeatFree(vehicle, -1)
 
+    if GetVehicleDoorLockStatus(vehicle) < 2 then exports.qbx_core:Notify(locale('notify.vehicle_is_unlocked'), 'error') return end
+
     --- player may attempt to open the lock if:
     if not isDriverSeatFree -- no one in the driver's seat
         or not getIsCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
-        or GetVehicleDoorLockStatus(vehicle) < 2 -- the vehicle is locked
         or functions.getIsVehicleLockpickImmune(vehicle)
     then return end
 

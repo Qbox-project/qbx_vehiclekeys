@@ -40,7 +40,8 @@
     "vehicle_unlocked": "Araç açık",
     "removed_keys": "Plakalı %s aracın oyuncu %s'ye ait anahtarları alındı!",
     "removed_keys_player": "Plakalı %s araca ait anahtarlarınız alındı!",
-    "player_offline": "Bu oyuncu çevrimdışı!"
+    "player_offline": "Bu oyuncu çevrimdışı!",
+	"vehicle_is_unlocked": "Vehicle is already unlocked!"
   },
   "progress": {
     "attempting_carjack": "Araç hırsızlığı deneniyor...",
