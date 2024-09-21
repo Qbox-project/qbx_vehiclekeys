@@ -37,7 +37,9 @@ RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, state)
-    SetVehicleDoorsLocked(NetworkGetEntityFromNetworkId(vehNetId), state)
+	local vehicleEntity = NetworkGetEntityFromNetworkId(vehNetId)
+	if type(state) ~= 'number' or not DoesEntityExist(vehicleEntity) then return end
+    Entity(vehicleEntity).state:set('doorslockstate', state, true)
 end)
 
 RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()

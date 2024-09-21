@@ -40,7 +40,8 @@
     "vehicle_unlocked": "Voertuig van het slot gehaald!",
     "removed_keys": "De sleutels voor het voertuig met kenteken %s voor speler %s zijn afgenomen!",
     "removed_keys_player": "De sleutels voor het voertuig met kenteken %s zijn van je afgenomen!",
-    "player_offline": "Deze speler is niet online!"
+    "player_offline": "Deze speler is niet online!",
+	"vehicle_is_unlocked": "Voertuig staat niet op slot!"
   },
   "progress": {
     "attempting_carjack": "Voertuig Stelen...",

@@ -416,6 +416,11 @@ if config.carjackEnable then
     end)
 end
 
+qbx.entityStateHandler('doorslockstate', function(entity, _, value)
+    if entity == 0 then return end
+    SetVehicleDoorsLocked(entity, value)
+end)
+
 AddEventHandler('onResourceStart', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then return end
 

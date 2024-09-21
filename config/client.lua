@@ -32,7 +32,7 @@ local defaultHotwireAnim = { dict = 'anim@veh@plane@howard@front@ds@base', clip 
 local defaultSearchKeysAnim = { dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@', clip = 'machinic_loop_mechandplayer' }
 
 ---@type Anim
-local defaultLockpickAnim = { dict = 'anim@mp_player_intmenu@key_fob@', clip = 'fob_click' }
+local defaultLockpickAnim = { dict = 'veh@break_in@0h@p_m_one@', clip = 'low_force_entry_ds' }
 
 ---@type Anim
 local defaultHoldupAnim = { dict = 'mp_am_hold_up', clip = 'holdup_victim_20s' }

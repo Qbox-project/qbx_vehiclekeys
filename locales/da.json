@@ -42,7 +42,8 @@
     "vehicle_unlocked": "Køretøj ulåst!",
     "removed_keys": "Nøglerne til nummerplade %s for spiller %s er blevet fjernet!",
     "removed_keys_player": "Dine nøgler til nummerplade %s er blevet fjernet!",
-    "player_offline": "Denne spiller er ikke online!"
+    "player_offline": "Denne spiller er ikke online!",
+	"vehicle_is_unlocked": "Vehicle is already unlocked!"
   },
   "progress": {
     "attempting_carjack": "Forsøger at kapre køretøjet...",

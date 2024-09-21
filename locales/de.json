@@ -40,7 +40,8 @@
     "vehicle_unlocked": "Fahrzeug entriegelt.",
     "removed_keys": "The keys to plate %s for player %s have been removed!",
     "removed_keys_player": "Your keys to plate %s have been removed!",
-    "player_offline": "This player is not online!"
+    "player_offline": "This player is not online!",
+	"vehicle_is_unlocked": "Vehicle is already unlocked!"
   },
   "progress": {
     "attempting_carjack": "Versuchter Autodiebstahl...",

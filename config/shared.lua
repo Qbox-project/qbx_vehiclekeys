@@ -11,13 +11,13 @@ return {
         ---@type VehicleConfig
         default = {
             noLock = false,
-            spawnLockedIfParked = .75,
-            spawnLockedIfDriven = .75,
+            spawnLockedIfParked = 0.75,
+            spawnLockedIfDriven = 0.75,
             carjackingImmune = false,
             lockpickImmune = false,
             shared = false,
-            removeNormalLockpickChance = 1.0,
-            removeAdvancedLockpickChance = 1.0,
+            removeNormalLockpickChance = 0.4,
+            removeAdvancedLockpickChance = 0.2,
             findKeysChance = 0.5,
         },
         ---@type table<VehicleClass, VehicleConfig>
