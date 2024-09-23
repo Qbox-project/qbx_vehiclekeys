@@ -79,7 +79,7 @@ function public.getVehicleInFront()
     for i = 1, #raycastOffsetTable do
         local vehicle = getVehicleInDirection(raycastOffsetTable[i]['fromOffset'], raycastOffsetTable[i]['toOffset'])
 
-        if IsEntityAVehicle(vehicle) then
+        if vehicle and DoesEntityExist(vehicle) and IsEntityAVehicle(vehicle) then
             return vehicle
         end
     end
