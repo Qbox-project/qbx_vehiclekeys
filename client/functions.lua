@@ -45,17 +45,6 @@ end
 
 exports('ToggleEngine', public.toggleEngine)
 
-function public.getNPCPedsInVehicle(vehicle)
-    local otherPeds = {}
-    for seat = -1, GetVehicleModelNumberOfSeats(GetEntityModel(vehicle)) - 2 do
-        local pedInSeat = GetPedInVehicleSeat(vehicle, seat)
-        if pedInSeat ~= 0 and not IsPedAPlayer(pedInSeat) then
-            otherPeds[#otherPeds + 1] = pedInSeat
-        end
-    end
-    return otherPeds
-end
-
 local function getVehicleInDirection(coordFromOffset, coordToOffset)
     local coordFrom = GetOffsetFromEntityInWorldCoords(cache.ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
     local coordTo = GetOffsetFromEntityInWorldCoords(cache.ped, coordToOffset.x, coordToOffset.y, coordToOffset.z)
