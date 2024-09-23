@@ -6,6 +6,7 @@ local addPlayer = functions.addPlayer
 local removePlayer = functions.removePlayer
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
 local getIsVehicleInitiallyLocked = sharedFunctions.getIsVehicleInitiallyLocked
+local getIsVehicleShared = sharedFunctions.getIsVehicleShared
 
 ---@enum EntityType
 local EntityType = {
@@ -39,6 +40,7 @@ end)
 RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, state)
 	local vehicleEntity = NetworkGetEntityFromNetworkId(vehNetId)
 	if type(state) ~= 'number' or not DoesEntityExist(vehicleEntity) then return end
+    if getIsVehicleAlwaysUnlocked(vehicleEntity) or getIsVehicleShared(vehicleEntity) then return end
     Entity(vehicleEntity).state:set('doorslockstate', state, true)
 end)
 
