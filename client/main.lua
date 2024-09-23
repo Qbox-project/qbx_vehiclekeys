@@ -418,9 +418,6 @@ end
 
 qbx.entityStateHandler('doorslockstate', function(entity, _, value)
     if entity == 0 then return end
-    if getIsVehicleShared(entity) then
-        value = 1
-    end
     SetVehicleDoorsLocked(entity, value)
 end)
 
