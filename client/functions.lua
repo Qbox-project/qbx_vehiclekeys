@@ -31,7 +31,12 @@ exports('HasKeys', public.hasKeys)
 ---@param plate string? The plate number of the vehicle.
 ---@return boolean? `true` if player has access to the vehicle, `nil` otherwise.
 function public.getIsVehicleAccessible(vehicle, plate)
-    plate = plate or qbx.getVehiclePlate(vehicle)
+    local qbxPlate = qbx.getVehiclePlate(vehicle) -- Define local variable rather than call twice
+    plate = plate or qbxPlate
+    if plate ~= qbxPlate then -- Double check if plate matches (Sometimes only uses plate from inital spawn, instead of updated plate, breaking this e.g. JG scripts like garages & dealerships)
+        plate = qbxPlate
+    end
+
     return public.hasKeys(plate) or public.areKeysJobShared(vehicle)
 end
 
