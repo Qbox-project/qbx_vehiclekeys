@@ -106,45 +106,49 @@ local function setSearchLabelState(isAllowed)
     isSearchAllowed = isAllowed and cache.seat == -1
 end
 
-local isShowHotwiringLabelRunning = false
-local function showHotwiringLabel(vehicle)
-    if not vehicle or not DoesEntityExist(vehicle) then return end
-    if config.keepEngineOnWhenAbandoned then
-        SetVehicleKeepEngineOnWhenAbandoned(vehicle, true)
+---if the player does not have ignition access to the vehicle:
+---check whether to give keys if engine is on
+---disable the engine and listen for search keys if applicable to the vehicle
+local function onEnteringDriverSeat()
+    local vehicle = cache.vehicle
+    if getIsVehicleShared(vehicle) then return end
+
+    local plate = qbx.getVehiclePlate(vehicle)
+    local isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
+    if isVehicleAccessible then return end
+
+    local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
+    if config.getKeysWhenEngineIsRunning and isVehicleRunning then
+        lib.print.debug("giving keys because engine is running. plate:", plate)
+        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+        return
     end
 
-    if getIsVehicleShared(vehicle)
-        or isShowHotwiringLabelRunning then return end
-    isShowHotwiringLabelRunning = true
+    lib.print.debug("player does not have access to vehicle ignition. Disabling engine. plate:", plate)
+    SetVehicleNeedsToBeHotwired(vehicle, false)
     CreateThread(function()
-        local plate = qbx.getVehiclePlate(vehicle)
-        local isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
-        -- Hotwiring while in vehicle, also keeps engine off for vehicles you don't own keys to
-        if not isVehicleAccessible and cache.seat == -1 then
-            local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
-            if config.getKeysWhenEngineIsRunning and isVehicleRunning then
-                TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
-            else
-                SetVehicleNeedsToBeHotwired(vehicle, false)
-                setSearchLabelState(true)
-                while not isVehicleAccessible and cache.seat == -1 do
-                    SetVehicleEngineOn(cache.vehicle, false, true, true)
-                    DisableControlAction(0, 71, true)
-                    Wait(0)
-                    isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
-                end
-
-                if lib.progressActive() then
-                    lib.cancelProgress()
-                end
-
-                setSearchLabelState(false)
-            end
+        while not isVehicleAccessible and cache.seat == -1 do
+            SetVehicleEngineOn(vehicle, false, true, true)
+            DisableControlAction(0, 71, true)
+            Wait(0)
+            isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
         end
-
-        isShowHotwiringLabelRunning = false
+        if lib.progressActive() then
+            lib.cancelProgress()
+        end
+        setSearchLabelState(false)
     end)
+
+    if sharedFunctions.getVehicleConfig(vehicle).findKeysChance ~= 0.0 then
+        setSearchLabelState(true)
+    end
 end
+
+lib.onCache('seat', function(newSeat)
+    if newSeat ~= -1 then return end
+    Wait(0) -- needed to update cache.seat
+    onEnteringDriverSeat()
+end)
 
 -----------------------
 ------ Key Binds ------
@@ -248,20 +252,10 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
 end)
 
 RegisterNetEvent('qbx_vehiclekeys:client:OnLostKeys', function()
-    Wait(0)
-    showHotwiringLabel(cache.vehicle)
+    if cache.seat == -1 then
+        onEnteringDriverSeat()
+    end
 end)
-
-AddEventHandler('ox_lib:cache:seat', function()
-    showHotwiringLabel(cache.vehicle)
-end)
-
-AddEventHandler('ox_lib:cache:vehicle', function()
-    showHotwiringLabel(cache.vehicle)
-end)
-
--- lib.onCache('vehicle', function (vehicle) ---for some reason the autolock works with this
--- end)
 
 for _, info in pairs(config.sharedKeys) do
     if info.enableAutolock then
@@ -287,8 +281,9 @@ end)
 
 AddEventHandler('onResourceStart', function(resourceName)
     if (GetCurrentResourceName() ~= resourceName) then return end
-
-    showHotwiringLabel(cache.vehicle)
+    if cache.seat == -1 then
+        onEnteringDriverSeat()
+    end
 end)
 
 RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
