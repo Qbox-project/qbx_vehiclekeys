@@ -10,7 +10,6 @@ local hotwire = functions.hotwire
 local toggleEngine = functions.toggleEngine
 local lockpickDoor = functions.lockpickDoor
 local areKeysJobShared = functions.areKeysJobShared
-local getVehicleInFront = functions.getVehicleInFront
 local sendPoliceAlertAttempt = functions.sendPoliceAlertAttempt
 local getIsVehicleAccessible = functions.getIsVehicleAccessible
 
