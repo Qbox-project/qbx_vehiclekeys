@@ -15,7 +15,7 @@ local EntityType = {
 }
 
 RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(netId)
-    giveKeys(source, NetToVeh(netId))
+    giveKeys(source, NetworkGetEntityFromNetworkId(netId))
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
