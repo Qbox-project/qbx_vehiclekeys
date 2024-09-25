@@ -5,7 +5,41 @@ local debug = GetConvarInt(('%s-debug'):format(GetCurrentResourceName()), 0) == 
 local keysList = {} ---holds key status for some time after player logs out (Prevents frustration by crashing the client)
 local keysLifetime = {} ---Life timestamp of the keys of a character who has logged out
 
----Removes old keys from server memory 
+---Gets Citizen Id based on source
+---@param source number ID of the player
+---@return string? citizenid The player CitizenID, nil otherwise.
+local function getCitizenId(source)
+    local player = exports.qbx_core:GetPlayer(source)
+    if not player then return end
+
+    return player.PlayerData.citizenid
+end
+
+RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
+    local src = source
+    local citizenId = getCitizenId(src)
+    if not citizenId then return end
+    if keysList[citizenId] then
+        Player(src).state:set('keysList', keysList[citizenId], true)
+        keysList[citizenId] = nil
+        keysLifetime[citizenId] = nil
+    end
+end)
+
+local function onPlayerUnload(src)
+    local citizenId = getCitizenId(src)
+    if not citizenId then return end
+    keysList[citizenId] = Player(src).state.keysList
+    keysLifetime[citizenId] = os.time()
+end
+
+RegisterNetEvent('QBCore:Server:OnPlayerUnload', onPlayerUnload)
+
+AddEventHandler('playerDropped', function()
+    onPlayerUnload(source)
+end)
+
+---Removes old keys from server memory
 lib.cron.new('*/'..config.runClearCronMinutes ..' * * * *', function ()
     local time = os.time()
     local seconds = config.runClearCronMinutes * 60
@@ -17,87 +51,18 @@ lib.cron.new('*/'..config.runClearCronMinutes ..' * * * *', function ()
     end
 end, {debug = debug})
 
----Gets Citizen Id based on source
----@param source number ID of the player
----@return string? citizenid The player CitizenID, nil otherwise.
-local function getCitizenId(source)
-    local player = exports.qbx_core:GetPlayer(source)
-    if not player then return end
-
-    return player.PlayerData.citizenid
-end
-
----Looking for a vehicle in the world
----@param plate string The plate number of the vehicle.
----@return number? vehicle The entity number of the found vehicle, nil otherwise.
-function public.findVehicleByPlate(plate)
-    local vehicles = GetAllVehicles()
-    for i = 1, #vehicles do
-        local vehicle = vehicles[i]
-        if qbx.getVehiclePlate(vehicle) == plate then
-            return vehicle
-        end
-    end
-end
-
----Loads a players vehicles to the vehicleList
----@param src integer
-function public.addPlayer(src)
-    local citizenid = getCitizenId(src)
-    if not citizenid then return end
-
-    local vehicles = MySQL.query.await('SELECT plate FROM player_vehicles WHERE citizenid = ?', { citizenid })
-
-    local state = {}
-    local platesAssociations = {}
-
-    for i = 1, #vehicles do
-        platesAssociations[vehicles[i].plate] = true
-    end
-
-    if keysList[citizenid] then
-        keysLifetime[citizenid] = nil
-
-        for plate in pairs(keysList[citizenid]) do
-            platesAssociations[plate] = true
-        end
-    end
-
-    local worldVehicles = GetAllVehicles()
-    for i = 1, #worldVehicles do
-        local vehiclePlate = qbx.getVehiclePlate(worldVehicles[i])
-        if platesAssociations[vehiclePlate] then
-            state[vehiclePlate] = true
-        end
-    end
-
-    Player(src).state:set('keysList', state, true)
-end
-
----Removes a players vehicles from the vehicleList
----@param src integer
-function public.removePlayer(src)
-    local citizenid = getCitizenId(src)
-    if not citizenid then return end
-
-    keysList[citizenid] = Player(src).state.keysList
-    keysLifetime[citizenid] = os.time()
-
-    Player(src).state:set('keysList', nil, true)
-end
-
 --- Removing the vehicle keys from the user
 ---@param source number ID of the player
----@param plate string The plate number of the vehicle.
-function public.removeKeys(source, plate)
+---@param vehicle number
+function public.removeKeys(source, vehicle)
     local citizenid = getCitizenId(source)
 
     if not citizenid then return end
 
     local keys = Player(source).state.keysList or {}
-
-    if not keys[plate] then return end
-    keys[plate] = nil
+    local sessionId = Entity(vehicle).state.sessionId
+    if not keys[sessionId] then return end
+    keys[sessionId] = nil
 
     Player(source).state:set('keysList', keys, true)
 
@@ -107,23 +72,22 @@ function public.removeKeys(source, plate)
     return true
 end
 
----Gives the user the keys to the vehicle
----@param source number ID of the player
----@param plate string The plate number of the vehicle.
-function public.giveKeys(source, plate)
-    local citizenid = getCitizenId(source)
+exports('RemoveKeys', public.removeKeys)
 
+---@param source number
+---@param vehicle number
+function public.giveKeys(source, vehicle)
+    local citizenid = getCitizenId(source)
     if not citizenid then return end
 
+    local sessionId = Entity(vehicle).state.sessionId or exports.qbx_core:CreateSessionId(vehicle)
     local keys = Player(source).state.keysList or {}
+    if keys[sessionId] then return end
 
-    if keys[plate] then return end
-    keys[plate] = true
+    keys[sessionId] = true
 
     Player(source).state:set('keysList', keys, true)
-
     exports.qbx_core:Notify(source, locale('notify.keys_taken'))
-
     return true
 end
 

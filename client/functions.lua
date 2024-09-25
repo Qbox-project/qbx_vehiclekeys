@@ -17,38 +17,28 @@ function public.areKeysJobShared(vehicle)
 end
 
 ---Checks if player has vehicle keys
----@param plate string The plate number of the vehicle.
+---@param vehicle number
 ---@return boolean? `true` if player has vehicle keys, `nil` otherwise.
-function public.hasKeys(plate)
+function public.hasKeys(vehicle)
     local keysList = LocalPlayer.state.keysList or {}
-    return keysList[plate]
+    local sessionId = Entity(vehicle).state.sessionId
+    return keysList[sessionId]
 end
 
 exports('HasKeys', public.hasKeys)
 
 ---Checks if player has vehicle keys of or access to the vehicle is provided as part of his job.
 ---@param vehicle number The entity number of the vehicle.
----@param plate string? The plate number of the vehicle.
 ---@return boolean? `true` if player has access to the vehicle, `nil` otherwise.
-function public.getIsVehicleAccessible(vehicle, plate)
-    local qbxPlate = qbx.getVehiclePlate(vehicle) -- Define local variable rather than call twice
-    plate = plate or qbxPlate
-    if plate ~= qbxPlate then -- Double check if plate matches (Sometimes only uses plate from inital spawn, instead of updated plate, breaking this e.g. JG scripts like garages & dealerships)
-        plate = qbxPlate
-    end
-
-    return public.hasKeys(plate) or public.areKeysJobShared(vehicle)
+function public.getIsVehicleAccessible(vehicle)
+    return public.hasKeys(vehicle) or public.areKeysJobShared(vehicle)
 end
-
-exports('HasAccess', public.getIsVehicleAccessible)
 
 function public.toggleEngine(vehicle)
     if not public.getIsVehicleAccessible(vehicle) then return end
     local engineOn = GetIsVehicleEngineRunning(vehicle)
     SetVehicleEngineOn(vehicle, not engineOn, false, true)
 end
-
-exports('ToggleEngine', public.toggleEngine)
 
 local function getVehicleInDirection(coordFromOffset, coordToOffset)
     local coordFrom = GetOffsetFromEntityInWorldCoords(cache.ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
@@ -237,8 +227,7 @@ end
 ---Will be executed when the lock opening is successful.
 ---@param vehicle number The entity number of the vehicle.
 local function hotwireSuccessCallback(vehicle)
-    local plate = qbx.getVehiclePlate(vehicle)
-    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(vehicle))
 end
 
 ---Operations done after the LockpickDoor quickevent done.
