@@ -161,7 +161,8 @@ togglelocksBind = lib.addKeybind({
     defaultKey = 'L',
     onPressed = function()
         togglelocksBind:disable(true)
-        setVehicleDoorLock(getVehicleInFront(), nil, true)
+        local vehicle = lib.getClosestVehicle(GetEntityCoords(cache.ped), config.vehicleMaximumLockingDistance, true)
+        setVehicleDoorLock(vehicle, nil, true)
         Wait(1000)
         togglelocksBind:disable(false)
     end
