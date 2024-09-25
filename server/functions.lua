@@ -1,12 +1,12 @@
 local public = {}
 local config = require 'config.server'
-local debug = GetConvarInt(('%s-debug'):format(GetCurrentResourceName()), 0) == 1
+local isDebug = GetConvar('ox:printlevel:' .. cache.resource, GetConvar('ox:printlevel', 'info')) == 'debug'
 
-local keysList = {} ---holds key status for some time after player logs out (Prevents frustration by crashing the client)
+local keysList = {}     ---holds key status for some time after player logs out (Prevents frustration by crashing the client)
 local keysLifetime = {} ---Life timestamp of the keys of a character who has logged out
 
----Removes old keys from server memory 
-lib.cron.new('*/'..config.runClearCronMinutes ..' * * * *', function ()
+---Removes old keys from server memory
+lib.cron.new('*/' .. config.runClearCronMinutes .. ' * * * *', function()
     local time = os.time()
     local seconds = config.runClearCronMinutes * 60
     for citizenId, lifetime in pairs(keysLifetime) do
@@ -15,7 +15,7 @@ lib.cron.new('*/'..config.runClearCronMinutes ..' * * * *', function ()
             keysLifetime[citizenId] = nil
         end
     end
-end, {debug = debug})
+end, { debug = isDebug })
 
 ---Gets Citizen Id based on source
 ---@param source number ID of the player
@@ -48,9 +48,7 @@ function public.addPlayer(src)
 
     local vehicles = MySQL.query.await('SELECT plate FROM player_vehicles WHERE citizenid = ?', { citizenid })
 
-    local state = {}
     local platesAssociations = {}
-
     for i = 1, #vehicles do
         platesAssociations[vehicles[i].plate] = true
     end
@@ -63,6 +61,7 @@ function public.addPlayer(src)
         end
     end
 
+    local state = {}
     local worldVehicles = GetAllVehicles()
     for i = 1, #worldVehicles do
         local vehiclePlate = qbx.getVehiclePlate(worldVehicles[i])
