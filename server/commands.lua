@@ -1,6 +1,3 @@
-local functions = require 'server.functions'
-local giveKeys = functions.giveKeys
-
 ---@param src number
 ---@param vehicle number
 ---@return boolean
@@ -47,13 +44,13 @@ local function transferKeys(source, target, enforceSrcHasKeys)
         return
     end
     if target and type(target) == 'number' then
-        giveKeys(target, vehicle)
+        GiveKeys(target, vehicle)
     elseif GetVehiclePedIsIn(playerPed, false) == vehicle then -- Give keys to everyone in vehicle
         for i = -1, 7 do
             local ped = GetPedInVehicleSeat(vehicle, i)
             local serverId = ped and NetworkGetEntityOwner(ped)
             if serverId and serverId ~= source then
-                giveKeys(serverId, vehicle)
+                GiveKeys(serverId, vehicle)
             end
         end
 
@@ -61,7 +58,7 @@ local function transferKeys(source, target, enforceSrcHasKeys)
     else -- Give keys to closest player
         local closestPlayer = getClosestPlayer(source)
         if closestPlayer then
-            giveKeys(closestPlayer, vehicle)
+            GiveKeys(closestPlayer, vehicle)
         end
     end
 end

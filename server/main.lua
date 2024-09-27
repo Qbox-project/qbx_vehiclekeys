@@ -1,7 +1,5 @@
-local functions = require 'server.functions'
 local sharedFunctions = require 'shared.functions'
 
-local giveKeys = functions.giveKeys
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
 local getIsVehicleInitiallyLocked = sharedFunctions.getIsVehicleInitiallyLocked
 local getIsVehicleShared = sharedFunctions.getIsVehicleShared
@@ -15,7 +13,7 @@ local EntityType = {
 }
 
 RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(netId)
-    giveKeys(source, NetworkGetEntityFromNetworkId(netId))
+    GiveKeys(source, NetworkGetEntityFromNetworkId(netId))
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)

@@ -1,4 +1,3 @@
-local public = {}
 local config = require 'config.server'
 local debug = GetConvarInt(('%s-debug'):format(GetCurrentResourceName()), 0) == 1
 
@@ -54,7 +53,7 @@ end, {debug = debug})
 --- Removing the vehicle keys from the user
 ---@param source number ID of the player
 ---@param vehicle number
-function public.removeKeys(source, vehicle)
+function RemoveKeys(source, vehicle)
     local citizenid = getCitizenId(source)
 
     if not citizenid then return end
@@ -72,11 +71,11 @@ function public.removeKeys(source, vehicle)
     return true
 end
 
-exports('RemoveKeys', public.removeKeys)
+exports('RemoveKeys', RemoveKeys)
 
 ---@param source number
 ---@param vehicle number
-function public.giveKeys(source, vehicle)
+function GiveKeys(source, vehicle)
     local citizenid = getCitizenId(source)
     if not citizenid then return end
 
@@ -91,6 +90,4 @@ function public.giveKeys(source, vehicle)
     return true
 end
 
-exports('GiveKeys', public.giveKeys)
-
-return public
+exports('GiveKeys', GiveKeys)
