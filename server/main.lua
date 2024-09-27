@@ -1,9 +1,5 @@
-local functions = require 'server.functions'
 local sharedFunctions = require 'shared.functions'
 
-local giveKeys = functions.giveKeys
-local addPlayer = functions.addPlayer
-local removePlayer = functions.removePlayer
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
 local getIsVehicleInitiallyLocked = sharedFunctions.getIsVehicleInitiallyLocked
 local getIsVehicleShared = sharedFunctions.getIsVehicleShared
@@ -16,20 +12,8 @@ local EntityType = {
     Object = 3
 }
 
--- Event to give keys. receiver can either be a single id, or a table of ids.
--- Must already have keys to the vehicle, trigger the event from the server, or pass forcegive paramter as true.
-RegisterNetEvent('qb-vehiclekeys:server:GiveVehicleKeys', function(receiver, plate)
-    if type(receiver) == 'table' then
-        for i = 1, receiver do
-            giveKeys(receiver[i], plate)
-        end
-    else
-        giveKeys(receiver, plate)
-    end
-end)
-
-RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(plate)
-    giveKeys(source, plate)
+RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(netId)
+    GiveKeys(source, NetworkGetEntityFromNetworkId(netId))
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
@@ -42,19 +26,6 @@ RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, sta
 	if type(state) ~= 'number' or not DoesEntityExist(vehicleEntity) then return end
     if getIsVehicleAlwaysUnlocked(vehicleEntity) or getIsVehicleShared(vehicleEntity) then return end
     Entity(vehicleEntity).state:set('doorslockstate', state, true)
-end)
-
-RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
-    addPlayer(source --[[@as integer]])
-end)
-
----@param src integer
-RegisterNetEvent('QBCore:Server:OnPlayerUnload', function(src)
-    removePlayer(src)
-end)
-
-AddEventHandler('playerDropped', function()
-    removePlayer(source --[[@as integer]])
 end)
 
 ---Lock every spawned vehicle

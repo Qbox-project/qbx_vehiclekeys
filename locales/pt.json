@@ -35,6 +35,7 @@
     "keys_taken": "Recebeste as chaves do veículo!",
     "no_keys": "Não tens as chaves deste veículo.",
     "not_near": "Não há ninguém por perto para entregar as chaves",
+    "vehicle_not_near": "Not close enough to vehicle",
     "vehicle_locked": "Veículo trancado!",
     "vehicle_lockedpick": "Conseguiste abrir a fechadura da porta!",
     "vehicle_unlocked": "Veículo destrancado!",

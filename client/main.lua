@@ -55,7 +55,7 @@ end
 
 exports('SetVehicleDoorLock', setVehicleDoorLock)
 
-local function findKeys(vehicleModel, vehicleClass, plate, vehicle)
+local function findKeys(vehicleModel, vehicleClass, vehicle)
     local vehicleConfig = sharedFunctions.getVehicleConfig(vehicle)
     local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
 
@@ -76,7 +76,7 @@ local function findKeys(vehicleModel, vehicleClass, plate, vehicle)
         }
     }) then
         if math.random() <= vehicleConfig.findKeysChance then
-            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(vehicle))
             return true
         else
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
@@ -112,25 +112,24 @@ local function onEnteringDriverSeat()
     local vehicle = cache.vehicle
     if getIsVehicleShared(vehicle) then return end
 
-    local plate = qbx.getVehiclePlate(vehicle)
-    local isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
+    local isVehicleAccessible = getIsVehicleAccessible(vehicle)
     if isVehicleAccessible then return end
 
     local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
     if config.getKeysWhenEngineIsRunning and isVehicleRunning then
-        lib.print.debug("giving keys because engine is running. plate:", plate)
-        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+        lib.print.debug("giving keys because engine is running")
+        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(vehicle))
         return
     end
 
-    lib.print.debug("player does not have access to vehicle ignition. Disabling engine. plate:", plate)
+    lib.print.debug("player does not have access to vehicle ignition. Disabling engine.")
     SetVehicleNeedsToBeHotwired(vehicle, false)
     CreateThread(function()
         while not isVehicleAccessible and cache.seat == -1 do
             SetVehicleEngineOn(vehicle, false, true, true)
             DisableControlAction(0, 71, true)
             Wait(0)
-            isVehicleAccessible = getIsVehicleAccessible(vehicle, plate)
+            isVehicleAccessible = getIsVehicleAccessible(vehicle)
         end
         if lib.progressActive() then
             lib.cancelProgress()
@@ -193,10 +192,9 @@ lib.addKeybind({
             isSearchLocked = true
             setSearchLabelState(false)
             local vehicle = cache.vehicle
-            local plate = qbx.getVehiclePlate(vehicle)
             local isFound
-            if not getIsVehicleAccessible(vehicle, plate) then
-                isFound = findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), plate, vehicle)
+            if not getIsVehicleAccessible(vehicle) then
+                isFound = findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), vehicle)
                 SetTimeout(10000, function()
                     sendPoliceAlertAttempt('steal')
                 end)
@@ -232,7 +230,7 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
                 car = true,
             },
         }) then
-            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', qbx.getVehiclePlate(data.vehicle))
+            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(data.vehicle))
         end
     end
     isTakingKeys = false
@@ -285,17 +283,3 @@ AddEventHandler('onResourceStart', function(resourceName)
         onEnteringDriverSeat()
     end
 end)
-
-RegisterNetEvent('qb-vehiclekeys:client:GiveKeys', function(id, plate)
-    require 'client.commands'(id, plate) -- we load command module when we actually need it
-end)
-
---#region Backwards Compatibility ONLY -- Remove at some point --
-RegisterNetEvent('qb-vehiclekeys:client:AddKeys', function(plate)
-    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
-end)
-
-RegisterNetEvent('vehiclekeys:client:SetOwner', function(plate)
-    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
-end)
---#endregion Backwards Compatibility ONLY -- Remove at some point --

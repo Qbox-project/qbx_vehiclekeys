@@ -35,6 +35,7 @@
     "keys_taken": "Vous obtenez les clés du véhicule!",
     "no_keys": "Vous n'avez pas de clés de ce véhicule.",
     "not_near": "Il n'y a personne à proximité.",
+    "vehicle_not_near": "Not close enough to vehicle",
     "vehicle_locked": "Véhicule verrouillé!",
     "vehicle_lockedpick": "Vous avez réussi à ouvrir le véhicule!",
     "vehicle_unlocked": "Véhicule déverrouillé!",

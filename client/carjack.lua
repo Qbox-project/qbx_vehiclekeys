@@ -42,7 +42,6 @@ local function makePedsPutHandsUpAndScream(occupants, vehicle)
 end
 
 local function onCarjackSuccess(occupants, vehicle)
-    local plate = qbx.getVehiclePlate(vehicle)
     for p = 1, #occupants do
         local ped = occupants[p]
         CreateThread(function()
@@ -55,7 +54,7 @@ local function onCarjackSuccess(occupants, vehicle)
     end
     TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
-    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', plate)
+    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(vehicle))
 end
 
 local function onCarjackFail(driver)

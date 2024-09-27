@@ -35,6 +35,7 @@
     "keys_taken": "Dostanete klíčky od vozidla!",
     "no_keys": "Od tohoto vozidla nemáte klíče.",
     "not_near": "V blízkosti není nikdo, komu by bylo možné předat klíče",
+    "vehicle_not_near": "Not close enough to vehicle",
     "vehicle_locked": "Vozidlo je zamčené!",
     "vehicle_lockedpick": "Podařilo se ti otevřít zámek dveří!",
     "vehicle_unlocked": "Vozidlo odemčeno!",

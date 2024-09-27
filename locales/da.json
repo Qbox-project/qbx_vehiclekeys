@@ -37,6 +37,7 @@
     "keys_removed": "Du mistede nøglerne til køretøjet!",
     "no_keys": "Du har ikke nøgler til dette køretøj.",
     "not_near": "Der er ingen i nærheden at give nøglerne til",
+    "vehicle_not_near": "Not close enough to vehicle",
     "vehicle_locked": "Køretøj låst!",
     "vehicle_lockedpick": "Det lykkedes dig at dirke dørlåsen op!",
     "vehicle_unlocked": "Køretøj ulåst!",

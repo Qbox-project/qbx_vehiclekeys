@@ -37,6 +37,7 @@
     "keys_removed": "You lost keys to the vehicle!",
     "no_keys": "You don't have keys to this vehicle.",
     "not_near": "There is nobody nearby to hand keys to",
+    "vehicle_not_near": "Not close enough to vehicle",
     "vehicle_locked": "Vehicle locked!",
     "vehicle_lockedpick": "You managed to pick the door lock open!",
     "vehicle_unlocked": "Vehicle unlocked!",
