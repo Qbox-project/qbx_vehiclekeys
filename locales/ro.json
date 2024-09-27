@@ -35,6 +35,7 @@
     "keys_taken": "Ai primit cheile vehiculului!",
     "no_keys": "Nu ai cheile acestui vehicul.",
     "not_near": "Nu este nimeni langa tine sa-i dai cheile vehiculului",
+    "vehicle_not_near": "Not close enough to vehicle",
     "vehicle_locked": "Vehicul blocat - Alarma activa!",
     "vehicle_lockedpick": "Felicitari, ai reusit sa spargi incuietoarea!",
     "vehicle_unlocked": "Vehicul deblocat - Alarma inactiva!",

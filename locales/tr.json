@@ -35,6 +35,7 @@
     "keys_taken": "Araç anahtarlarını aldınız",
     "no_keys": "Bu aracın anahtarlarına sahip değilsiniz",
     "not_near": "Anahtarları verecek kimse yakınınızda değil",
+    "vehicle_not_near": "Not close enough to vehicle",
     "vehicle_locked": "Araç kilitli",
     "vehicle_lockedpick": "Kilidi açmayı başardın",
     "vehicle_unlocked": "Araç açık",

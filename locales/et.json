@@ -35,6 +35,7 @@
     "keys_taken": "Saate auto võtmed!",
     "no_keys": "Teil pole selle sõiduki võtmeid.",
     "not_near": "Läheduses pole kedagi, kellele võtmed kätte anda",
+    "vehicle_not_near": "Not close enough to vehicle",
     "vehicle_locked": "Sõiduk lukus!",
     "vehicle_lockedpick": "Sul õnnestus ukselukk lahti keerata!",
     "vehicle_unlocked": "Sõiduk avatud!",

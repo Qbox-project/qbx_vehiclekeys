@@ -35,6 +35,7 @@
     "keys_taken": "Du erhälst die Schlüssel für das Fahrzeug!",
     "no_keys": "Du hast keine Schlüssel für das Fahrzeug!",
     "not_near": "Es ist niemand in der Nähe, der den Schlüssel bekommen könnte!",
+    "vehicle_not_near": "Not close enough to vehicle",
     "vehicle_locked": "Fahrzeug verriegelt!",
     "vehicle_lockedpick": "Du hast es geschafft, das Türschloss zu knacken!",
     "vehicle_unlocked": "Fahrzeug entriegelt.",
