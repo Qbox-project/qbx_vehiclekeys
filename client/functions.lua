@@ -227,7 +227,7 @@ end
 ---Will be executed when the lock opening is successful.
 ---@param vehicle number The entity number of the vehicle.
 local function hotwireSuccessCallback(vehicle)
-    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(vehicle))
+    TriggerServerEvent('qbx_vehiclekeys:server:hotwiredVehicle', VehToNet(vehicle))
 end
 
 ---Operations done after the LockpickDoor quickevent done.

@@ -56,7 +56,6 @@ end
 exports('SetVehicleDoorLock', setVehicleDoorLock)
 
 local function findKeys(vehicleModel, vehicleClass, vehicle)
-    local vehicleConfig = sharedFunctions.getVehicleConfig(vehicle)
     local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
 
     local anim = config.anims.lockpick.model[vehicleModel]
@@ -75,13 +74,12 @@ local function findKeys(vehicleModel, vehicleClass, vehicle)
             combat = true,
         }
     }) then
-        if math.random() <= vehicleConfig.findKeysChance then
-            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(vehicle))
-            return true
-        else
+        local success = lib.callback.await('qbx_vehiclekeys:server:findKeys', false, VehToNet(vehicle))
+        if not success then
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             exports.qbx_core:Notify(locale("notify.failed_keys"), 'error')
         end
+        return success
     end
 end
 
@@ -118,7 +116,7 @@ local function onEnteringDriverSeat()
     local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
     if config.getKeysWhenEngineIsRunning and isVehicleRunning then
         lib.print.debug("giving keys because engine is running")
-        TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(vehicle))
+        TriggerServerEvent('qbx_vehiclekeys:server:playerEnteredVehicleWithEngineOn', VehToNet(vehicle))
         return
     end
 
@@ -230,7 +228,7 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
                 car = true,
             },
         }) then
-            TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(data.vehicle))
+            TriggerServerEvent('qbx_vehiclekeys:server:tookKeys', VehToNet(data.vehicle))
         end
     end
     isTakingKeys = false

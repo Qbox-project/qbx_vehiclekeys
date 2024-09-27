@@ -1,7 +1,13 @@
 local config = require 'config.server'
 local debug = GetConvarInt(('%s-debug'):format(GetCurrentResourceName()), 0) == 1
 
+---@alias CitizenId string
+---@alias SessionId integer
+---@type table<CitizenId, table<SessionId, boolean>>
 local keysList = {} ---holds key status for some time after player logs out (Prevents frustration by crashing the client)
+
+---@alias LogoutTime integer
+---@type table<CitizenId, LogoutTime>
 local keysLifetime = {} ---Life timestamp of the keys of a character who has logged out
 
 ---Gets Citizen Id based on source
