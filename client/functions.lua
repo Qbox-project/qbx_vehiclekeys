@@ -19,19 +19,19 @@ end
 ---Checks if player has vehicle keys
 ---@param vehicle number
 ---@return boolean? `true` if player has vehicle keys, `nil` otherwise.
-function public.hasKeys(vehicle)
+function HasKeys(vehicle)
     local keysList = LocalPlayer.state.keysList or {}
     local sessionId = Entity(vehicle).state.sessionId
     return keysList[sessionId]
 end
 
-exports('HasKeys', public.hasKeys)
+exports('HasKeys', HasKeys)
 
 ---Checks if player has vehicle keys of or access to the vehicle is provided as part of his job.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if player has access to the vehicle, `nil` otherwise.
 function public.getIsVehicleAccessible(vehicle)
-    return public.hasKeys(vehicle) or public.areKeysJobShared(vehicle)
+    return HasKeys(vehicle) or public.areKeysJobShared(vehicle)
 end
 
 function public.toggleEngine(vehicle)
