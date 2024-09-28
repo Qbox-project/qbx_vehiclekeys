@@ -3,15 +3,7 @@
 -----------------------
 
 local config = require 'config.client'
-local functions = require 'client.functions'
 local sharedFunctions = require 'shared.functions'
-
-local hotwire = functions.hotwire
-local toggleEngine = functions.toggleEngine
-local lockpickDoor = functions.lockpickDoor
-local areKeysJobShared = functions.areKeysJobShared
-local sendPoliceAlertAttempt = functions.sendPoliceAlertAttempt
-local getIsVehicleAccessible = functions.getIsVehicleAccessible
 
 local getIsVehicleShared = sharedFunctions.getIsVehicleShared
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
@@ -27,7 +19,7 @@ local getIsVehicleCarjackingImmune = sharedFunctions.getIsVehicleCarjackingImmun
 ---@param anim any Aniation
 local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle or getIsVehicleAlwaysUnlocked(vehicle) or getIsVehicleShared(vehicle) then return end
-    if getIsVehicleAccessible(vehicle) then
+    if GetIsVehicleAccessible(vehicle) then
 
         if anim then
             lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
@@ -110,7 +102,7 @@ local function onEnteringDriverSeat()
     local vehicle = cache.vehicle
     if getIsVehicleShared(vehicle) then return end
 
-    local isVehicleAccessible = getIsVehicleAccessible(vehicle)
+    local isVehicleAccessible = GetIsVehicleAccessible(vehicle)
     if isVehicleAccessible then return end
 
     local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
@@ -127,7 +119,7 @@ local function onEnteringDriverSeat()
             SetVehicleEngineOn(vehicle, false, true, true)
             DisableControlAction(0, 71, true)
             Wait(0)
-            isVehicleAccessible = getIsVehicleAccessible(vehicle)
+            isVehicleAccessible = GetIsVehicleAccessible(vehicle)
         end
         if lib.progressActive() then
             lib.cancelProgress()
@@ -164,6 +156,12 @@ togglelocksBind = lib.addKeybind({
     end
 })
 
+local function toggleEngine(vehicle)
+    if not GetIsVehicleAccessible(vehicle) then return end
+    local engineOn = GetIsVehicleEngineRunning(vehicle)
+    SetVehicleEngineOn(vehicle, not engineOn, false, true)
+end
+
 local engineBind
 engineBind = lib.addKeybind({
     name = 'toggleengine',
@@ -191,10 +189,10 @@ lib.addKeybind({
             setSearchLabelState(false)
             local vehicle = cache.vehicle
             local isFound
-            if not getIsVehicleAccessible(vehicle) then
+            if not GetIsVehicleAccessible(vehicle) then
                 isFound = findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), vehicle)
                 SetTimeout(10000, function()
-                    sendPoliceAlertAttempt('steal')
+                    SendPoliceAlertAttempt('steal')
                 end)
             end
             Wait(config.timeBetweenHotwires)
@@ -239,11 +237,11 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
     if vehicle then
         if isSearchAllowed then
             setSearchLabelState(false)
-            hotwire(vehicle, isAdvanced)
+            Hotwire(vehicle, isAdvanced)
             setSearchLabelState(true)
         end
     else
-        lockpickDoor(isAdvanced)
+        LockpickDoor(isAdvanced)
     end
 end)
 
@@ -258,7 +256,7 @@ for _, info in pairs(config.sharedKeys) do
         lib.onCache('vehicle', function (vehicle)
             local leftVehicle = cache.vehicle
             if not vehicle and leftVehicle then
-                local isShared = areKeysJobShared(leftVehicle)
+                local isShared = AreKeysJobShared(leftVehicle)
                 local isAutolockEnabled = config.sharedKeys[QBX.PlayerData.job.name]?.enableAutolock
 
                 if isShared and isAutolockEnabled then
