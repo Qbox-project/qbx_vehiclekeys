@@ -27,3 +27,12 @@ end)
 RegisterNetEvent('qb-vehiclekeys:server:removeKeys', function(plate)
     removeKeys(source, plate)
 end)
+
+CreateQbExport('HasKeys', function(source, plate)
+    local vehicles = GetVehiclesFromPlate(plate)
+    local success = false
+    for i = 1, #vehicles do
+        success = success or HasKeys(source, vehicles[i])
+    end
+    return success
+end)

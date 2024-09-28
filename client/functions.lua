@@ -17,11 +17,13 @@ end
 
 ---Checks if player has vehicle keys
 ---@param vehicle number
----@return boolean? `true` if player has vehicle keys, `nil` otherwise.
+---@return boolean `true` if player has vehicle keys, `false` otherwise.
 function HasKeys(vehicle)
+    vehicle = vehicle or cache.vehicle
+    if not vehicle then return false end
     local keysList = LocalPlayer.state.keysList or {}
     local sessionId = Entity(vehicle).state.sessionId
-    return keysList[sessionId]
+    return keysList[sessionId] or false
 end
 
 exports('HasKeys', HasKeys)
