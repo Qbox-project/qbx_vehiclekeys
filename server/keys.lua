@@ -101,13 +101,13 @@ exports('GiveKeys', GiveKeys)
 
 ---@param src number
 ---@param vehicle number
----@return boolean?
+---@return boolean
 function HasKeys(src, vehicle)
     local keysList = Player(src).state.keysList
-    if not keysList then return end
+    if not keysList then return false end
 
     local sessionId = Entity(vehicle).state.sessionId
-    return keysList[sessionId]
+    return keysList[sessionId] or false
 end
 
 exports('HasKeys', HasKeys)
