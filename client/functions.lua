@@ -176,7 +176,7 @@ function LockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
 
     CreateThread(function()
         local anim = config.anims.lockpick.model[GetEntityModel(vehicle)]
-            or config.anims.lockpick.model[GetVehicleClass(vehicle)]
+            or config.anims.lockpick.class[GetVehicleClass(vehicle)]
             or config.anims.lockpick.default
         lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
         local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs)
@@ -230,7 +230,7 @@ function Hotwire(vehicle, isAdvancedLockedpick, customChallenge)
 
     CreateThread(function()
         local anim = config.anims.hotwire.model[GetEntityModel(vehicle)]
-        or config.anims.hotwire.model[GetVehicleClass(vehicle)]
+        or config.anims.hotwire.class[GetVehicleClass(vehicle)]
         or config.anims.hotwire.default
         lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
         local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs)

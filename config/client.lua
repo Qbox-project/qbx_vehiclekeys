@@ -37,6 +37,9 @@ local defaultLockpickAnim = { dict = 'veh@break_in@0h@p_m_one@', clip = 'low_for
 ---@type Anim
 local defaultHoldupAnim = { dict = 'mp_am_hold_up', clip = 'holdup_victim_20s' }
 
+---@type Anim
+local defaultEngineToggleAnim = { dict = 'oddjobs@towing', clip = 'start_engine' }
+
 return {
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
@@ -228,6 +231,7 @@ return {
     ---@field searchKeys AnimConfigEntry
     ---@field lockpick AnimConfigEntry
     ---@field holdup AnimConfigEntry
+    ---@field toggleEngine AnimConfigEntry
 
     ---@type AnimConfigEntities
     anims = {
@@ -350,6 +354,11 @@ return {
             model = {
                 [`zombiea`] = defaultHoldupAnim
             }
-        }
+        },
+        toggleEngine = {
+            default = defaultEngineToggleAnim,
+            class = {},
+            model = {},
+        },
     }
 }

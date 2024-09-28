@@ -111,6 +111,17 @@ togglelocksBind = lib.addKeybind({
 local function toggleEngine(vehicle)
     if not GetIsVehicleAccessible(vehicle) then return end
     local engineOn = GetIsVehicleEngineRunning(vehicle)
+
+    local vehicleModel = GetEntityModel(vehicle)
+    local vehicleClass = GetVehicleClass(vehicle)
+    local anim = config.anims.toggleEngine.model[vehicleModel]
+        or config.anims.toggleEngine.class[vehicleClass]
+        or config.anims.toggleEngine.default
+    if anim then
+        lib.playAnim(cache.ped, anim.dict, anim.clip, 8.0, 8.0,-1, 48, 0)
+        Wait(400) -- for aesthetic purposes so the engine toggles when the player appears to touch the button/key
+    end
+
     SetVehicleEngineOn(vehicle, not engineOn, false, true)
 end
 
