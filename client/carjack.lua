@@ -1,8 +1,5 @@
 local config = require 'config.client'
-local functions = require 'client.functions'
 local sharedFunctions = require 'shared.functions'
-
-local sendPoliceAlertAttempt = functions.sendPoliceAlertAttempt
 
 local getIsCloseToCoords = sharedFunctions.getIsCloseToCoords
 local getIsBlacklistedWeapon = sharedFunctions.getIsBlacklistedWeapon
@@ -103,7 +100,7 @@ local function carjackVehicle(driver, vehicle)
             end
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             Wait(2000)
-            sendPoliceAlertAttempt('carjack')
+            SendPoliceAlertAttempt('carjack')
         end
     else
         makePedFlee(driver)

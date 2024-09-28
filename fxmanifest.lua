@@ -16,6 +16,7 @@ shared_scripts {
 
 client_scripts {
     '@qbx_core/modules/playerdata.lua',
+    'client/functions.lua',
     'client/main.lua',
     'client/carjack.lua',
     'bridge/qb/client.lua',
@@ -31,7 +32,6 @@ server_scripts {
 }
 
 files {
-    'client/functions.lua',
     'shared/functions.lua',
     'locales/*.json',
     'config/client.lua',
