@@ -47,66 +47,6 @@ end
 
 exports('SetVehicleDoorLock', setVehicleDoorLock)
 
-local function findKeys(vehicleModel, vehicleClass, vehicle)
-    local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
-
-    local anim = config.anims.lockpick.model[vehicleModel]
-        or config.anims.lockpick.model[vehicleClass]
-        or config.anims.lockpick.default
-
-    local searchingForKeys = true
-    CreateThread(function()
-        while searchingForKeys do
-            if not IsEntityPlayingAnim(cache.ped, anim.dict, anim.clip, 49) then
-                lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 1.0, -1, 49)
-            end
-            Wait(100)
-        end
-    end)
-    if lib.progressCircle({
-        duration = hotwireTime,
-        label = locale('progress.searching_keys'),
-        position = 'bottom',
-        useWhileDead = false,
-        canCancel = true,
-        anim = anim,
-        disable = {
-            move = true,
-            car = true,
-            combat = true,
-        }
-    }) then
-        searchingForKeys = false
-        local success = lib.callback.await('qbx_vehiclekeys:server:findKeys', false, VehToNet(vehicle))
-        if not success then
-            TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-            exports.qbx_core:Notify(locale("notify.failed_keys"), 'error')
-        end
-        return success
-    end
-    searchingForKeys = false
-end
-
-local isSearchLocked = false
-local isSearchAllowed = false
-local function setSearchLabelState(isAllowed)
-    if isSearchLocked and isAllowed then return end
-    if isAllowed and cache.vehicle and sharedFunctions.getVehicleConfig(cache.vehicle).findKeysChance == 0.0 then
-        isSearchAllowed = false
-        return
-    end
-    local isOpen, text = lib.isTextUIOpen()
-    local newText = locale('info.search_keys_dispatch')
-    local isValidMessage = text and text == newText
-    if isAllowed and not isValidMessage and cache.seat == -1 then
-        lib.showTextUI(newText)
-    elseif (not isAllowed or cache.seat ~= -1) and isOpen and isValidMessage then
-        lib.hideTextUI()
-    end
-
-    isSearchAllowed = isAllowed and cache.seat == -1
-end
-
 ---if the player does not have ignition access to the vehicle:
 ---check whether to give keys if engine is on
 ---disable the engine and listen for search keys if applicable to the vehicle
@@ -136,11 +76,11 @@ local function onEnteringDriverSeat()
         if lib.progressActive() then
             lib.cancelProgress()
         end
-        setSearchLabelState(false)
+        DisableKeySearch()
     end)
 
     if sharedFunctions.getVehicleConfig(vehicle).findKeysChance ~= 0.0 then
-        setSearchLabelState(true)
+        EnableKeySearch()
     end
 end
 
@@ -189,31 +129,6 @@ engineBind = lib.addKeybind({
     end
 })
 
-lib.addKeybind({
-    name = 'searchkeys',
-    description = locale('info.search_keys'),
-    defaultKey = 'H',
-    secondaryMapper = 'PAD_DIGITALBUTTONANY',
-    secondaryKey = 'LRIGHT_INDEX',
-    onPressed = function()
-        if isSearchAllowed and cache.vehicle then
-            isSearchLocked = true
-            setSearchLabelState(false)
-            local vehicle = cache.vehicle
-            local isFound
-            if not GetIsVehicleAccessible(vehicle) then
-                isFound = findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), vehicle)
-                SetTimeout(10000, function()
-                    SendPoliceAlertAttempt('steal')
-                end)
-            end
-            Wait(config.timeBetweenHotwires)
-            isSearchLocked = false
-            setSearchLabelState(not isFound)
-        end
-    end
-})
-
 -----------------------
 ---- Client Events ----
 -----------------------
@@ -247,10 +162,10 @@ end)
 RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
     local vehicle = cache.vehicle
     if vehicle then
-        if isSearchAllowed then
-            setSearchLabelState(false)
+        if GetKeySearchEnabled() then
+            DisableKeySearch()
             Hotwire(vehicle, isAdvanced)
-            setSearchLabelState(true)
+            EnableKeySearch()
         end
     else
         LockpickDoor(isAdvanced)
