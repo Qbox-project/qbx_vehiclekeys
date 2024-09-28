@@ -1,15 +1,4 @@
 ---@param src number
----@param vehicle number
----@return boolean
-local function hasKeys(src, vehicle)
-    local keysList = Player(src).state.keysList or {}
-    local sessionId = Entity(vehicle).state.sessionId
-    return keysList[sessionId]
-end
-
-exports('HasKeys', hasKeys)
-
----@param src number
 ---@return number?
 local function getClosestPlayer(src)
     local playerCoords = GetEntityCoords(GetPlayerPed(src))
@@ -39,7 +28,7 @@ local function transferKeys(source, target, enforceSrcHasKeys)
         exports.qbx_core:Notify(source, locale('notify.vehicle_not_near'), 'error')
         return
     end
-    if enforceSrcHasKeys and not hasKeys(source, vehicle) then
+    if enforceSrcHasKeys and not HasKeys(source, vehicle) then
         exports.qbx_core:Notify(source, locale('notify.no_keys'), 'error')
         return
     end
