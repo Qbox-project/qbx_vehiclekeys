@@ -17,6 +17,7 @@ shared_scripts {
 client_scripts {
     '@qbx_core/modules/playerdata.lua',
     'client/functions.lua',
+    'client/searchkeys.lua',
     'client/main.lua',
     'client/carjack.lua',
     'bridge/qb/client.lua',
