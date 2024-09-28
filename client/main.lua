@@ -53,6 +53,16 @@ local function findKeys(vehicleModel, vehicleClass, vehicle)
     local anim = config.anims.lockpick.model[vehicleModel]
         or config.anims.lockpick.model[vehicleClass]
         or config.anims.lockpick.default
+
+    local searchingForKeys = true
+    CreateThread(function()
+        while searchingForKeys do
+            if not IsEntityPlayingAnim(cache.ped, anim.dict, anim.clip, 49) then
+                lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 1.0, -1, 49)
+            end
+            Wait(100)
+        end
+    end)
     if lib.progressCircle({
         duration = hotwireTime,
         label = locale('progress.searching_keys'),
@@ -66,6 +76,7 @@ local function findKeys(vehicleModel, vehicleClass, vehicle)
             combat = true,
         }
     }) then
+        searchingForKeys = false
         local success = lib.callback.await('qbx_vehiclekeys:server:findKeys', false, VehToNet(vehicle))
         if not success then
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
@@ -73,6 +84,7 @@ local function findKeys(vehicleModel, vehicleClass, vehicle)
         end
         return success
     end
+    searchingForKeys = false
 end
 
 local isSearchLocked = false

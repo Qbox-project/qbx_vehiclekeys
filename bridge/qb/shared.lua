@@ -20,12 +20,3 @@ function GetVehiclesFromPlate(plate)
 
     return vehEntityFromPlate
 end
-
-CreateQbExport('HasKeys', function(source, plate)
-    local vehicles = GetVehiclesFromPlate(plate)
-    local success = nil
-    for i = 1, #vehicles do
-        success = success or HasKeys(source, vehicles[i])
-    end
-    return success
-end)
