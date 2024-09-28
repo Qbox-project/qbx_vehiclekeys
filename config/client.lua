@@ -48,19 +48,6 @@ return {
     carjackEnable = true,                -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
     carjackingTimeInMs = 7500,           -- Time it takes to successfully carjack in miliseconds
     delayBetweenCarjackingsInMs = 10000, -- Time before you can attempt another carjack in miliseconds
-    ---@type table<VehicleClass, number>
-    carjackChance = {                    -- Probability of successful carjacking based on weapon used
-        [WeaponTypeGroup.MELEE] = 0.0,
-        [WeaponTypeGroup.HANDGUN] = 0.5,
-        [WeaponTypeGroup.SMG] = 0.75,
-        [WeaponTypeGroup.SHOTGUN] = 0.90,
-        [WeaponTypeGroup.RIFLE] = 0.90,
-        [WeaponTypeGroup.LMG] = 0.99,
-        [WeaponTypeGroup.SNIPER] = 0.99,
-        [WeaponTypeGroup.HEAVY] = 0.99,
-        [WeaponTypeGroup.THROWABLE] = 0.0,
-        [WeaponTypeGroup.MISC] = 0.0,
-    },
 
     -- Hotwire Settings
     timeBetweenHotwires = 5000, -- Time in milliseconds between hotwire attempts

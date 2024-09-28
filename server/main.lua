@@ -1,3 +1,4 @@
+local config = require 'config.server'
 local sharedFunctions = require 'shared.functions'
 
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
@@ -12,7 +13,38 @@ local EntityType = {
     Object = 3
 }
 
-RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(netId)
+lib.callback.register('qbx_vehiclekeys:server:findKeys', function(source, netId)
+    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    if math.random() <= sharedFunctions.getVehicleConfig(vehicle).findKeysChance then
+        GiveKeys(source, vehicle)
+        return true
+    end
+end)
+
+lib.callback.register('qbx_vehiclekeys:server:carjack', function(source, netId, weaponTypeGroup)
+    local chance = config.carjackChance[weaponTypeGroup] or 0.5
+    if math.random() <= chance then
+        local vehicle = NetworkGetEntityFromNetworkId(netId)
+        GiveKeys(source, vehicle)
+        TriggerEvent('qb-vehiclekeys:server:setVehLockState', netId, 1)
+        return true
+    end
+end)
+
+RegisterNetEvent('qbx_vehiclekeys:server:playerEnteredVehicleWithEngineOn', function(netId)
+    local src = source
+    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    if not GetIsVehicleEngineRunning(vehicle) then return end
+    GiveKeys(src, vehicle)
+end)
+
+---TODO: secure this event
+RegisterNetEvent('qbx_vehiclekeys:server:tookKeys', function(netId)
+    GiveKeys(source, NetworkGetEntityFromNetworkId(netId))
+end)
+
+---TODO: secure this event
+RegisterNetEvent('qbx_vehiclekeys:server:hotwiredVehicle', function(netId)
     GiveKeys(source, NetworkGetEntityFromNetworkId(netId))
 end)
 

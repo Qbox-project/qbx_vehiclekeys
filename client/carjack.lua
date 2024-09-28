@@ -52,15 +52,11 @@ local function onCarjackSuccess(occupants, vehicle)
             makePedFlee(ped)
         end)
     end
-    TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), 1)
-    TriggerServerEvent('qb-vehiclekeys:server:AcquireVehicleKeys', VehToNet(vehicle))
 end
 
 local function onCarjackFail(driver)
     exports.qbx_core:Notify(locale('notify.carjack_failed'), 'error')
     makePedFlee(driver)
-    TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
 end
 
 local function carjackVehicle(driver, vehicle)
@@ -98,14 +94,14 @@ local function carjackVehicle(driver, vehicle)
         },
     }) then
         if cache.weapon and isCarjacking then
-            local carjackChance = config.carjackChance[GetWeapontypeGroup(cache.weapon) --[[@as string]]] or 0.5
             isCarjacking = false -- make this false to stop TaskVehicleTempAction from preventing ped to leave the car
-
-            if math.random() <= carjackChance then
+            local success = lib.callback.await('qbx_vehiclekeys:server:carjack', false, VehToNet(vehicle), GetWeapontypeGroup(cache.weapon))
+            if success then
                 onCarjackSuccess(occupants, vehicle)
             else
                 onCarjackFail(driver)
             end
+            TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             Wait(2000)
             sendPoliceAlertAttempt('carjack')
         end
