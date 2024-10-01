@@ -104,11 +104,32 @@ exports('GiveKeys', GiveKeys)
 ---@return boolean
 function HasKeys(src, vehicle)
     local keysList = Player(src).state.keysList
-    if not keysList then return false end
+    if keysList then
+        local sessionId = Entity(vehicle).state.sessionId
+        if keysList[sessionId] then
+            return true
+        end
+    end
 
-    local sessionId = Entity(vehicle).state.sessionId
-    return keysList[sessionId] or false
+    local owner = Entity(vehicle).state.owner
+    if owner and getCitizenId(src) == owner then
+        GiveKeys(src, vehicle)
+        return true
+    end
+
+    return false
 end
 
 exports('HasKeys', HasKeys)
 
+lib.callback.register('qbx_vehiclekeys:server:giveKeys', function(source, netId)
+    GiveKeys(source, NetworkGetEntityFromNetworkId(netId))
+end)
+
+AddStateBagChangeHandler('vehicleid', nil, function(bagName, _, vehicleId)
+    local vehicle = GetEntityFromStateBagName(bagName)
+    if not vehicle or vehicle == 0 then return end
+    local owner = exports.qbx_vehicles:GetPlayerVehicle(vehicleId)?.citizenid
+    if not owner then return end
+    Entity(vehicle).state:set('owner', owner, true)
+end)
