@@ -25,6 +25,12 @@ local function setVehicleDoorLock(vehicle, state, anim)
             lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
         end
 
+        --- if the statebag is out of sync, rely on it as the source of truth and sync the client to the statebag's value
+        local stateBagValue = Entity(vehicle).state.doorslockstate
+        if GetVehicleDoorLockStatus(vehicle) ~= stateBagValue then
+            SetVehicleDoorsLocked(vehicle, stateBagValue)
+        end
+
         local lockstate = state ~= nil
             and (state and 2 or 1)
             or (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- use ternary
