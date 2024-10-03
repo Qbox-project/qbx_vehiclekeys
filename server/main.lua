@@ -73,7 +73,7 @@ AddEventHandler('entityCreated', function (entity)
     local isPed = type == EntityType.Ped
     local isVehicle = type == EntityType.Vehicle
     if not isPed and not isVehicle then return end
-    local vehicle = isPed and GetVehiclePedIsIn(entity, false) or entity
+    local vehicle = not isPed and entity or GetVehiclePedIsIn(entity, false)
 
     if not DoesEntityExist(vehicle) then return end -- ped can be not in vehicle, so we need to check if vehicle is a entity, otherwise it will return 0
 
