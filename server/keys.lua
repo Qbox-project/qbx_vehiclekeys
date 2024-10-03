@@ -59,7 +59,8 @@ end, {debug = debug})
 --- Removing the vehicle keys from the user
 ---@param source number ID of the player
 ---@param vehicle number
-function RemoveKeys(source, vehicle)
+---@param skipNotification? boolean
+function RemoveKeys(source, vehicle, skipNotification)
     local citizenid = getCitizenId(source)
     if not citizenid then return end
 
@@ -73,7 +74,9 @@ function RemoveKeys(source, vehicle)
     Player(source).state:set('keysList', keys, true)
 
     TriggerClientEvent('qbx_vehiclekeys:client:OnLostKeys', source)
-    exports.qbx_core:Notify(source, locale('notify.keys_removed'))
+    if not skipNotification then
+        exports.qbx_core:Notify(source, locale('notify.keys_removed'))
+    end
 
     return true
 end
@@ -82,7 +85,8 @@ exports('RemoveKeys', RemoveKeys)
 
 ---@param source number
 ---@param vehicle number
-function GiveKeys(source, vehicle)
+---@param skipNotification? boolean
+function GiveKeys(source, vehicle, skipNotification)
     local citizenid = getCitizenId(source)
     if not citizenid then return end
 
@@ -93,7 +97,9 @@ function GiveKeys(source, vehicle)
     keys[sessionId] = true
 
     Player(source).state:set('keysList', keys, true)
-    exports.qbx_core:Notify(source, locale('notify.keys_taken'))
+    if not skipNotification then
+        exports.qbx_core:Notify(source, locale('notify.keys_taken'))
+    end
     return true
 end
 
