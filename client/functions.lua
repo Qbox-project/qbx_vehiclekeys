@@ -11,8 +11,7 @@ function AreKeysJobShared(vehicle)
     if not jobInfo or (jobInfo.requireOnduty and not QBX.PlayerData.job.onduty) then return end
 
     assert(jobInfo.vehicles, string.format('Vehicles not configured for the %s job.', job))
-
-    return jobInfo.vehicles[GetEntityModel(vehicle)]
+    return jobInfo.vehicles and jobInfo.vehicles[GetEntityModel(vehicle)] or jobInfo.classes and jobInfo.classes[GetVehicleClass(vehicle)]
 end
 
 ---Checks if player has vehicle keys
@@ -48,7 +47,7 @@ function GetIsVehicleAccessible(vehicle)
 end
 
 local alertSend = false --Variable strictly related to sendPoliceAlertAttempt, not used elsewhere
-function SendPoliceAlertAttempt(type)
+function SendPoliceAlertAttempt(crime, vehicle)
     if alertSend then return end
     alertSend = true
 
@@ -58,7 +57,7 @@ function SendPoliceAlertAttempt(type)
         or config.policeNightAlertChance
 
     if math.random() <= chance then
-        TriggerServerEvent('police:server:policeAlert', locale("info.vehicle_theft") .. type)
+        config.alertPolice(crime, vehicle)
     end
 
     SetTimeout(config.alertCooldown, function()
@@ -145,7 +144,7 @@ local function lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
     if isSuccess then
         lockpickSuccessCallback(vehicle)
     else -- if player fails quickevent
-        SendPoliceAlertAttempt('carjack')
+        SendPoliceAlertAttempt('carjack', vehicle)
         SetVehicleAlarm(vehicle, false)
         SetVehicleAlarmTimeLeft(vehicle, config.vehicleAlarmDuration)
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
@@ -182,6 +181,7 @@ function LockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     skillCheckConfig = skillCheckConfig.model[GetEntityModel(vehicle)]
         or skillCheckConfig.class[GetVehicleClass(vehicle)]
         or skillCheckConfig.default
+    if not next(skillCheckConfig) then return end
 
     if islockpickingProcessLocked then return end -- start of the critical section
     islockpickingProcessLocked = true -- one call per player at a time
@@ -216,7 +216,7 @@ local function hotwireCallback(vehicle, isAdvancedLockedpick, isSuccess)
     if isSuccess then
         hotwireSuccessCallback(vehicle)
     else -- if player fails quickevent
-        SendPoliceAlertAttempt('carjack')
+        SendPoliceAlertAttempt('carjack', vehicle)
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         exports.qbx_core:Notify(locale('notify.failed_lockedpick'), 'error')
     end
@@ -236,6 +236,7 @@ function Hotwire(vehicle, isAdvancedLockedpick, customChallenge)
     skillCheckConfig = skillCheckConfig.model[GetEntityModel(vehicle)]
         or skillCheckConfig.class[GetVehicleClass(vehicle)]
         or skillCheckConfig.default
+    if not next(skillCheckConfig) then return end
 
     if isHotwiringProcessLocked then return end -- start of the critical section
     isHotwiringProcessLocked = true -- one call per player at a time
