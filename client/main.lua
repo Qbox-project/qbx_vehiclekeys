@@ -209,7 +209,7 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
             Hotwire(vehicle, isAdvanced)
         end
     else
-        LockpickDoor(isAdvanced, GetVehicleClass(vehicle) == 16 and 5 or 2.5)
+        LockpickDoor(isAdvanced)
     end
 end)
 
