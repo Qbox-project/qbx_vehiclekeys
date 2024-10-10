@@ -25,9 +25,9 @@ end
 local function findKeys(vehicleModel, vehicleClass, vehicle)
     local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
 
-    local anim = config.anims.lockpick.model[vehicleModel]
-        or config.anims.lockpick.model[vehicleClass]
-        or config.anims.lockpick.default
+    local anim = config.anims.searchKeys.model[vehicleModel]
+        or config.anims.searchKeys.model[vehicleClass]
+        or config.anims.searchKeys.default
 
     local searchingForKeys = true
     CreateThread(function()

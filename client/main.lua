@@ -16,7 +16,7 @@ local getIsVehicleCarjackingImmune = sharedFunctions.getIsVehicleCarjackingImmun
 ---manages the opening of locks
 ---@param vehicle number? The entity number of the vehicle.
 ---@param state boolean? State of the vehicle lock.
----@param anim any Aniation
+---@param anim any Animation
 local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle or getIsVehicleAlwaysUnlocked(vehicle) or getIsVehicleShared(vehicle) then return end
     if GetIsVehicleAccessible(vehicle) then
@@ -58,6 +58,15 @@ exports('SetVehicleDoorLock', setVehicleDoorLock)
 ---disable the engine and listen for search keys if applicable to the vehicle
 local function onEnteringDriverSeat()
     local vehicle = cache.vehicle
+    EngineBind:disable(false)
+    CreateThread(function()
+        while cache.seat == -1 do
+            if IsControlJustPressed(0, 23) then -- vehicle enter/leave input
+                EngineBind:disable(true)
+            end
+            Wait(0)
+        end
+    end)
     if getIsVehicleShared(vehicle) then return end
 
     local isVehicleAccessible = GetIsVehicleAccessible(vehicle)
@@ -123,25 +132,38 @@ local function toggleEngine(vehicle)
     local anim = config.anims.toggleEngine.model[vehicleModel]
         or config.anims.toggleEngine.class[vehicleClass]
         or config.anims.toggleEngine.default
-    if anim then
+    if next(anim) then
         lib.playAnim(cache.ped, anim.dict, anim.clip, 8.0, 8.0,-1, 48, 0)
-        Wait(400) -- for aesthetic purposes so the engine toggles when the player appears to touch the button/key
+        Wait(0)
+        CreateThread(function()
+            while IsEntityPlayingAnim(cache.ped, anim.dict, anim.clip, 3) do
+                if IsControlJustPressed(0, 23) then -- enter/exit vehicle input
+                    ClearPedTasks(cache.ped)
+                    return
+                end
+                Wait(0)
+            end
+        end)
+
+        --- aethestic wait so that the engine toggles when the player appears to touch the button/key
+        Wait(anim.delay or 0)
     end
 
-    SetVehicleEngineOn(vehicle, not engineOn, false, true)
+    if cache.vehicle then
+        SetVehicleEngineOn(vehicle, not engineOn, false, true)
+    end
 end
 
-local engineBind
-engineBind = lib.addKeybind({
+EngineBind = lib.addKeybind({
     name = 'toggleengine',
     description = locale('info.engine'),
-    defaultKey = 'G',
+    defaultKey = config.keySearchBind,
     onPressed = function()
-        if cache.vehicle then
-            engineBind:disable(true)
+        if cache.seat == -1 then
+            EngineBind:disable(true)
             toggleEngine(cache.vehicle)
             Wait(1000)
-            engineBind:disable(false)
+            EngineBind:disable(false)
         end
     end
 })
@@ -183,6 +205,8 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
             DisableKeySearch()
             Hotwire(vehicle, isAdvanced)
             EnableKeySearch()
+        else
+            Hotwire(vehicle, isAdvanced)
         end
     else
         LockpickDoor(isAdvanced)
