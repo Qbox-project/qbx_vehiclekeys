@@ -47,7 +47,7 @@
     "vehicle_is_unlocked": "Vehiculul este deja descuiat!"
   },
   "progress": {
-    "attempting_carjack": "Încerci să spargi încuietoarea...",
+    "attempting_carjack": "Ameninți șoferul...",
     "searching_keys": "Cauți cheile vehiculului...",
     "takekeys": "Iei cheile de la corp..."
   }
