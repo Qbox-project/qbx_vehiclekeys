@@ -1,76 +1,53 @@
 local config = require 'config.client'
 local functions = require 'shared.functions'
-local public = {}
 
 ---Grants keys for job shared vehicles
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if the vehicle is shared for a player's job, `nil` otherwise.
-function public.areKeysJobShared(vehicle)
+function AreKeysJobShared(vehicle)
     local job = QBX.PlayerData.job.name
     local jobInfo = config.sharedKeys[job]
 
     if not jobInfo or (jobInfo.requireOnduty and not QBX.PlayerData.job.onduty) then return end
 
     assert(jobInfo.vehicles, string.format('Vehicles not configured for the %s job.', job))
-
-    return jobInfo.vehicles[GetEntityModel(vehicle)]
+    return jobInfo.vehicles and jobInfo.vehicles[GetEntityModel(vehicle)] or jobInfo.classes and jobInfo.classes[GetVehicleClass(vehicle)]
 end
 
 ---Checks if player has vehicle keys
 ---@param vehicle number
----@return boolean? `true` if player has vehicle keys, `nil` otherwise.
-function public.hasKeys(vehicle)
-    local keysList = LocalPlayer.state.keysList or {}
-    local sessionId = Entity(vehicle).state.sessionId
-    return keysList[sessionId]
+---@return boolean `true` if player has vehicle keys, `false` otherwise.
+function HasKeys(vehicle)
+    vehicle = vehicle or cache.vehicle
+    if not vehicle then return false end
+    local keysList = LocalPlayer.state.keysList
+    if keysList then
+        local sessionId = Entity(vehicle).state.sessionId
+        if keysList[sessionId] then
+            return true
+        end
+    end
+
+    local owner = Entity(vehicle).state.owner
+    if owner and QBX.PlayerData.citizenid == owner then
+        lib.callback.await('qbx_vehiclekeys:server:giveKeys', false, VehToNet(vehicle))
+        return true
+    end
+
+    return false
 end
 
-exports('HasKeys', public.hasKeys)
+exports('HasKeys', HasKeys)
 
 ---Checks if player has vehicle keys of or access to the vehicle is provided as part of his job.
 ---@param vehicle number The entity number of the vehicle.
 ---@return boolean? `true` if player has access to the vehicle, `nil` otherwise.
-function public.getIsVehicleAccessible(vehicle)
-    return public.hasKeys(vehicle) or public.areKeysJobShared(vehicle)
-end
-
-function public.toggleEngine(vehicle)
-    if not public.getIsVehicleAccessible(vehicle) then return end
-    local engineOn = GetIsVehicleEngineRunning(vehicle)
-    SetVehicleEngineOn(vehicle, not engineOn, false, true)
-end
-
-local function getVehicleInDirection(coordFromOffset, coordToOffset)
-    local coordFrom = GetOffsetFromEntityInWorldCoords(cache.ped, coordFromOffset.x, coordFromOffset.y, coordFromOffset.z)
-    local coordTo = GetOffsetFromEntityInWorldCoords(cache.ped, coordToOffset.x, coordToOffset.y, coordToOffset.z)
-    local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, cache.ped, 0)
-    local _, _, _, _, vehicle = GetShapeTestResult(rayHandle)
-    return vehicle
-end
-
--- If in vehicle returns that, otherwise tries 3 different raycasts to get the vehicle they are facing.
--- Raycasts picture: https://i.imgur.com/FRED0kV.png
-function public.getVehicleInFront()
-    if cache.vehicle then
-        return cache.vehicle
-    end
-    local raycastOffsetTable = {
-        { fromOffset = vec3(0.0, 0.0, 0.0), toOffset = vec3(0.0, 20.0, -10.0) }, -- Waist to ground 45 degree angle
-        { fromOffset = vec3(0.0, 0.0, 0.7), toOffset = vec3(0.0, 10.0, -10.0) }, -- Head to ground 30 degree angle
-        { fromOffset = vec3(0.0, 0.0, 0.7), toOffset = vec3(0.0, 10.0, -20.0) }, -- Head to ground 15 degree angle
-    }
-
-    for i = 1, #raycastOffsetTable do
-        local vehicle = getVehicleInDirection(raycastOffsetTable[i]['fromOffset'], raycastOffsetTable[i]['toOffset'])
-
-        if vehicle and DoesEntityExist(vehicle) and IsEntityAVehicle(vehicle) then
-            return vehicle
-        end
-    end
+function GetIsVehicleAccessible(vehicle)
+    return HasKeys(vehicle) or AreKeysJobShared(vehicle)
 end
 
 local alertSend = false --Variable strictly related to sendPoliceAlertAttempt, not used elsewhere
-function public.sendPoliceAlertAttempt(type)
+function SendPoliceAlertAttempt(crime, vehicle)
     if alertSend then return end
     alertSend = true
 
@@ -80,7 +57,7 @@ function public.sendPoliceAlertAttempt(type)
         or config.policeNightAlertChance
 
     if math.random() <= chance then
-        TriggerServerEvent('police:server:policeAlert', locale("info.vehicle_theft") .. type)
+        config.alertPolice(crime, vehicle)
     end
 
     SetTimeout(config.alertCooldown, function()
@@ -167,7 +144,7 @@ local function lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
     if isSuccess then
         lockpickSuccessCallback(vehicle)
     else -- if player fails quickevent
-        public.sendPoliceAlertAttempt('carjack')
+        SendPoliceAlertAttempt('carjack', vehicle)
         SetVehicleAlarm(vehicle, false)
         SetVehicleAlarmTimeLeft(vehicle, config.vehicleAlarmDuration)
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
@@ -182,7 +159,7 @@ local islockpickingProcessLocked = false -- lock flag
 ---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
 ---@param maxDistance number? The max distance to check.
 ---@param customChallenge boolean? lockpick challenge
-function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
+function LockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     maxDistance = maxDistance or 2
     local pedCoords = GetEntityCoords(cache.ped)
     local vehicle = lib.getClosestVehicle(pedCoords, maxDistance * 2, false) -- The difference between the door and the center of the vehicle
@@ -204,13 +181,14 @@ function public.lockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     skillCheckConfig = skillCheckConfig.model[GetEntityModel(vehicle)]
         or skillCheckConfig.class[GetVehicleClass(vehicle)]
         or skillCheckConfig.default
+    if not next(skillCheckConfig) then return end
 
     if islockpickingProcessLocked then return end -- start of the critical section
     islockpickingProcessLocked = true -- one call per player at a time
 
     CreateThread(function()
         local anim = config.anims.lockpick.model[GetEntityModel(vehicle)]
-            or config.anims.lockpick.model[GetVehicleClass(vehicle)]
+            or config.anims.lockpick.class[GetVehicleClass(vehicle)]
             or config.anims.lockpick.default
         lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
         local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs)
@@ -238,7 +216,7 @@ local function hotwireCallback(vehicle, isAdvancedLockedpick, isSuccess)
     if isSuccess then
         hotwireSuccessCallback(vehicle)
     else -- if player fails quickevent
-        public.sendPoliceAlertAttempt('carjack')
+        SendPoliceAlertAttempt('carjack', vehicle)
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
         exports.qbx_core:Notify(locale('notify.failed_lockedpick'), 'error')
     end
@@ -251,20 +229,21 @@ local isHotwiringProcessLocked = false -- lock flag
 ---@param vehicle number The entity number of the vehicle.
 ---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used
 ---@param customChallenge boolean? lockpick challenge
-function public.hotwire(vehicle, isAdvancedLockedpick, customChallenge)
-    if cache.seat ~= -1 or public.getIsVehicleAccessible(vehicle) then return end
+function Hotwire(vehicle, isAdvancedLockedpick, customChallenge)
+    if cache.seat ~= -1 or GetIsVehicleAccessible(vehicle) then return end
     local skillCheckConfig = config.skillCheck[isAdvancedLockedpick and 'advancedHotwire' or 'hotwire']
 
     skillCheckConfig = skillCheckConfig.model[GetEntityModel(vehicle)]
         or skillCheckConfig.class[GetVehicleClass(vehicle)]
         or skillCheckConfig.default
+    if not next(skillCheckConfig) then return end
 
     if isHotwiringProcessLocked then return end -- start of the critical section
     isHotwiringProcessLocked = true -- one call per player at a time
 
     CreateThread(function()
         local anim = config.anims.hotwire.model[GetEntityModel(vehicle)]
-        or config.anims.hotwire.model[GetVehicleClass(vehicle)]
+        or config.anims.hotwire.class[GetVehicleClass(vehicle)]
         or config.anims.hotwire.default
         lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
         local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs)
@@ -275,5 +254,3 @@ function public.hotwire(vehicle, isAdvancedLockedpick, customChallenge)
         isHotwiringProcessLocked = false -- end of the critical section
     end)
 end
-
-return public

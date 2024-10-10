@@ -23,7 +23,7 @@ local hardLockpickSkillCheck = {
     inputs = { '1', '2', '3', '4' }
 }
 
----@alias Anim {dict: string, clip: string}
+---@alias Anim {dict: string, clip: string, delay?: integer}
 
 ---@type Anim
 local defaultHotwireAnim = { dict = 'anim@veh@plane@howard@front@ds@base', clip = 'hotwire' }
@@ -60,6 +60,12 @@ return {
     policeNightAlertChance = 0.50, -- Chance of alerting the police at night (times: 01-06)
     policeAlertNightStartHour = 1,
     policeAlertNightDuration = 5,
+    ---Sends an alert to police
+    ---@param crime string
+    ---@param vehicle number entity
+    alertPolice = function(crime, vehicle)
+        TriggerServerEvent('police:server:policeAlert', locale("info.vehicle_theft") .. crime)
+    end,
 
     vehicleAlarmDuration = 10000,
     lockpickCooldown = 1000,
@@ -69,11 +75,20 @@ return {
     sharedKeys = { -- Share keys amongst employees. Employees can lock/unlock any job-listed vehicle
         police = { -- Job name
             enableAutolock = true,
-            requireOnduty = false,
+            requireOnduty = true,
+            classes = {},
             vehicles = {
                 [`police`] = true,  -- Vehicle model
                 [`police2`] = true, -- Vehicle model
             }
+        },
+        ambulance = {
+            enableAutolock = true,
+            requireOnduty = true,
+            classes = {},
+            vehicles = {
+                [`ambulance`] = true,
+            },
         },
         mechanic = {
             requireOnduty = false,
@@ -228,6 +243,7 @@ return {
     ---@field searchKeys AnimConfigEntry
     ---@field lockpick AnimConfigEntry
     ---@field holdup AnimConfigEntry
+    ---@field toggleEngine AnimConfigEntry
 
     ---@type AnimConfigEntities
     anims = {
@@ -350,6 +366,22 @@ return {
             model = {
                 [`zombiea`] = defaultHoldupAnim
             }
-        }
+        },
+        toggleEngine = {
+            default = {
+                dict = 'oddjobs@towing',
+                clip = 'start_engine',
+                delay = 400, -- how long it takes to start the engine
+            },
+            class = {
+                [VehicleClass.MOTORCYCLES] = {
+                    dict = 'veh@bike@quad@front@base',
+                    clip = 'start_engine',
+                    delay = 1000,
+                },
+                [VehicleClass.CYCLES] = {}, -- does not have an engine
+            },
+            model = {},
+        },
     }
 }

@@ -11,12 +11,16 @@ shared_scripts {
     '@ox_lib/init.lua',
     '@qbx_core/modules/lib.lua',
     'shared/types.lua',
+    'bridge/qb/shared.lua',
 }
 
 client_scripts {
     '@qbx_core/modules/playerdata.lua',
+    'client/functions.lua',
+    'client/searchkeys.lua',
     'client/main.lua',
     'client/carjack.lua',
+    'bridge/qb/client.lua',
 }
 
 server_scripts {
@@ -24,12 +28,12 @@ server_scripts {
     'server/version.lua',
     'server/keys.lua',
     'server/main.lua',
-    'server/commands.lua'
+    'server/commands.lua',
+    'bridge/qb/server.lua',
 }
 
 files {
-    'client/*.lua',
-    'shared/*.lua',
+    'shared/functions.lua',
     'locales/*.json',
     'config/client.lua',
     'config/shared.lua'
@@ -37,3 +41,4 @@ files {
 
 lua54 'yes'
 use_experimental_fxv2_oal 'yes'
+provide 'qb-vehiclekeys'

@@ -3,15 +3,7 @@
 -----------------------
 
 local config = require 'config.client'
-local functions = require 'client.functions'
 local sharedFunctions = require 'shared.functions'
-
-local hotwire = functions.hotwire
-local toggleEngine = functions.toggleEngine
-local lockpickDoor = functions.lockpickDoor
-local areKeysJobShared = functions.areKeysJobShared
-local sendPoliceAlertAttempt = functions.sendPoliceAlertAttempt
-local getIsVehicleAccessible = functions.getIsVehicleAccessible
 
 local getIsVehicleShared = sharedFunctions.getIsVehicleShared
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
@@ -24,13 +16,19 @@ local getIsVehicleCarjackingImmune = sharedFunctions.getIsVehicleCarjackingImmun
 ---manages the opening of locks
 ---@param vehicle number? The entity number of the vehicle.
 ---@param state boolean? State of the vehicle lock.
----@param anim any Aniation
+---@param anim any Animation
 local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle or getIsVehicleAlwaysUnlocked(vehicle) or getIsVehicleShared(vehicle) then return end
-    if getIsVehicleAccessible(vehicle) then
+    if GetIsVehicleAccessible(vehicle) then
 
         if anim then
             lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
+        end
+
+        --- if the statebag is out of sync, rely on it as the source of truth and sync the client to the statebag's value
+        local stateBagValue = Entity(vehicle).state.doorslockstate
+        if GetVehicleDoorLockStatus(vehicle) ~= stateBagValue then
+            SetVehicleDoorsLocked(vehicle, stateBagValue)
         end
 
         local lockstate = state ~= nil
@@ -55,62 +53,23 @@ end
 
 exports('SetVehicleDoorLock', setVehicleDoorLock)
 
-local function findKeys(vehicleModel, vehicleClass, vehicle)
-    local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
-
-    local anim = config.anims.lockpick.model[vehicleModel]
-        or config.anims.lockpick.model[vehicleClass]
-        or config.anims.lockpick.default
-    if lib.progressCircle({
-        duration = hotwireTime,
-        label = locale('progress.searching_keys'),
-        position = 'bottom',
-        useWhileDead = false,
-        canCancel = true,
-        anim = anim,
-        disable = {
-            move = true,
-            car = true,
-            combat = true,
-        }
-    }) then
-        local success = lib.callback.await('qbx_vehiclekeys:server:findKeys', false, VehToNet(vehicle))
-        if not success then
-            TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-            exports.qbx_core:Notify(locale("notify.failed_keys"), 'error')
-        end
-        return success
-    end
-end
-
-local isSearchLocked = false
-local isSearchAllowed = false
-local function setSearchLabelState(isAllowed)
-    if isSearchLocked and isAllowed then return end
-    if isAllowed and cache.vehicle and sharedFunctions.getVehicleConfig(cache.vehicle).findKeysChance == 0.0 then
-        isSearchAllowed = false
-        return
-    end
-    local isOpen, text = lib.isTextUIOpen()
-    local newText = locale('info.search_keys_dispatch')
-    local isValidMessage = text and text == newText
-    if isAllowed and not isValidMessage and cache.seat == -1 then
-        lib.showTextUI(newText)
-    elseif (not isAllowed or cache.seat ~= -1) and isOpen and isValidMessage then
-        lib.hideTextUI()
-    end
-
-    isSearchAllowed = isAllowed and cache.seat == -1
-end
-
 ---if the player does not have ignition access to the vehicle:
 ---check whether to give keys if engine is on
 ---disable the engine and listen for search keys if applicable to the vehicle
 local function onEnteringDriverSeat()
     local vehicle = cache.vehicle
+    EngineBind:disable(false)
+    CreateThread(function()
+        while cache.seat == -1 do
+            if IsControlJustPressed(0, 23) then -- vehicle enter/leave input
+                EngineBind:disable(true)
+            end
+            Wait(0)
+        end
+    end)
     if getIsVehicleShared(vehicle) then return end
 
-    local isVehicleAccessible = getIsVehicleAccessible(vehicle)
+    local isVehicleAccessible = GetIsVehicleAccessible(vehicle)
     if isVehicleAccessible then return end
 
     local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
@@ -127,16 +86,16 @@ local function onEnteringDriverSeat()
             SetVehicleEngineOn(vehicle, false, true, true)
             DisableControlAction(0, 71, true)
             Wait(0)
-            isVehicleAccessible = getIsVehicleAccessible(vehicle)
+            isVehicleAccessible = GetIsVehicleAccessible(vehicle)
         end
         if lib.progressActive() then
             lib.cancelProgress()
         end
-        setSearchLabelState(false)
+        DisableKeySearch()
     end)
 
     if sharedFunctions.getVehicleConfig(vehicle).findKeysChance ~= 0.0 then
-        setSearchLabelState(true)
+        EnableKeySearch()
     end
 end
 
@@ -164,42 +123,47 @@ togglelocksBind = lib.addKeybind({
     end
 })
 
-local engineBind
-engineBind = lib.addKeybind({
+local function toggleEngine(vehicle)
+    if not GetIsVehicleAccessible(vehicle) then return end
+    local engineOn = GetIsVehicleEngineRunning(vehicle)
+
+    local vehicleModel = GetEntityModel(vehicle)
+    local vehicleClass = GetVehicleClass(vehicle)
+    local anim = config.anims.toggleEngine.model[vehicleModel]
+        or config.anims.toggleEngine.class[vehicleClass]
+        or config.anims.toggleEngine.default
+    if next(anim) then
+        lib.playAnim(cache.ped, anim.dict, anim.clip, 8.0, 8.0,-1, 48, 0)
+        Wait(0)
+        CreateThread(function()
+            while IsEntityPlayingAnim(cache.ped, anim.dict, anim.clip, 3) do
+                if IsControlJustPressed(0, 23) then -- enter/exit vehicle input
+                    ClearPedTasks(cache.ped)
+                    return
+                end
+                Wait(0)
+            end
+        end)
+
+        --- aethestic wait so that the engine toggles when the player appears to touch the button/key
+        Wait(anim.delay or 0)
+    end
+
+    if cache.vehicle then
+        SetVehicleEngineOn(vehicle, not engineOn, false, true)
+    end
+end
+
+EngineBind = lib.addKeybind({
     name = 'toggleengine',
     description = locale('info.engine'),
-    defaultKey = 'G',
+    defaultKey = config.keySearchBind,
     onPressed = function()
-        if cache.vehicle then
-            engineBind:disable(true)
+        if cache.seat == -1 then
+            EngineBind:disable(true)
             toggleEngine(cache.vehicle)
             Wait(1000)
-            engineBind:disable(false)
-        end
-    end
-})
-
-lib.addKeybind({
-    name = 'searchkeys',
-    description = locale('info.search_keys'),
-    defaultKey = 'H',
-    secondaryMapper = 'PAD_DIGITALBUTTONANY',
-    secondaryKey = 'LRIGHT_INDEX',
-    onPressed = function()
-        if isSearchAllowed and cache.vehicle then
-            isSearchLocked = true
-            setSearchLabelState(false)
-            local vehicle = cache.vehicle
-            local isFound
-            if not getIsVehicleAccessible(vehicle) then
-                isFound = findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), vehicle)
-                SetTimeout(10000, function()
-                    sendPoliceAlertAttempt('steal')
-                end)
-            end
-            Wait(config.timeBetweenHotwires)
-            isSearchLocked = false
-            setSearchLabelState(not isFound)
+            EngineBind:disable(false)
         end
     end
 })
@@ -237,13 +201,15 @@ end)
 RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
     local vehicle = cache.vehicle
     if vehicle then
-        if isSearchAllowed then
-            setSearchLabelState(false)
-            hotwire(vehicle, isAdvanced)
-            setSearchLabelState(true)
+        if GetKeySearchEnabled() then
+            DisableKeySearch()
+            Hotwire(vehicle, isAdvanced)
+            EnableKeySearch()
+        else
+            Hotwire(vehicle, isAdvanced)
         end
     else
-        lockpickDoor(isAdvanced)
+        LockpickDoor(isAdvanced)
     end
 end)
 
@@ -258,7 +224,7 @@ for _, info in pairs(config.sharedKeys) do
         lib.onCache('vehicle', function (vehicle)
             local leftVehicle = cache.vehicle
             if not vehicle and leftVehicle then
-                local isShared = areKeysJobShared(leftVehicle)
+                local isShared = AreKeysJobShared(leftVehicle)
                 local isAutolockEnabled = config.sharedKeys[QBX.PlayerData.job.name]?.enableAutolock
 
                 if isShared and isAutolockEnabled then

@@ -4,11 +4,11 @@ local debug = GetConvarInt(('%s-debug'):format(GetCurrentResourceName()), 0) == 
 ---@alias CitizenId string
 ---@alias SessionId integer
 ---@type table<CitizenId, table<SessionId, boolean>>
-local keysList = {} ---holds key status for some time after player logs out (Prevents frustration by crashing the client)
+local loggedOutKeys = {} ---holds key status for some time after player logs out (Prevents frustration by crashing the client)
 
 ---@alias LogoutTime integer
 ---@type table<CitizenId, LogoutTime>
-local keysLifetime = {} ---Life timestamp of the keys of a character who has logged out
+local logedOutTime = {} ---Life timestamp of the keys of a character who has logged out
 
 ---Gets Citizen Id based on source
 ---@param source number ID of the player
@@ -24,18 +24,18 @@ RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
     local src = source
     local citizenId = getCitizenId(src)
     if not citizenId then return end
-    if keysList[citizenId] then
-        Player(src).state:set('keysList', keysList[citizenId], true)
-        keysList[citizenId] = nil
-        keysLifetime[citizenId] = nil
+    if loggedOutKeys[citizenId] then
+        Player(src).state:set('keysList', loggedOutKeys[citizenId], true)
+        loggedOutKeys[citizenId] = nil
+        logedOutTime[citizenId] = nil
     end
 end)
 
 local function onPlayerUnload(src)
     local citizenId = getCitizenId(src)
     if not citizenId then return end
-    keysList[citizenId] = Player(src).state.keysList
-    keysLifetime[citizenId] = os.time()
+    loggedOutKeys[citizenId] = Player(src).state.keysList
+    logedOutTime[citizenId] = os.time()
 end
 
 RegisterNetEvent('QBCore:Server:OnPlayerUnload', onPlayerUnload)
@@ -48,10 +48,10 @@ end)
 lib.cron.new('*/'..config.runClearCronMinutes ..' * * * *', function ()
     local time = os.time()
     local seconds = config.runClearCronMinutes * 60
-    for citizenId, lifetime in pairs(keysLifetime) do
+    for citizenId, lifetime in pairs(logedOutTime) do
         if lifetime + seconds < time then
-            keysList[citizenId] = nil
-            keysLifetime[citizenId] = nil
+            loggedOutKeys[citizenId] = nil
+            logedOutTime[citizenId] = nil
         end
     end
 end, {debug = debug})
@@ -59,12 +59,14 @@ end, {debug = debug})
 --- Removing the vehicle keys from the user
 ---@param source number ID of the player
 ---@param vehicle number
-function RemoveKeys(source, vehicle)
+---@param skipNotification? boolean
+function RemoveKeys(source, vehicle, skipNotification)
     local citizenid = getCitizenId(source)
-
     if not citizenid then return end
 
-    local keys = Player(source).state.keysList or {}
+    local keys = Player(source).state.keysList
+    if not keys then return end
+
     local sessionId = Entity(vehicle).state.sessionId
     if not keys[sessionId] then return end
     keys[sessionId] = nil
@@ -72,7 +74,9 @@ function RemoveKeys(source, vehicle)
     Player(source).state:set('keysList', keys, true)
 
     TriggerClientEvent('qbx_vehiclekeys:client:OnLostKeys', source)
-    exports.qbx_core:Notify(source, locale('notify.keys_removed'))
+    if not skipNotification then
+        exports.qbx_core:Notify(source, locale('notify.keys_removed'))
+    end
 
     return true
 end
@@ -81,7 +85,8 @@ exports('RemoveKeys', RemoveKeys)
 
 ---@param source number
 ---@param vehicle number
-function GiveKeys(source, vehicle)
+---@param skipNotification? boolean
+function GiveKeys(source, vehicle, skipNotification)
     local citizenid = getCitizenId(source)
     if not citizenid then return end
 
@@ -92,8 +97,45 @@ function GiveKeys(source, vehicle)
     keys[sessionId] = true
 
     Player(source).state:set('keysList', keys, true)
-    exports.qbx_core:Notify(source, locale('notify.keys_taken'))
+    if not skipNotification then
+        exports.qbx_core:Notify(source, locale('notify.keys_taken'))
+    end
     return true
 end
 
 exports('GiveKeys', GiveKeys)
+
+---@param src number
+---@param vehicle number
+---@return boolean
+function HasKeys(src, vehicle)
+    local keysList = Player(src).state.keysList
+    if keysList then
+        local sessionId = Entity(vehicle).state.sessionId
+        if keysList[sessionId] then
+            return true
+        end
+    end
+
+    local owner = Entity(vehicle).state.owner
+    if owner and getCitizenId(src) == owner then
+        GiveKeys(src, vehicle)
+        return true
+    end
+
+    return false
+end
+
+exports('HasKeys', HasKeys)
+
+lib.callback.register('qbx_vehiclekeys:server:giveKeys', function(source, netId)
+    GiveKeys(source, NetworkGetEntityFromNetworkId(netId))
+end)
+
+AddStateBagChangeHandler('vehicleid', nil, function(bagName, _, vehicleId)
+    local vehicle = GetEntityFromStateBagName(bagName)
+    if not vehicle or vehicle == 0 then return end
+    local owner = exports.qbx_vehicles:GetPlayerVehicle(vehicleId)?.citizenid
+    if not owner then return end
+    Entity(vehicle).state:set('owner', owner, true)
+end)
