@@ -21,7 +21,37 @@ local function setVehicleDoorLock(vehicle, state, anim)
     if not vehicle or getIsVehicleAlwaysUnlocked(vehicle) or getIsVehicleShared(vehicle) then return end
     if GetIsVehicleAccessible(vehicle) then
         if anim then
+            local hash = joaat('p_car_keys_01')
+            lib.requestModel(hash)
+            local key = CreateObject(hash, GetEntityCoords(cache.ped), false, false, false)
             lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
+
+            SetEntityCollision(key, false, false)
+            AttachEntityToEntity(
+                key,
+                cache.ped,
+                GetPedBoneIndex(cache.ped, 57005),
+                0.10,
+                0.02,
+                0,
+                48.10,
+                23.14,
+                24.14,
+                true,
+                true,
+                false,
+                true,
+                1,
+                true
+            )
+            SetModelAsNoLongerNeeded(key)
+            SetTimeout(
+                1250,
+                function()
+                    ClearPedTasks(cache.ped)
+                    DeleteEntity(key)
+                end
+            )
         end
 
         --- if the statebag is out of sync, rely on it as the source of truth and sync the client to the statebag's value
