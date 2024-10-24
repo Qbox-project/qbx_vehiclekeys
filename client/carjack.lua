@@ -100,7 +100,7 @@ local function carjackVehicle(driver, vehicle)
             end
             TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
             Wait(2000)
-            SendPoliceAlertAttempt('carjack')
+            SendPoliceAlertAttempt('carjack', vehicle)
         end
     else
         makePedFlee(driver)
