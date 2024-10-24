@@ -2,16 +2,7 @@ local config = require 'config.server'
 local sharedFunctions = require 'shared.functions'
 
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
-local getIsVehicleInitiallyLocked = sharedFunctions.getIsVehicleInitiallyLocked
 local getIsVehicleShared = sharedFunctions.getIsVehicleShared
-
----@enum EntityType
-local EntityType = {
-    NoEntity = 0,
-    Ped = 1,
-    Vehicle = 2,
-    Object = 3
-}
 
 lib.callback.register('qbx_vehiclekeys:server:findKeys', function(source, netId)
     local vehicle = NetworkGetEntityFromNetworkId(netId)
