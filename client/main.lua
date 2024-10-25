@@ -187,7 +187,7 @@ end
 EngineBind = lib.addKeybind({
     name = 'toggleengine',
     description = locale('info.engine'),
-    defaultKey = 'RSHIFT',
+    defaultKey = config.keySearchBind,
     onPressed = function()
         if cache.seat == -1 then
             EngineBind:disable(true)
