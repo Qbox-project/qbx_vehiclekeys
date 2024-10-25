@@ -261,14 +261,28 @@ local function onVehicleAttemptToEnter(vehicle)
     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockState)
 end
 
-CreateThread(function()
-    while true do
-        if LocalPlayer.state.isLoggedIn then
+local isLoggedIn = false
+
+local function playerEnterVehLoop()
+    CreateThread(function()
+        while isLoggedIn do
             local vehicle = GetVehiclePedIsTryingToEnter(cache.ped)
             if vehicle ~= 0 then
                 onVehicleAttemptToEnter(vehicle)
             end
+            Wait(100)
         end
-        Wait(100)
+    end)
+end
+
+CreateThread(function()
+    if LocalPlayer.state.isLoggedIn then
+        playerEnterVehLoop()
     end
+end)
+
+AddStateBagChangeHandler('isLoggedIn', ('player:%s'):format(cache.serverId), function(_, _, value)
+    isLoggedIn = value
+    if not value then return end
+    playerEnterVehLoop()
 end)
