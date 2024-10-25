@@ -212,15 +212,15 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
     if driver ~= 0 and IsEntityDead(driver) and not (isVehicleImmune or IsPedAPlayer(driver)) then
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
         if lib.progressCircle({
-                duration = 2500,
-                label = locale('progress.takekeys'),
-                position = 'bottom',
-                useWhileDead = false,
-                canCancel = true,
-                disable = {
-                    car = true,
-                },
-            }) then
+            duration = 2500,
+            label = locale('progress.takekeys'),
+            position = 'bottom',
+            useWhileDead = false,
+            canCancel = true,
+            disable = {
+                car = true,
+            },
+        }) then
             TriggerServerEvent('qbx_vehiclekeys:server:tookKeys', VehToNet(data.vehicle))
         end
     end
