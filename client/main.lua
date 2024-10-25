@@ -5,6 +5,7 @@
 local config = require 'config.client'
 local sharedFunctions = require 'shared.functions'
 
+local getIsVehicleInitiallyLocked = sharedFunctions.getIsVehicleInitiallyLocked
 local getIsVehicleShared = sharedFunctions.getIsVehicleShared
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
 local getIsVehicleCarjackingImmune = sharedFunctions.getIsVehicleCarjackingImmune
@@ -276,4 +277,42 @@ AddEventHandler('onResourceStart', function(resourceName)
     if cache.seat == -1 then
         onEnteringDriverSeat()
     end
+end)
+
+local function onVehicleAttemptToEnter(vehicle)
+    if Entity(vehicle).state.doorslockstate then return end
+
+    local ped = GetPedInVehicleSeat(vehicle, -1)
+    if IsPedAPlayer(ped) then return end
+
+    local isLocked = not getIsVehicleAlwaysUnlocked(vehicle) and getIsVehicleInitiallyLocked(vehicle, ped and ped ~= 0)
+    local lockState = isLocked and 2 or 1
+    SetVehicleDoorsLocked(vehicle, lockState)
+    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockState)
+end
+
+local isLoggedIn = false
+
+local function playerEnterVehLoop()
+    CreateThread(function()
+        while isLoggedIn do
+            local vehicle = GetVehiclePedIsTryingToEnter(cache.ped)
+            if vehicle ~= 0 then
+                onVehicleAttemptToEnter(vehicle)
+            end
+            Wait(100)
+        end
+    end)
+end
+
+CreateThread(function()
+    if LocalPlayer.state.isLoggedIn then
+        playerEnterVehLoop()
+    end
+end)
+
+AddStateBagChangeHandler('isLoggedIn', ('player:%s'):format(cache.serverId), function(_, _, value)
+    isLoggedIn = value
+    if not value then return end
+    playerEnterVehLoop()
 end)

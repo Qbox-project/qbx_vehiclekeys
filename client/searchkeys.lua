@@ -78,7 +78,7 @@ local searchKeysKeybind = lib.addKeybind({
             if not GetIsVehicleAccessible(vehicle) then
                 isFound = findKeys(GetEntityModel(vehicle), GetVehicleClass(vehicle), vehicle)
                 SetTimeout(10000, function()
-                    SendPoliceAlertAttempt('steal')
+                    SendPoliceAlertAttempt('steal', vehicle)
                 end)
             end
             Wait(config.timeBetweenHotwires)
