@@ -1,30 +1,14 @@
------------------------
-----    Imports    ----
------------------------
-
 local config = require 'config.client'
-local sharedFunctions = require 'shared.functions'
 
-local getIsVehicleInitiallyLocked = sharedFunctions.getIsVehicleInitiallyLocked
-local getIsVehicleShared = sharedFunctions.getIsVehicleShared
-local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
-local getIsVehicleCarjackingImmune = sharedFunctions.getIsVehicleCarjackingImmune
-
------------------------
-----   Functions   ----
------------------------
-
----manages the opening of locks
----@param vehicle number? The entity number of the vehicle.
----@param state boolean? State of the vehicle lock.
----@param anim any Animation
-local function setVehicleDoorLock(vehicle, state, anim)
-    if not vehicle or getIsVehicleAlwaysUnlocked(vehicle) or getIsVehicleShared(vehicle) then return end
+---client uses key fob to toggle the door locks
+---@param vehicle number The entity number of the vehicle.
+local function toggleLock(vehicle)
+    if not vehicle then return end
+    local vehicleConfig = GetVehicleConfig(vehicle)
+    if vehicleConfig.noLock or vehicleConfig.shared then return end
     if GetIsVehicleAccessible(vehicle) then
 
-        if anim then
-            lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
-        end
+        lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
 
         --- if the statebag is out of sync, rely on it as the source of truth and sync the client to the statebag's value
         local stateBagValue = Entity(vehicle).state.doorslockstate
@@ -32,9 +16,7 @@ local function setVehicleDoorLock(vehicle, state, anim)
             SetVehicleDoorsLocked(vehicle, stateBagValue)
         end
 
-        local lockstate = state ~= nil
-            and (state and 2 or 1)
-            or (GetVehicleDoorLockStatus(vehicle) % 2) + 1 -- use ternary
+        local lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1
 
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
         exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
@@ -52,8 +34,6 @@ local function setVehicleDoorLock(vehicle, state, anim)
     end
 end
 
-exports('SetVehicleDoorLock', setVehicleDoorLock)
-
 ---if the player does not have ignition access to the vehicle:
 ---check whether to give keys if engine is on
 ---disable the engine and listen for search keys if applicable to the vehicle
@@ -68,7 +48,8 @@ local function onEnteringDriverSeat()
             Wait(0)
         end
     end)
-    if getIsVehicleShared(vehicle) then return end
+    local vehicleConfig = GetVehicleConfig(vehicle)
+    if vehicleConfig.shared then return end
 
     local isVehicleAccessible = GetIsVehicleAccessible(vehicle)
     if isVehicleAccessible then return end
@@ -95,7 +76,7 @@ local function onEnteringDriverSeat()
         DisableKeySearch()
     end)
 
-    if sharedFunctions.getVehicleConfig(vehicle).findKeysChance ~= 0.0 then
+    if vehicleConfig.findKeysChance ~= 0.0 then
         EnableKeySearch()
     end
 end
@@ -118,7 +99,7 @@ togglelocksBind = lib.addKeybind({
     onPressed = function()
         togglelocksBind:disable(true)
         local vehicle = lib.getClosestVehicle(GetEntityCoords(cache.ped), config.vehicleMaximumLockingDistance, true)
-        setVehicleDoorLock(vehicle, nil, true)
+        toggleLock(vehicle)
         Wait(1000)
         togglelocksBind:disable(false)
     end
@@ -176,12 +157,12 @@ EngineBind = lib.addKeybind({
 local isTakingKeys = false
 RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
     if not LocalPlayer.state.isLoggedIn or data.event ~= 'Entering' then return end
-    if getIsVehicleAlwaysUnlocked(data.vehicle) or isTakingKeys then return end
+    local vehicleConfig = GetVehicleConfig(data.vehicle)
+    if vehicleConfig.noLock or isTakingKeys then return end
     isTakingKeys = true
-    local isVehicleImmune = getIsVehicleCarjackingImmune(data.vehicle)
     local driver = GetPedInVehicleSeat(data.vehicle, -1)
 
-    if driver ~= 0 and IsEntityDead(driver) and not (isVehicleImmune or IsPedAPlayer(driver)) then
+    if driver ~= 0 and IsEntityDead(driver) and not (vehicleConfig.carjackingImmune or IsPedAPlayer(driver)) then
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
         if lib.progressCircle({
             duration = 2500,
@@ -249,13 +230,30 @@ AddEventHandler('onResourceStart', function(resourceName)
     end
 end)
 
+---Checks the vehicle is always locked at spawn.
+---@param vehicle number The entity number of the vehicle.
+---@param isDriven boolean
+---@return boolean `true` if the vehicle is locked, `false` otherwise.
+local function getIsVehicleInitiallyLocked(vehicle, isDriven)
+    local vehicleConfig = GetVehicleConfig(vehicle)
+    local vehicleLockedChance = isDriven
+        and vehicleConfig.spawnLockedIfDriven
+         or vehicleConfig.spawnLockedIfParked
+
+    if type(vehicleLockedChance) == 'number' then
+        return math.random() < vehicleLockedChance
+    else
+        return vehicleLockedChance == true
+    end
+end
+
 local function onVehicleAttemptToEnter(vehicle)
     if Entity(vehicle).state.doorslockstate then return end
 
     local ped = GetPedInVehicleSeat(vehicle, -1)
     if IsPedAPlayer(ped) then return end
 
-    local isLocked = not getIsVehicleAlwaysUnlocked(vehicle) and getIsVehicleInitiallyLocked(vehicle, ped and ped ~= 0)
+    local isLocked = not GetVehicleConfig(vehicle).noLock and getIsVehicleInitiallyLocked(vehicle, ped and ped ~= 0)
     local lockState = isLocked and 2 or 1
     SetVehicleDoorsLocked(vehicle, lockState)
     TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockState)

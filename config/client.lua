@@ -23,25 +23,9 @@ local hardLockpickSkillCheck = {
     inputs = { '1', '2', '3', '4' }
 }
 
----@alias Anim {dict: string, clip: string, delay?: integer}
-
----@type Anim
-local defaultHotwireAnim = { dict = 'anim@veh@plane@howard@front@ds@base', clip = 'hotwire' }
-
----@type Anim
-local defaultSearchKeysAnim = { dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@', clip = 'machinic_loop_mechandplayer' }
-
----@type Anim
-local defaultLockpickAnim = { dict = 'veh@break_in@0h@p_m_one@', clip = 'low_force_entry_ds' }
-
----@type Anim
-local defaultHoldupAnim = { dict = 'mp_am_hold_up', clip = 'holdup_victim_20s' }
-
 return {
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
-
     getKeysWhenEngineIsRunning = true, -- when enabled, gives keys to a player who doesn't have them if they enter the driver seat when the engine is running
-
     keepEngineOnWhenAbandoned = true, -- when enabled, keeps a vehicle's engine running after exiting
 
     -- Carjack Settings
@@ -60,6 +44,7 @@ return {
     policeNightAlertChance = 0.50, -- Chance of alerting the police at night (times: 01-06)
     policeAlertNightStartHour = 1,
     policeAlertNightDuration = 5,
+
     ---Sends an alert to police
     ---@param crime string
     ---@param vehicle number entity
@@ -72,6 +57,14 @@ return {
     hotwireCooldown = 1000,
 
     -- Job Settings
+    ---@class SharedKeysConfig
+    ---@field enableAutolock? boolean auto-lock door on driver exit
+    ---@field requireOnDuty? boolean requires player to be on duty to access the vehicle
+    ---@field classes? table<VehicleClass, boolean> vehicle classes to enable shared keys on
+    ---@field vehicles? table<number, boolean> vehicle hashes to enable shared keys on
+
+    ---@alias JobName string
+    ---@type table<JobName, SharedKeysConfig>
     sharedKeys = { -- Share keys amongst employees. Employees can lock/unlock any job-listed vehicle
         police = { -- Job name
             enableAutolock = true,
@@ -114,122 +107,48 @@ return {
         lockpick = {
             default = normalLockpickSkillCheck,
             class = {
-                [VehicleClass.COMPACTS]        = normalLockpickSkillCheck,
-                [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
-                [VehicleClass.SUVS]            = normalLockpickSkillCheck,
-                [VehicleClass.COUPES]          = normalLockpickSkillCheck,
-                [VehicleClass.MUSCLE]          = normalLockpickSkillCheck,
-                [VehicleClass.SPORTS_CLASSICS] = normalLockpickSkillCheck,
-                [VehicleClass.SPORTS]          = normalLockpickSkillCheck,
-                [VehicleClass.SUPER]           = normalLockpickSkillCheck,
-                [VehicleClass.MOTORCYCLES]     = normalLockpickSkillCheck,
-                [VehicleClass.OFF_ROAD]        = normalLockpickSkillCheck,
-                [VehicleClass.INDUSTRIAL]      = normalLockpickSkillCheck,
-                [VehicleClass.UTILITY]         = normalLockpickSkillCheck,
-                [VehicleClass.VANS]            = normalLockpickSkillCheck,
-                [VehicleClass.BOATS]           = normalLockpickSkillCheck,
-                [VehicleClass.HELICOPTERS]     = {},
-                [VehicleClass.PLANES]          = normalLockpickSkillCheck,
-                [VehicleClass.SERVICE]         = normalLockpickSkillCheck,
-                [VehicleClass.EMERGENCY]       = hardLockpickSkillCheck,
-                [VehicleClass.MILITARY]        = {},                          -- The vehicle class can only be opened with an advanced lockpick
-                [VehicleClass.COMMERCIAL]      = normalLockpickSkillCheck,
-                [VehicleClass.TRAINS]          = {},
-                [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
+                [VehicleClass.PLANES] = hardLockpickSkillCheck,
+                [VehicleClass.HELICOPTERS] = hardLockpickSkillCheck,
+                [VehicleClass.EMERGENCY] = hardLockpickSkillCheck,
+                [VehicleClass.MILITARY] = {}, -- cannot be lockpicked
+                [VehicleClass.TRAINS] = {}, -- cannot be lockpicked
+                [VehicleClass.OPEN_WHEEL] = easyLockpickSkillCheck,
             },
-            model = {
-                [`zombiea`] = normalLockpickSkillCheck
-            }
+            model = {}
         },
         advancedLockpick = {
             default = easyLockpickSkillCheck,
             class = {
-                [VehicleClass.COMPACTS]        = easyLockpickSkillCheck,
-                [VehicleClass.SEDANS]          = easyLockpickSkillCheck,
-                [VehicleClass.SUVS]            = easyLockpickSkillCheck,
-                [VehicleClass.COUPES]          = easyLockpickSkillCheck,
-                [VehicleClass.MUSCLE]          = easyLockpickSkillCheck,
-                [VehicleClass.SPORTS_CLASSICS] = easyLockpickSkillCheck,
-                [VehicleClass.SPORTS]          = easyLockpickSkillCheck,
-                [VehicleClass.SUPER]           = easyLockpickSkillCheck,
-                [VehicleClass.MOTORCYCLES]     = easyLockpickSkillCheck,
-                [VehicleClass.OFF_ROAD]        = easyLockpickSkillCheck,
-                [VehicleClass.INDUSTRIAL]      = easyLockpickSkillCheck,
-                [VehicleClass.UTILITY]         = easyLockpickSkillCheck,
-                [VehicleClass.VANS]            = easyLockpickSkillCheck,
-                [VehicleClass.BOATS]           = easyLockpickSkillCheck,
-                [VehicleClass.HELICOPTERS]     = hardLockpickSkillCheck,
-                [VehicleClass.PLANES]          = hardLockpickSkillCheck,
-                [VehicleClass.SERVICE]         = easyLockpickSkillCheck,
-                [VehicleClass.EMERGENCY]       = easyLockpickSkillCheck,
-                [VehicleClass.MILITARY]        = hardLockpickSkillCheck,
-                [VehicleClass.COMMERCIAL]      = easyLockpickSkillCheck,
-                [VehicleClass.TRAINS]          = {},                         -- The vehicle class can't be opened with an lockpick
-                [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
+                [VehicleClass.PLANES] = hardLockpickSkillCheck,
+                [VehicleClass.HELICOPTERS] = hardLockpickSkillCheck,
+                [VehicleClass.EMERGENCY] = hardLockpickSkillCheck,
+                [VehicleClass.MILITARY] = {}, -- cannot be lockpicked
+                [VehicleClass.TRAINS] = {}, -- cannot be lockpicked
             },
-            model = {
-                [`zombiea`] = easyLockpickSkillCheck
-            }
+            model = {}
         },
         hotwire = {
             default = normalLockpickSkillCheck,
             class = {
-                [VehicleClass.COMPACTS]        = normalLockpickSkillCheck,
-                [VehicleClass.SEDANS]          = normalLockpickSkillCheck,
-                [VehicleClass.SUVS]            = normalLockpickSkillCheck,
-                [VehicleClass.COUPES]          = normalLockpickSkillCheck,
-                [VehicleClass.MUSCLE]          = normalLockpickSkillCheck,
-                [VehicleClass.SPORTS_CLASSICS] = normalLockpickSkillCheck,
-                [VehicleClass.SPORTS]          = normalLockpickSkillCheck,
-                [VehicleClass.SUPER]           = normalLockpickSkillCheck,
-                [VehicleClass.MOTORCYCLES]     = normalLockpickSkillCheck,
-                [VehicleClass.OFF_ROAD]        = normalLockpickSkillCheck,
-                [VehicleClass.INDUSTRIAL]      = normalLockpickSkillCheck,
-                [VehicleClass.UTILITY]         = normalLockpickSkillCheck,
-                [VehicleClass.VANS]            = normalLockpickSkillCheck,
-                [VehicleClass.BOATS]           = normalLockpickSkillCheck,
-                [VehicleClass.HELICOPTERS]     = {},
-                [VehicleClass.PLANES]          = normalLockpickSkillCheck,
-                [VehicleClass.SERVICE]         = normalLockpickSkillCheck,
-                [VehicleClass.EMERGENCY]       = hardLockpickSkillCheck,
-                [VehicleClass.MILITARY]        = {},
-                [VehicleClass.COMMERCIAL]      = normalLockpickSkillCheck,
-                [VehicleClass.TRAINS]          = {},
-                [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
+                [VehicleClass.PLANES] = hardLockpickSkillCheck,
+                [VehicleClass.HELICOPTERS] = hardLockpickSkillCheck,
+                [VehicleClass.EMERGENCY] = hardLockpickSkillCheck,
+                [VehicleClass.MILITARY] = {}, -- cannot be hotwired
+                [VehicleClass.TRAINS] = {}, -- cannot be hotwired
+                [VehicleClass.OPEN_WHEEL] = easyLockpickSkillCheck,
             },
-            model = {
-                [`zombiea`] = normalLockpickSkillCheck
-            }
+            model = {}
         },
         advancedHotwire = {
             default = easyLockpickSkillCheck,
             class = {
-                [VehicleClass.COMPACTS]        = easyLockpickSkillCheck,
-                [VehicleClass.SEDANS]          = easyLockpickSkillCheck,
-                [VehicleClass.SUVS]            = easyLockpickSkillCheck,
-                [VehicleClass.COUPES]          = easyLockpickSkillCheck,
-                [VehicleClass.MUSCLE]          = easyLockpickSkillCheck,
-                [VehicleClass.SPORTS_CLASSICS] = easyLockpickSkillCheck,
-                [VehicleClass.SPORTS]          = easyLockpickSkillCheck,
-                [VehicleClass.SUPER]           = easyLockpickSkillCheck,
-                [VehicleClass.MOTORCYCLES]     = easyLockpickSkillCheck,
-                [VehicleClass.OFF_ROAD]        = easyLockpickSkillCheck,
-                [VehicleClass.INDUSTRIAL]      = easyLockpickSkillCheck,
-                [VehicleClass.UTILITY]         = easyLockpickSkillCheck,
-                [VehicleClass.VANS]            = easyLockpickSkillCheck,
-                [VehicleClass.BOATS]           = easyLockpickSkillCheck,
-                [VehicleClass.HELICOPTERS]     = hardLockpickSkillCheck,
-                [VehicleClass.PLANES]          = hardLockpickSkillCheck,
-                [VehicleClass.SERVICE]         = easyLockpickSkillCheck,
-                [VehicleClass.EMERGENCY]       = easyLockpickSkillCheck,
-                [VehicleClass.MILITARY]        = hardLockpickSkillCheck,
-                [VehicleClass.COMMERCIAL]      = easyLockpickSkillCheck,
-                [VehicleClass.TRAINS]          = {},                         -- The vehicle class can't be hotwired
-                [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
+                [VehicleClass.PLANES] = hardLockpickSkillCheck,
+                [VehicleClass.HELICOPTERS] = hardLockpickSkillCheck,
+                [VehicleClass.EMERGENCY] = hardLockpickSkillCheck,
+                [VehicleClass.MILITARY] = {}, -- cannot be hotwired
+                [VehicleClass.TRAINS] = {}, -- cannot be hotwired
             },
-            model = {
-                [`zombiea`] = easyLockpickSkillCheck
-            }
+            model = {}
         }
     },
 
@@ -248,124 +167,36 @@ return {
     ---@type AnimConfigEntities
     anims = {
         hotwire = {
-            default = defaultHotwireAnim,
-            class = {
-                [VehicleClass.COMPACTS]        = defaultHotwireAnim,
-                [VehicleClass.SEDANS]          = defaultHotwireAnim,
-                [VehicleClass.SUVS]            = defaultHotwireAnim,
-                [VehicleClass.COUPES]          = defaultHotwireAnim,
-                [VehicleClass.MUSCLE]          = defaultHotwireAnim,
-                [VehicleClass.SPORTS_CLASSICS] = defaultHotwireAnim,
-                [VehicleClass.SPORTS]          = defaultHotwireAnim,
-                [VehicleClass.SUPER]           = defaultHotwireAnim,
-                [VehicleClass.MOTORCYCLES]     = defaultHotwireAnim,
-                [VehicleClass.OFF_ROAD]        = defaultHotwireAnim,
-                [VehicleClass.INDUSTRIAL]      = defaultHotwireAnim,
-                [VehicleClass.UTILITY]         = defaultHotwireAnim,
-                [VehicleClass.VANS]            = defaultHotwireAnim,
-                [VehicleClass.BOATS]           = defaultHotwireAnim,
-                [VehicleClass.HELICOPTERS]     = defaultHotwireAnim,
-                [VehicleClass.PLANES]          = defaultHotwireAnim,
-                [VehicleClass.SERVICE]         = defaultHotwireAnim,
-                [VehicleClass.EMERGENCY]       = defaultHotwireAnim,
-                [VehicleClass.MILITARY]        = defaultHotwireAnim,
-                [VehicleClass.COMMERCIAL]      = defaultHotwireAnim,
-                [VehicleClass.TRAINS]          = defaultHotwireAnim,
-                [VehicleClass.OPEN_WHEEL]      = defaultHotwireAnim,
+            default = {
+                dict = 'anim@veh@plane@howard@front@ds@base',
+                clip = 'hotwire'
             },
-            model = {
-                [`zombiea`] = defaultHotwireAnim
-            }
+            class = {},
+            model = {}
         },
         searchKeys = {
-            default = defaultSearchKeysAnim,
-            class = {
-                [VehicleClass.COMPACTS]        = defaultSearchKeysAnim,
-                [VehicleClass.SEDANS]          = defaultSearchKeysAnim,
-                [VehicleClass.SUVS]            = defaultSearchKeysAnim,
-                [VehicleClass.COUPES]          = defaultSearchKeysAnim,
-                [VehicleClass.MUSCLE]          = defaultSearchKeysAnim,
-                [VehicleClass.SPORTS_CLASSICS] = defaultSearchKeysAnim,
-                [VehicleClass.SPORTS]          = defaultSearchKeysAnim,
-                [VehicleClass.SUPER]           = defaultSearchKeysAnim,
-                [VehicleClass.MOTORCYCLES]     = defaultSearchKeysAnim,
-                [VehicleClass.OFF_ROAD]        = defaultSearchKeysAnim,
-                [VehicleClass.INDUSTRIAL]      = defaultSearchKeysAnim,
-                [VehicleClass.UTILITY]         = defaultSearchKeysAnim,
-                [VehicleClass.VANS]            = defaultSearchKeysAnim,
-                [VehicleClass.BOATS]           = defaultSearchKeysAnim,
-                [VehicleClass.HELICOPTERS]     = defaultSearchKeysAnim,
-                [VehicleClass.PLANES]          = defaultSearchKeysAnim,
-                [VehicleClass.SERVICE]         = defaultSearchKeysAnim,
-                [VehicleClass.EMERGENCY]       = defaultSearchKeysAnim,
-                [VehicleClass.MILITARY]        = defaultSearchKeysAnim,
-                [VehicleClass.COMMERCIAL]      = defaultSearchKeysAnim,
-                [VehicleClass.TRAINS]          = defaultSearchKeysAnim,
-                [VehicleClass.OPEN_WHEEL]      = defaultSearchKeysAnim,
+            default = {
+                dict = 'anim@amb@clubhouse@tutorial@bkr_tut_ig3@',
+                clip = 'machinic_loop_mechandplayer',
             },
-            model = {
-                [`zombiea`] = defaultSearchKeysAnim
-            }
+            class = {},
+            model = {}
         },
         lockpick = {
-            default = defaultLockpickAnim,
-            class = {
-                [VehicleClass.COMPACTS]        = defaultLockpickAnim,
-                [VehicleClass.SEDANS]          = defaultLockpickAnim,
-                [VehicleClass.SUVS]            = defaultLockpickAnim,
-                [VehicleClass.COUPES]          = defaultLockpickAnim,
-                [VehicleClass.MUSCLE]          = defaultLockpickAnim,
-                [VehicleClass.SPORTS_CLASSICS] = defaultLockpickAnim,
-                [VehicleClass.SPORTS]          = defaultLockpickAnim,
-                [VehicleClass.SUPER]           = defaultLockpickAnim,
-                [VehicleClass.MOTORCYCLES]     = defaultLockpickAnim,
-                [VehicleClass.OFF_ROAD]        = defaultLockpickAnim,
-                [VehicleClass.INDUSTRIAL]      = defaultLockpickAnim,
-                [VehicleClass.UTILITY]         = defaultLockpickAnim,
-                [VehicleClass.VANS]            = defaultLockpickAnim,
-                [VehicleClass.BOATS]           = defaultLockpickAnim,
-                [VehicleClass.HELICOPTERS]     = defaultLockpickAnim,
-                [VehicleClass.PLANES]          = defaultLockpickAnim,
-                [VehicleClass.SERVICE]         = defaultLockpickAnim,
-                [VehicleClass.EMERGENCY]       = defaultLockpickAnim,
-                [VehicleClass.MILITARY]        = defaultLockpickAnim,
-                [VehicleClass.COMMERCIAL]      = defaultLockpickAnim,
-                [VehicleClass.TRAINS]          = defaultLockpickAnim,
-                [VehicleClass.OPEN_WHEEL]      = defaultLockpickAnim,
+            default = {
+                dict = 'veh@break_in@0h@p_m_one@',
+                clip = 'low_force_entry_ds'
             },
-            model = {
-                [`zombiea`] = defaultLockpickAnim
-            }
+            class = {},
+            model = {}
         },
         holdup = {
-            default = defaultHoldupAnim,
-            class = {
-                [VehicleClass.COMPACTS]        = defaultHoldupAnim,
-                [VehicleClass.SEDANS]          = defaultHoldupAnim,
-                [VehicleClass.SUVS]            = defaultHoldupAnim,
-                [VehicleClass.COUPES]          = defaultHoldupAnim,
-                [VehicleClass.MUSCLE]          = defaultHoldupAnim,
-                [VehicleClass.SPORTS_CLASSICS] = defaultHoldupAnim,
-                [VehicleClass.SPORTS]          = defaultHoldupAnim,
-                [VehicleClass.SUPER]           = defaultHoldupAnim,
-                [VehicleClass.MOTORCYCLES]     = defaultHoldupAnim,
-                [VehicleClass.OFF_ROAD]        = defaultHoldupAnim,
-                [VehicleClass.INDUSTRIAL]      = defaultHoldupAnim,
-                [VehicleClass.UTILITY]         = defaultHoldupAnim,
-                [VehicleClass.VANS]            = defaultHoldupAnim,
-                [VehicleClass.BOATS]           = defaultHoldupAnim,
-                [VehicleClass.HELICOPTERS]     = defaultHoldupAnim,
-                [VehicleClass.PLANES]          = defaultHoldupAnim,
-                [VehicleClass.SERVICE]         = defaultHoldupAnim,
-                [VehicleClass.EMERGENCY]       = defaultHoldupAnim,
-                [VehicleClass.MILITARY]        = defaultHoldupAnim,
-                [VehicleClass.COMMERCIAL]      = defaultHoldupAnim,
-                [VehicleClass.TRAINS]          = defaultHoldupAnim,
-                [VehicleClass.OPEN_WHEEL]      = defaultHoldupAnim,
+            default = {
+                dict = 'mp_am_hold_up',
+                clip = 'holdup_victim_20s'
             },
-            model = {
-                [`zombiea`] = defaultHoldupAnim
-            }
+            class = {},
+            model = {}
         },
         toggleEngine = {
             default = {
@@ -383,5 +214,37 @@ return {
             },
             model = {},
         },
-    }
+    },
+    -- Weapons that cannot be used for carjacking
+    noCarjackWeapons = {
+        `WEAPON_UNARMED`,
+        `WEAPON_KNIFE`,
+        `WEAPON_NIGHTSTICK`,
+        `WEAPON_HAMMER`,
+        `WEAPON_BAT`,
+        `WEAPON_CROWBAR`,
+        `WEAPON_GOLFCLUB`,
+        `WEAPON_BOTTLE`,
+        `WEAPON_DAGGER`,
+        `WEAPON_HATCHET`,
+        `WEAPON_KNUCKLE`,
+        `WEAPON_MACHETE`,
+        `WEAPON_FLASHLIGHT`,
+        `WEAPON_SWITCHBLADE`,
+        `WEAPON_POOLCUE`,
+        `WEAPON_WRENCH`,
+        `WEAPON_BATTLEAXE`,
+        `WEAPON_GRENADE`,
+        `WEAPON_STOCKYBOMB`,
+        `WEAPON_PROXIMITYMINE`,
+        `WEAPON_BZGAS`,
+        `WEAPON_MOLOTOV`,
+        `WEAPON_FIREEXTINGUISHER`,
+        `WEAPON_PETROLCAN`,
+        `WEAPON_FLARE`,
+        `WEAPON_BALL`,
+        `WEAPON_SNOWBALL`,
+        `WEAPON_SMOKEGRENADE`,
+        -- Add more weapon names as needed
+    },
 }

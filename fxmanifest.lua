@@ -11,6 +11,7 @@ shared_scripts {
     '@ox_lib/init.lua',
     '@qbx_core/modules/lib.lua',
     'shared/types.lua',
+    'shared/vehicle-config.lua',
     'bridge/qb/shared.lua',
 }
 
@@ -33,7 +34,6 @@ server_scripts {
 }
 
 files {
-    'shared/functions.lua',
     'locales/*.json',
     'config/client.lua',
     'config/shared.lua'

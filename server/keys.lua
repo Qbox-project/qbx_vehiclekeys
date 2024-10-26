@@ -132,7 +132,7 @@ lib.callback.register('qbx_vehiclekeys:server:giveKeys', function(source, netId)
     GiveKeys(source, NetworkGetEntityFromNetworkId(netId))
 end)
 
-AddStateBagChangeHandler('vehicleid', nil, function(bagName, _, vehicleId)
+AddStateBagChangeHandler('vehicleid', '', function(bagName, _, vehicleId)
     local vehicle = GetEntityFromStateBagName(bagName)
     if not vehicle or vehicle == 0 then return end
     local owner = exports.qbx_vehicles:GetPlayerVehicle(vehicleId)?.citizenid

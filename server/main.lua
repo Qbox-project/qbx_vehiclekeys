@@ -1,12 +1,8 @@
 local config = require 'config.server'
-local sharedFunctions = require 'shared.functions'
-
-local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
-local getIsVehicleShared = sharedFunctions.getIsVehicleShared
 
 lib.callback.register('qbx_vehiclekeys:server:findKeys', function(source, netId)
     local vehicle = NetworkGetEntityFromNetworkId(netId)
-    if math.random() <= sharedFunctions.getVehicleConfig(vehicle).findKeysChance then
+    if math.random() <= GetVehicleConfig(vehicle).findKeysChance then
         GiveKeys(source, vehicle)
         return true
     end
@@ -47,6 +43,7 @@ end)
 RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, state)
 	local vehicleEntity = NetworkGetEntityFromNetworkId(vehNetId)
 	if type(state) ~= 'number' or not DoesEntityExist(vehicleEntity) then return end
-    if getIsVehicleAlwaysUnlocked(vehicleEntity) or getIsVehicleShared(vehicleEntity) then return end
+    local vehicleConfig = GetVehicleConfig(vehicleEntity)
+    if vehicleConfig.noLock or vehicleConfig.shared then return end
     Entity(vehicleEntity).state:set('doorslockstate', state, true)
 end)

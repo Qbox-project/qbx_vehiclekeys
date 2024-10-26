@@ -1,5 +1,4 @@
 local config = require 'config.client'
-local functions = require 'shared.functions'
 
 ---Grants keys for job shared vehicles
 ---@param vehicle number The entity number of the vehicle.
@@ -8,7 +7,7 @@ function AreKeysJobShared(vehicle)
     local job = QBX.PlayerData.job.name
     local jobInfo = config.sharedKeys[job]
 
-    if not jobInfo or (jobInfo.requireOnduty and not QBX.PlayerData.job.onduty) then return end
+    if not jobInfo or (jobInfo.requireOnDuty and not QBX.PlayerData.job.onduty) then return end
 
     assert(jobInfo.vehicles, string.format('Vehicles not configured for the %s job.', job))
     return jobInfo.vehicles and jobInfo.vehicles[GetEntityModel(vehicle)] or jobInfo.classes and jobInfo.classes[GetVehicleClass(vehicle)]
@@ -86,7 +85,7 @@ end
 local function getIsCloseToAnyBone(coords, entity, bones, maxDistance)
     for i = 1, #bones do
         local boneCoords = getBoneCoords(entity, bones[i])
-        if functions.getIsCloseToCoords(coords, boneCoords, maxDistance) then
+        if #(coords - boneCoords) < maxDistance then
             return true
         end
     end
@@ -116,7 +115,7 @@ end
 ---@param vehicle number
 local function breakLockpick(isAdvancedLockedpick, vehicle)
     local chance = math.random()
-    local vehicleConfig = functions.getVehicleConfig(vehicle)
+    local vehicleConfig = GetVehicleConfig(vehicle)
     if isAdvancedLockedpick then -- there is no benefit to using an advanced tool in the default configuration.
         if chance <= vehicleConfig.removeAdvancedLockpickChance then
             TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "advancedlockpick")
@@ -173,7 +172,7 @@ function LockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     --- player may attempt to open the lock if:
     if not isDriverSeatFree -- no one in the driver's seat
         or not getIsCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
-        or functions.getIsVehicleLockpickImmune(vehicle)
+        or GetVehicleConfig(vehicle).lockpickImmune
     then return end
 
     local skillCheckConfig = config.skillCheck[isAdvancedLockedpick and 'advancedLockpick' or 'lockpick']
