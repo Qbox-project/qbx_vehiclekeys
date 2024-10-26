@@ -1,5 +1,7 @@
 ---@meta
 
+---@alias Anim {dict: string, clip: string, delay?: integer}
+
 ---@alias VehicleType 'automobile' | 'bike' | 'boat' | 'heli' | 'plane' | 'submarine' | 'trailer' | 'train'
 ---@alias Hash number|string actually a number but `model` is treated as a string by language server
 

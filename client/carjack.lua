@@ -1,9 +1,4 @@
 local config = require 'config.client'
-local sharedFunctions = require 'shared.functions'
-
-local getIsCloseToCoords = sharedFunctions.getIsCloseToCoords
-local getIsBlacklistedWeapon = sharedFunctions.getIsBlacklistedWeapon
-local getIsVehicleCarjackingImmune = sharedFunctions.getIsVehicleCarjackingImmune
 
 local function getNPCPedsInVehicle(vehicle)
     local otherPeds = {}
@@ -110,6 +105,13 @@ local function carjackVehicle(driver, vehicle)
     isCarjacking = false
 end
 
+---Checks if the weapon cannot be used to steal keys from drivers.
+---@param weaponHash number The current weapon hash.
+---@return boolean `true` if the weapon cannot be used to carjacking, `false` otherwise.
+local function getIsBlacklistedWeapon(weaponHash)
+    return qbx.array.contains(config.noCarjackWeapons, weaponHash)
+end
+
 local isWatchCarjackingAttemptRunning = false
 local function watchCarjackingAttempts()
     if isWatchCarjackingAttemptRunning then return end
@@ -126,8 +128,8 @@ local function watchCarjackingAttempts()
                 local targetveh = GetVehiclePedIsIn(target, false)
 
                 if GetPedInVehicleSeat(targetveh, -1) == target
-                    and not getIsVehicleCarjackingImmune(targetveh)
-                    and getIsCloseToCoords(GetEntityCoords(cache.ped), GetEntityCoords(target), 5.0)
+                    and not GetVehicleConfig(targetveh).carjackingImmune
+                    and #(GetEntityCoords(cache.ped) - GetEntityCoords(target)) < 5.0
                 then
                     carjackVehicle(target, targetveh)
                 end

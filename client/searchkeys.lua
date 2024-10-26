@@ -1,12 +1,10 @@
 local config = require 'config.client'
-local sharedFunctions = require 'shared.functions'
-
 local isSearchLocked = false
 local isSearchAllowed = false
 
 local function setSearchLabelState(isAllowed)
     if isSearchLocked and isAllowed then return end
-    if isAllowed and cache.vehicle and sharedFunctions.getVehicleConfig(cache.vehicle).findKeysChance == 0.0 then
+    if isAllowed and cache.vehicle and GetVehicleConfig(cache.vehicle).findKeysChance == 0.0 then
         isSearchAllowed = false
         return
     end
