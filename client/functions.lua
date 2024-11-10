@@ -28,6 +28,10 @@ function HasKeys(vehicle)
     end
 
     local owner = Entity(vehicle).state.owner
+    if not owner then
+        local hasKey = lib.callback.await('qbx_vehiclekeys:server:hasKeys', false, VehToNet(vehicle))
+        if hasKey then return true else return false end
+    end
     if owner and QBX.PlayerData.citizenid == owner then
         lib.callback.await('qbx_vehiclekeys:server:giveKeys', false, VehToNet(vehicle))
         return true

@@ -118,6 +118,20 @@ function HasKeys(src, vehicle)
     end
 
     local owner = Entity(vehicle).state.owner
+    if not owner then
+        local plate = qbx.getVehiclePlate(vehicle)
+        local vehicleId = exports.qbx_vehicles:GetVehicleIdByPlate(plate)
+        if vehicleId then
+            owner = exports.qbx_vehicles:GetPlayerVehicle(vehicleId)?.citizenid
+            if owner then
+                Entity(vehicle).state:set('owner', owner, true)
+            else
+                return false
+            end
+        else
+            return false
+        end
+    end
     if owner and getCitizenId(src) == owner then
         GiveKeys(src, vehicle)
         return true
@@ -130,6 +144,10 @@ exports('HasKeys', HasKeys)
 
 lib.callback.register('qbx_vehiclekeys:server:giveKeys', function(source, netId)
     GiveKeys(source, NetworkGetEntityFromNetworkId(netId))
+end)
+
+lib.callback.register('qbx_vehiclekeys:server:hasKeys', function(source, netId)
+    return HasKeys(source, NetworkGetEntityFromNetworkId(netId))
 end)
 
 AddStateBagChangeHandler('vehicleid', '', function(bagName, _, vehicleId)
