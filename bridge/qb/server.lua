@@ -7,6 +7,7 @@ local function giveKeys(source, plate)
         if GiveKeys(source, vehicles[i], true) then
             success = true
         end
+        Wait(20)
     end
     if success then
         exports.qbx_core:Notify(source, locale('notify.keys_taken'))
@@ -23,6 +24,7 @@ local function removeKeys(source, plate)
         if RemoveKeys(source, vehicles[i], true) then
             success = true
         end
+        Wait(20)
     end
     if success then
         exports.qbx_core:Notify(source, locale('notify.keys_removed'))
