@@ -1,14 +1,17 @@
+local config = require 'config.server'
+
 ---@param src number
 ---@return number?
 local function getClosestPlayer(src)
     local playerCoords = GetEntityCoords(GetPlayerPed(src))
-    local nearbyPlayers = lib.getNearbyPlayers(playerCoords, 3)
-    local closestPlayer, closestDistance
+    local nearbyPlayers = lib.getNearbyPlayers(playerCoords, config.distanceToHandKeys)
+    local closestPlayer
+    local closestDistance = config.distanceToHandKeys
     for i = 1, #nearbyPlayers do
         local nearbyPlayer = nearbyPlayers[i]
-        if nearbyPlayer.id ~= source then
+        if nearbyPlayer.id ~= src then
             local distance = #(nearbyPlayer.coords - playerCoords)
-            if not distance or distance < closestDistance then
+            if not distance or distance <= closestDistance then
                 closestPlayer = nearbyPlayer
                 closestDistance = distance
             end
@@ -48,6 +51,9 @@ local function transferKeys(source, target, enforceSrcHasKeys)
         local closestPlayer = getClosestPlayer(source)
         if closestPlayer then
             GiveKeys(closestPlayer, vehicle)
+            exports.qbx_core:Notify(source, locale('notify.gave_keys'))
+        else
+            exports.qbx_core:Notify(source, locale('notify.not_near'), 'error')
         end
     end
 end
