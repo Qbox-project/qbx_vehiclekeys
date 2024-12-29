@@ -1,5 +1,17 @@
 local config = require 'config.server'
 
+---@param vehNetId number
+---@param state number
+local function setLockState(vehNetId, state)
+    local vehicleEntity = NetworkGetEntityFromNetworkId(vehNetId)
+	if type(state) ~= 'number' or not DoesEntityExist(vehicleEntity) then return end
+    local vehicleConfig = GetVehicleConfig(vehicleEntity)
+    if vehicleConfig.noLock or vehicleConfig.shared then return end
+    Entity(vehicleEntity).state:set('doorslockstate', state, true)
+end
+
+exports('SetVehLockState', setLockState)
+
 lib.callback.register('qbx_vehiclekeys:server:findKeys', function(source, netId)
     local vehicle = NetworkGetEntityFromNetworkId(netId)
     if math.random() <= GetVehicleConfig(vehicle).findKeysChance then
@@ -41,9 +53,5 @@ RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, state)
-	local vehicleEntity = NetworkGetEntityFromNetworkId(vehNetId)
-	if type(state) ~= 'number' or not DoesEntityExist(vehicleEntity) then return end
-    local vehicleConfig = GetVehicleConfig(vehicleEntity)
-    if vehicleConfig.noLock or vehicleConfig.shared then return end
-    Entity(vehicleEntity).state:set('doorslockstate', state, true)
+	setLockState(vehNetId, state)
 end)
