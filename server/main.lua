@@ -1,16 +1,14 @@
 local config = require 'config.server'
 
----@param vehNetId number
----@param state number
-local function setLockState(vehNetId, state)
-    local vehicleEntity = NetworkGetEntityFromNetworkId(vehNetId)
-	if type(state) ~= 'number' or not DoesEntityExist(vehicleEntity) then return end
-    local vehicleConfig = GetVehicleConfig(vehicleEntity)
+---@param veh number
+---@param state string
+local function setLockState(veh, state)
+	if type(state) ~= 'string' or not DoesEntityExist(veh) then return end
+    local vehicleConfig = GetVehicleConfig(veh)
     if vehicleConfig.noLock or vehicleConfig.shared then return end
-    Entity(vehicleEntity).state:set('doorslockstate', state, true)
+    Entity(veh).state:set('doorslockstate', state == 'lock' and 2 or 1, true)
 end
-
-exports('SetVehLockState', setLockState)
+exports('SetLockState', setLockState)
 
 lib.callback.register('qbx_vehiclekeys:server:findKeys', function(source, netId)
     local vehicle = NetworkGetEntityFromNetworkId(netId)
@@ -25,7 +23,7 @@ lib.callback.register('qbx_vehiclekeys:server:carjack', function(source, netId, 
     if math.random() <= chance then
         local vehicle = NetworkGetEntityFromNetworkId(netId)
         GiveKeys(source, vehicle)
-        TriggerEvent('qb-vehiclekeys:server:setVehLockState', netId, 1)
+        setLockState(vehicle, 'unlock')
         return true
     end
 end)
@@ -52,6 +50,9 @@ RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
     exports.ox_inventory:RemoveItem(source, itemName, 1)
 end)
 
-RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(vehNetId, state)
-	setLockState(vehNetId, state)
+RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(netId, state)
+    local vehicle = NetworkGetEntityFromNetworkId(netId)
+	if type(state) ~= 'number' or not DoesEntityExist(vehicle) then return end
+    if state == 2 then state = 'lock' else state = 'unlock' end
+	setLockState(vehicle, state)
 end)
