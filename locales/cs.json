@@ -47,6 +47,7 @@
   "progress": {
     "attempting_carjack": "Pokus o krádež auta...",
     "searching_keys": "Hledání klíčů od auta...",
-    "takekeys": "Odebírání klíčů z těla..."
+    "takekeys": "Odebírání klíčů z těla...",
+    "rob_keys": "Taking drivers keys..."
   }
 }

@@ -47,6 +47,7 @@
   "progress": {
     "attempting_carjack": "Autovarguse katse...",
     "searching_keys": "Autovõtmete otsimine...",
-    "takekeys": "Võtmete kehast võtmine..."
+    "takekeys": "Võtmete kehast võtmine...",
+    "rob_keys": "Taking drivers keys..."
   }
 }

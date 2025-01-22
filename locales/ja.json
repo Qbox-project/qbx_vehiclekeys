@@ -47,6 +47,7 @@
   "progress": {
     "attempting_carjack": "カージャックを試みています...",
     "searching_keys": "車の鍵を探しています...",
-    "takekeys": "鍵を盗んでいます..."
+    "takekeys": "鍵を盗んでいます...",
+    "rob_keys": "Taking drivers keys..."
   }
 }

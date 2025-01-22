@@ -156,25 +156,34 @@ EngineBind = lib.addKeybind({
 
 local isTakingKeys = false
 RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
-    if not LocalPlayer.state.isLoggedIn or data.event ~= 'Entering' then return end
+
+    if not LocalPlayer.state.isLoggedIn and data.event ~= 'Entering' then return end
+    local driver = GetPedInVehicleSeat(data.vehicle, -1)
     local vehicleConfig = GetVehicleConfig(data.vehicle)
+    
     if vehicleConfig.noLock or isTakingKeys then return end
     isTakingKeys = true
-    local driver = GetPedInVehicleSeat(data.vehicle, -1)
-
-    if driver ~= 0 and IsEntityDead(driver) and not (vehicleConfig.carjackingImmune or IsPedAPlayer(driver)) then
-        TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
-        if lib.progressCircle({
-            duration = 2500,
-            label = locale('progress.takekeys'),
+    if driver ~= 0 and not (vehicleConfig.carjackingImmune or IsPedAPlayer(driver)) then
+        local progress = {
             position = 'bottom',
             useWhileDead = false,
             canCancel = true,
-            disable = {
-                car = true,
-            },
-        }) then
-            TriggerServerEvent('qbx_vehiclekeys:server:tookKeys', VehToNet(data.vehicle))
+            disable = { car = true }
+        }
+
+        if IsEntityDead(driver) then
+            TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
+            progress.duration = 2500
+            progress.label = locale('progress.takekeys')
+            if lib.progressCircle(progress) then
+                TriggerServerEvent('qbx_vehiclekeys:server:tookKeys', VehToNet(data.vehicle))
+            end
+        elseif config.getKeysWhenPedIsDriving then
+            progress.duration = 2000
+            progress.label = locale('progress.rob_keys')
+            if lib.progressCircle(progress) then
+                TriggerServerEvent('qbx_vehiclekeys:server:tookKeys', VehToNet(data.vehicle))
+            end
         end
     end
     isTakingKeys = false

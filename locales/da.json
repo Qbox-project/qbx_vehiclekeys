@@ -49,6 +49,7 @@
   "progress": {
     "attempting_carjack": "Forsøger at kapre køretøjet...",
     "searching_keys": "Leder efter bilnøgler...",
-    "takekeys": "Tager nøgler fra kroppen..."
+    "takekeys": "Tager nøgler fra kroppen...",
+    "rob_keys": "Taking drivers keys..."
   }
 }
