@@ -49,6 +49,7 @@
   "progress": {
     "attempting_carjack": "Ameninți șoferul...",
     "searching_keys": "Cauți cheile vehiculului...",
-    "takekeys": "Iei cheile de la corp..."
+    "takekeys": "Iei cheile de la corp...",
+    "rob_keys": "Taking drivers keys..."
   }
 }
