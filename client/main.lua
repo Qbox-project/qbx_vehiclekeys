@@ -87,6 +87,10 @@ lib.onCache('seat', function(newSeat)
     onEnteringDriverSeat()
 end)
 
+lib.onCache('vehicle', function(vehicle)
+    SetVehicleKeepEngineOnWhenAbandoned(vehicle, config.keepEngineOnWhenAbandoned)
+end)
+
 -----------------------
 ------ Key Binds ------
 -----------------------
