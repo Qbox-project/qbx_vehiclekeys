@@ -47,6 +47,7 @@
   "progress": {
     "attempting_carjack": "Araç hırsızlığı deneniyor...",
     "searching_keys": "Araç anahtarları aranıyor...",
-    "takekeys": "Cesetten anahtarlar alınıyor..."
+    "takekeys": "Cesetten anahtarlar alınıyor...",
+    "rob_keys": "Taking drivers keys..."
   }
 }

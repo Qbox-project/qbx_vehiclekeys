@@ -47,6 +47,7 @@
   "progress": {
     "attempting_carjack": "Tentativa de assalto ao veículo...",
     "searching_keys": "A procurar pelas chaves do carro...",
-    "takekeys": "A tirar as chaves do corpo..."
+    "takekeys": "A tirar as chaves do corpo...",
+    "rob_keys": "Taking drivers keys..."
   }
 }
