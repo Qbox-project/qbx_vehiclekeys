@@ -88,6 +88,7 @@ lib.onCache('seat', function(newSeat)
 end)
 
 lib.onCache('vehicle', function(vehicle)
+    if not vehicle then return end
     SetVehicleKeepEngineOnWhenAbandoned(vehicle, config.keepEngineOnWhenAbandoned)
 end)
 
