@@ -34,6 +34,7 @@ return {
     delayBetweenCarjackingsInMs = 10000, -- Time before you can attempt another carjack in miliseconds
 
     -- Hotwire Settings
+    useSkillCheck = false, -- If false, it will search for keys, with no skill check
     timeBetweenHotwires = 5000, -- Time in milliseconds between hotwire attempts
     minKeysSearchTime = 20000,  -- Minimum hotwire time in milliseconds
     maxKeysSearchTime = 40000,  -- Maximum hotwire time in milliseconds
