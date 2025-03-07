@@ -22,42 +22,56 @@ end
 
 local function findKeys(vehicleModel, vehicleClass, vehicle)
     local hotwireTime = math.random(config.minKeysSearchTime, config.maxKeysSearchTime)
+    local searchingForKeys = true
+    local success = false
 
     local anim = config.anims.searchKeys.model[vehicleModel]
         or config.anims.searchKeys.model[vehicleClass]
         or config.anims.searchKeys.default
 
-    local searchingForKeys = true
-    CreateThread(function()
-        while searchingForKeys do
-            if not IsEntityPlayingAnim(cache.ped, anim.dict, anim.clip, 49) then
-                lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 1.0, -1, 49)
-            end
-            Wait(100)
-        end
-    end)
-    if lib.progressCircle({
-        duration = hotwireTime,
-        label = locale('progress.searching_keys'),
-        position = 'bottom',
-        useWhileDead = false,
-        canCancel = true,
-        anim = anim,
-        disable = {
-            move = true,
-            car = true,
-            combat = true,
-        }
-    }) then
-        searchingForKeys = false
-        local success = lib.callback.await('qbx_vehiclekeys:server:findKeys', false, VehToNet(vehicle))
-        if not success then
-            TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-            exports.qbx_core:Notify(locale("notify.failed_keys"), 'error')
-        end
-        return success
+    local skillCheckConfig = config.skillCheck.hotwire.default 
+    if config.skillCheck.hotwire.class[vehicleClass] then
+        skillCheckConfig = config.skillCheck.hotwire.class[vehicleClass]
     end
-    searchingForKeys = false
+
+    if not config.useSkillCheck then
+        CreateThread(function()
+            while searchingForKeys do
+                if not IsEntityPlayingAnim(cache.ped, anim.dict, anim.clip, 49) then
+                    lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 1.0, -1, 49)
+                end
+                Wait(100)
+            end
+        end)
+        if lib.progressCircle({
+            duration = hotwireTime,
+            label = locale('progress.searching_keys'),
+            position = 'bottom',
+            useWhileDead = false,
+            canCancel = true,
+            anim = anim,
+            disable = {
+                move = true,
+                car = true,
+                combat = true,
+            }
+        }) then
+            searchingForKeys = false
+            success = lib.callback.await('qbx_vehiclekeys:server:findKeys', false, VehToNet(vehicle))
+        end
+    else
+        searchingForKeys = false
+        if lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs) then
+            success = lib.callback.await('qbx_vehiclekeys:server:findKeys', false, VehToNet(vehicle))
+        end
+    end
+
+    if not success then
+        TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
+        exports.qbx_core:Notify(locale("notify.failed_keys"), 'error')
+    end
+
+    return success
 end
 
 local searchKeysKeybind = lib.addKeybind({
