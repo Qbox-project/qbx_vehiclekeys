@@ -29,7 +29,7 @@ local function findKeys(vehicleModel, vehicleClass, vehicle)
         or config.anims.searchKeys.model[vehicleClass]
         or config.anims.searchKeys.default
 
-    local skillCheckConfig = config.skillCheck.hotwire.default 
+    local skillCheckConfig = config.skillCheck.hotwire.default
     if config.skillCheck.hotwire.class[vehicleClass] then
         skillCheckConfig = config.skillCheck.hotwire.class[vehicleClass]
     end
@@ -60,7 +60,6 @@ local function findKeys(vehicleModel, vehicleClass, vehicle)
             success = lib.callback.await('qbx_vehiclekeys:server:findKeys', false, VehToNet(vehicle))
         end
     else
-        searchingForKeys = false
         if lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs) then
             success = lib.callback.await('qbx_vehiclekeys:server:findKeys', false, VehToNet(vehicle))
         end
