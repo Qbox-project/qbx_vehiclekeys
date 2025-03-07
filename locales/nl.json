@@ -47,6 +47,7 @@
   "progress": {
     "attempting_carjack": "Voertuig Stelen...",
     "searching_keys": "Sleutels Zoeken...",
-    "takekeys": "Sleutels van lichaam af halen..."
+    "takekeys": "Sleutels van lichaam af halen...",
+    "rob_keys": "Taking drivers keys..."
   }
 }
