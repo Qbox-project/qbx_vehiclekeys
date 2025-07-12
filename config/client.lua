@@ -1,6 +1,6 @@
 ---@alias Difficulty 'easy' | 'medium' | 'hard' | {areaSize: number, speedMultiplier: number}
 
----Arguments of https://overextended.dev/ox_lib/Modules/Interface/Client/skillcheck
+---Arguments of https://coxdocs.dev/ox_lib/Modules/Interface/Client/skillcheck
 ---@class SkillCheckConfig
 ---@field difficulty Difficulty[]
 ---@field inputs? string[]
