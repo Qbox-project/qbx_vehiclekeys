@@ -47,3 +47,31 @@ Search for the keys when in the driver seat to get keys to the vehicle.
 Alerts police when a vehicle is being broken into, or stolen.
 - Lower chance to alert at night (configurable)
 - cooldown to prevent spam (configurable)
+
+
+## 🔧 Lockpick Item Configuration (ox_inventory)
+Add the following to your `ox_inventory/data/items.lua` to ensure both lockpick types work correctly:
+
+```lua
+['lockpick'] = {
+        label = 'Lockpick',
+        weight = 50,
+        stack = true,
+        close = true,
+        client = {
+            event = 'lockpicks:UseLockpick',
+            args = false,  -- IMPORTANT: pass false (not nil) so we go down the normal path
+        },
+    },
+
+    ['advancedlockpick'] = {
+        label = 'Advanced Lockpick',
+        weight = 50,
+        stack = true,
+        close = true,
+        client = {
+            event = 'lockpicks:UseLockpick',
+            args = true,   -- Advanced path
+        },
+    },
+```
