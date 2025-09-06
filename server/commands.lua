@@ -85,6 +85,7 @@ lib.addCommand(locale('addcom.addkeys'), {
     },
     restricted = 'group.admin',
 }, function (source, args)
+    if not exports.qbx_core:IsOptin(source) then exports.qbx_core:Notify(source, locale('error.not_optin'), 'error') return end
     local playerId = args[locale('addcom.addkeys_id')]
     transferKeys(source, playerId, false)
 end)
