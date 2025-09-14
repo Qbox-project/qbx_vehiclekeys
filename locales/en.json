@@ -45,7 +45,7 @@
     "removed_keys_player": "Your keys to plate %s have been removed!",
     "player_offline": "This player is not online!",
 	  "vehicle_is_unlocked": "Vehicle is already unlocked!",
-    "not_optin": "You are not opted in."
+    "not_optin": "You are not opted in for admin duty. (/optin to toggle)"
   },
   "progress": {
     "attempting_carjack": "Attempting Carjacking...",
