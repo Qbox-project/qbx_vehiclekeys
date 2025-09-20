@@ -38,14 +38,17 @@ local function transferKeys(source, target, enforceSrcHasKeys)
     if target and type(target) == 'number' then
         GiveKeys(target, vehicle)
     elseif GetVehiclePedIsIn(playerPed, false) == vehicle then -- Give keys to everyone in vehicle
+        local givenKeys = false
         for i = -1, 7 do
             local ped = GetPedInVehicleSeat(vehicle, i)
             local serverId = ped and NetworkGetEntityOwner(ped)
-            if serverId and serverId ~= source then
+            if serverId and serverId ~= 0 and serverId ~= source then
                 GiveKeys(serverId, vehicle)
+                givenKeys = true
             end
         end
-
+        
+        if not givenKeys then return end
         exports.qbx_core:Notify(source, locale('notify.gave_keys'))
     else -- Give keys to closest player
         local closestPlayer = getClosestPlayer(source)
