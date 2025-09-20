@@ -1,4 +1,6 @@
 local config = require 'config.client'
+local sharedConfig = require 'config.shared'
+local decayConfig = sharedConfig.decayConfig
 
 ---Grants keys for job shared vehicles
 ---@param vehicle number The entity number of the vehicle.
@@ -110,21 +112,20 @@ local function getIsVehicleInRange(vehicle, maxDistance)
     end
 end
 
----Chance to destroy lockpick
----@param isAdvancedLockedpick any
+---@param isAdvancedLockpick boolean
 ---@param vehicle number
-local function breakLockpick(isAdvancedLockedpick, vehicle)
-    local chance = math.random()
-    local vehicleConfig = GetVehicleConfig(vehicle)
-    if isAdvancedLockedpick then -- there is no benefit to using an advanced tool in the default configuration.
-        if chance <= vehicleConfig.removeAdvancedLockpickChance then
-            TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "advancedlockpick")
-        end
-    else
-        if chance <= vehicleConfig.removeNormalLockpickChance then
-            TriggerServerEvent("qb-vehiclekeys:server:breakLockpick", "lockpick")
-        end
+---@param isSuccess boolean Whether the lockpick attempt was successful
+local function decayLockpick(isAdvancedLockpick, vehicle, isSuccess)
+    local itemName = isAdvancedLockpick and 'advancedlockpick' or 'lockpick'
+    local itemDecayConfig = decayConfig[itemName]
+    
+    -- Calculate decay amount
+    local decayAmount = itemDecayConfig.decayOnUse
+    if not isSuccess then
+        decayAmount = decayAmount + itemDecayConfig.decayOnFail
     end
+    
+    TriggerServerEvent("qbx_vehiclekeys:server:decayLockpick", itemName, decayAmount)
 end
 
 ---Will be executed when the lock opening is successful.
@@ -150,7 +151,7 @@ local function lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
         exports.qbx_core:Notify(locale('notify.failed_lockedpick'), 'error')
     end
 
-    breakLockpick(isAdvancedLockedpick, vehicle)
+    decayLockpick(isAdvancedLockedpick, vehicle, isSuccess)
 end
 
 local islockpickingProcessLocked = false -- lock flag
@@ -207,7 +208,6 @@ local function hotwireSuccessCallback(vehicle)
     TriggerServerEvent('qbx_vehiclekeys:server:hotwiredVehicle', VehToNet(vehicle))
 end
 
----Operations done after the LockpickDoor quickevent done.
 ---@param vehicle number The entity number of the vehicle.
 ---@param isAdvancedLockedpick boolean Determines whether an advanced lockpick was used.
 ---@param isSuccess boolean? Determines whether the lock has been successfully opened.
@@ -220,7 +220,7 @@ local function hotwireCallback(vehicle, isAdvancedLockedpick, isSuccess)
         exports.qbx_core:Notify(locale('notify.failed_lockedpick'), 'error')
     end
 
-    breakLockpick(isAdvancedLockedpick, vehicle)
+    decayLockpick(isAdvancedLockedpick, vehicle, isSuccess)
 end
 
 local isHotwiringProcessLocked = false -- lock flag
