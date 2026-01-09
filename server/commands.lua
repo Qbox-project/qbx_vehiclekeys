@@ -92,3 +92,8 @@ lib.addCommand(locale('addcom.addkeys'), {
     local playerId = args[locale('addcom.addkeys_id')]
     transferKeys(source, playerId, false)
 end)
+
+return {
+    getClosestPlayer = getClosestPlayer,
+    transferKeys = transferKeys
+}
