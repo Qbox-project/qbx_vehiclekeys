@@ -1,4 +1,5 @@
 local config = require 'config.server'
+local commands<const> = require 'server.commands'
 
 ---@param veh number
 ---@param state string
@@ -55,4 +56,9 @@ RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(netId, state)
 	if type(state) ~= 'number' or not DoesEntityExist(vehicle) then return end
     if state == 2 then state = 'lock' else state = 'unlock' end
 	setLockState(vehicle, state)
+end)
+
+RegisterNetEvent('qbx_vehiclekeys:server:quickgivekeys', function()
+    local closestPlayer = commands.getClosestPlayer(source) -- This excludes the source from giving keys to themselves :)
+    commands.transferKeys(source, closestPlayer, true)
 end)

@@ -3,7 +3,7 @@ game 'gta5'
 
 description 'vehicle key management system'
 repository 'https://github.com/Qbox-project/qbx_vehiclekeys'
-version '1.0.2'
+version '1.0.3'
 
 ox_lib 'locale'
 
