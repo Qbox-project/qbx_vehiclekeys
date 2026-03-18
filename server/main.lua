@@ -36,9 +36,9 @@ lib.callback.register('qbx_vehiclekeys:server:getPlayerVehicles', function(src)
     local playerVehicles = exports.qbx_vehicles:GetPlayerVehicles({
         citizenid = player.PlayerData.citizenid,
     })
-    if not playerVehicles then return {} end
 
     local vehicles = {}
+    if not playerVehicles then return vehicles end
 
     for _, vehicle in pairs(playerVehicles) do
         local data = exports.qbx_core:GetVehiclesByName(vehicle.modelName)
@@ -85,7 +85,7 @@ RegisterNetEvent('qbx_vehiclekeys:server:buyKeysForVehicle', function(payment, p
     end
 
     exports.ox_inventory:AddItem(src, shared.keysAsItems.item, 1, {
-        plate = plate,
+        plate = qbx.string.trim(plate),
     })
     exports.qbx_core:Notify(src, locale('notify.bought_keys', plate, shared.keysAsItems.price), 'success')
 end)
