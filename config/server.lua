@@ -1,6 +1,7 @@
 return {
     runClearCronMinutes = 5,
     distanceToHandKeys = 3,
+
     ---@type table<WeaponTypeGroup, number>
     carjackChance = {                    -- Probability of successful carjacking based on weapon used
         [WeaponTypeGroup.MELEE] = 0.0,

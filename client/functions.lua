@@ -1,4 +1,15 @@
 local config = require 'config.client'
+local shared = require 'config.shared'
+
+local function HasKeysItem(vehicle)
+    local plate = qbx.getVehiclePlate(vehicle)
+    if not plate then return false end
+
+    local count = exports.ox_inventory:Search('count', shared.keysAsItems.item, {
+        plate = plate,
+    })
+    return count and count > 0
+end
 
 ---Grants keys for job shared vehicles
 ---@param vehicle number The entity number of the vehicle.
@@ -10,7 +21,8 @@ function AreKeysJobShared(vehicle)
     if not jobInfo or (jobInfo.requireOnDuty and not QBX.PlayerData.job.onduty) then return end
 
     assert(jobInfo.vehicles, string.format('Vehicles not configured for the %s job.', job))
-    return jobInfo.vehicles and jobInfo.vehicles[GetEntityModel(vehicle)] or jobInfo.classes and jobInfo.classes[GetVehicleClass(vehicle)]
+    return jobInfo.vehicles and jobInfo.vehicles[GetEntityModel(vehicle)] or
+        jobInfo.classes and jobInfo.classes[GetVehicleClass(vehicle)]
 end
 
 ---Checks if player has vehicle keys
@@ -19,6 +31,11 @@ end
 function HasKeys(vehicle)
     vehicle = vehicle or cache.vehicle
     if not vehicle then return false end
+
+    if shared.keysAsItems.enabled and HasKeysItem(vehicle) then
+        return true
+    end
+
     local keysList = LocalPlayer.state.keysList
     if keysList then
         local sessionId = Entity(vehicle).state.sessionId
@@ -27,10 +44,12 @@ function HasKeys(vehicle)
         end
     end
 
-    local owner = Entity(vehicle).state.owner
-    if owner and QBX.PlayerData.citizenid == owner then
-        lib.callback.await('qbx_vehiclekeys:server:giveKeys', false, VehToNet(vehicle))
-        return true
+    if shared.grantKeysIfOwner then
+        local owner = Entity(vehicle).state.owner
+        if owner and QBX.PlayerData.citizenid == owner then
+            lib.callback.await('qbx_vehiclekeys:server:giveKeys', false, VehToNet(vehicle))
+            return true
+        end
     end
 
     return false
@@ -91,7 +110,7 @@ local function getIsCloseToAnyBone(coords, entity, bones, maxDistance)
     end
 end
 
-local doorBones = {'door_dside_f', 'door_dside_r', 'door_pside_f', 'door_pside_r'}
+local doorBones = { 'door_dside_f', 'door_dside_r', 'door_pside_f', 'door_pside_r' }
 
 ---Checking whether the character is close enough to the vehicle driver door.
 ---@param vehicle number The entity number of the vehicle.
@@ -167,13 +186,18 @@ function LockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
 
     local isDriverSeatFree = IsVehicleSeatFree(vehicle, -1)
 
-    if GetVehicleDoorLockStatus(vehicle) < 2 then exports.qbx_core:Notify(locale('notify.vehicle_is_unlocked'), 'error') return end
+    if GetVehicleDoorLockStatus(vehicle) < 2 then
+        exports.qbx_core:Notify(locale('notify.vehicle_is_unlocked'), 'error')
+        return
+    end
 
     --- player may attempt to open the lock if:
-    if not isDriverSeatFree -- no one in the driver's seat
+    if not isDriverSeatFree                                                    -- no one in the driver's seat
         or not getIsCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
         or GetVehicleConfig(vehicle).lockpickImmune
-    then return end
+    then
+        return
+    end
 
     local skillCheckConfig = config.skillCheck[isAdvancedLockedpick and 'advancedLockpick' or 'lockpick']
 
@@ -183,7 +207,7 @@ function LockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     if not next(skillCheckConfig) then return end
 
     if islockpickingProcessLocked then return end -- start of the critical section
-    islockpickingProcessLocked = true -- one call per player at a time
+    islockpickingProcessLocked = true             -- one call per player at a time
 
     CreateThread(function()
         local anim = config.anims.lockpick.model[GetEntityModel(vehicle)]
@@ -238,12 +262,12 @@ function Hotwire(vehicle, isAdvancedLockedpick, customChallenge)
     if not next(skillCheckConfig) then return end
 
     if isHotwiringProcessLocked then return end -- start of the critical section
-    isHotwiringProcessLocked = true -- one call per player at a time
+    isHotwiringProcessLocked = true             -- one call per player at a time
 
     CreateThread(function()
         local anim = config.anims.hotwire.model[GetEntityModel(vehicle)]
-        or config.anims.hotwire.class[GetVehicleClass(vehicle)]
-        or config.anims.hotwire.default
+            or config.anims.hotwire.class[GetVehicleClass(vehicle)]
+            or config.anims.hotwire.default
         lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
         local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs)
 

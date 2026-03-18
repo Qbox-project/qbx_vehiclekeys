@@ -53,7 +53,7 @@ Alerts police when a vehicle is being broken into, or stolen.
 Add the following to your `ox_inventory/data/items.lua` to ensure both lockpick types work correctly:
 
 ```lua
-['lockpick'] = {
+    ['lockpick'] = {
         label = 'Lockpick',
         weight = 50,
         stack = true,
@@ -73,5 +73,18 @@ Add the following to your `ox_inventory/data/items.lua` to ensure both lockpick 
             event = 'lockpicks:UseLockpick',
             args = true,   -- Advanced path
         },
+    },
+```
+## Vehicle keys as item (optional)
+
+If you want vehicle keys to be represented as items in player inventories, you can enable that in the config in `config/shared.lua` by setting `keysAsItems.enabled = true`.
+
+```lua
+    ['vehiclekeys'] = {
+        label = 'Vehicle Key',
+        weight = 10,
+        stack = false,
+        close = false,
+        description = 'A key for a vehicle. Try to keep track of which vehicle it belongs to!',
     },
 ```

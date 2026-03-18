@@ -1,4 +1,12 @@
 return {
+    keysAsItems = {
+        enabled = false, -- Whether vehicle keys are represented as items (need ox_inventory)
+        item = "vehiclekeys", -- The item name used for vehicle keys
+        price = 75, -- Price to buy a vehicle key from a vendor
+    },
+
+    grantKeysIfOwner = true, -- Whether to automatically give keys to the owner of the vehicle when checking for keys
+
     ---For a given vehicle, the config used is based on precendence of:
     ---1. model
     ---2. category from qbx_core shared/vehicles.lua

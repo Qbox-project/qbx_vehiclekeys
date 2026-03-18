@@ -1,4 +1,5 @@
 local config = require 'config.server'
+local shared = require 'config.shared'
 local debug = GetConvarInt(('%s-debug'):format(GetCurrentResourceName()), 0) == 1
 
 ---@alias CitizenId string
@@ -45,7 +46,7 @@ AddEventHandler('playerDropped', function()
 end)
 
 ---Removes old keys from server memory
-lib.cron.new('*/'..config.runClearCronMinutes ..' * * * *', function ()
+lib.cron.new('*/' .. config.runClearCronMinutes .. ' * * * *', function()
     local time = os.time()
     local seconds = config.runClearCronMinutes * 60
     for citizenId, lifetime in pairs(logedOutTime) do
@@ -54,13 +55,50 @@ lib.cron.new('*/'..config.runClearCronMinutes ..' * * * *', function ()
             logedOutTime[citizenId] = nil
         end
     end
-end, {debug = debug})
+end, { debug = debug })
 
---- Removing the vehicle keys from the user
+---@param source number
+---@param vehicle number
+---@param skipNotification? boolean
+local function RemoveKeysItem(source, vehicle, skipNotification)
+    local plate = qbx.getVehiclePlate(vehicle)
+    if not plate then return false end
+
+    local slots = exports.ox_inventory:Search(source, 'slots', shared.keysAsItems.item, {
+        plate = plate,
+    })
+    if not slots or not next(slots) then return false end
+
+    local success = true
+    for _, item in pairs(slots) do
+        local removed, response = exports.ox_inventory:RemoveItem(source, shared.keysAsItems.item, 1, nil, item.slot)
+        if not removed then
+            success = false
+            lib.print.warn(('Failed to remove vehicle key item from slot %s for player %s: %s'):format(item.slot, source,
+                response))
+            break
+        end
+    end
+
+    if success then
+        TriggerClientEvent('qbx_vehiclekeys:client:OnLostKeys', source)
+        if not skipNotification then
+            exports.qbx_core:Notify(source, locale('notify.keys_removed'))
+        end
+    end
+
+    return success
+end
+
+--- Remove the vehicle keys from the user
 ---@param source number ID of the player
 ---@param vehicle number
 ---@param skipNotification? boolean
-function RemoveKeys(source, vehicle, skipNotification)
+function RemoveKeys(source, vehicle, skipNotification, temporary)
+    if shared.keysAsItems.enabled and not temporary then
+        return RemoveKeysItem(source, vehicle, skipNotification)
+    end
+
     local citizenid = getCitizenId(source)
     if not citizenid then return end
 
@@ -72,7 +110,6 @@ function RemoveKeys(source, vehicle, skipNotification)
     keys[sessionId] = nil
 
     Player(source).state:set('keysList', keys, true)
-
     TriggerClientEvent('qbx_vehiclekeys:client:OnLostKeys', source)
     if not skipNotification then
         exports.qbx_core:Notify(source, locale('notify.keys_removed'))
@@ -83,32 +120,90 @@ end
 
 exports('RemoveKeys', RemoveKeys)
 
+local function getVehicleName(model)
+    local vehicle = exports.qbx_core:GetVehiclesByHash(model)
+    if vehicle and vehicle.brand and vehicle.name then
+        return ('%s %s'):format(vehicle.brand, vehicle.name)
+    end
+    return 'Unknown'
+end
+
 ---@param source number
 ---@param vehicle number
 ---@param skipNotification? boolean
-function GiveKeys(source, vehicle, skipNotification)
+---@param force? boolean
+local function GiveKeysItem(source, vehicle, skipNotification)
+    local plate = qbx.getVehiclePlate(vehicle)
+    if not plate then return false end
+
+    local slots = exports.ox_inventory:Search(source, 'slots', shared.keysAsItems.item, {
+        plate = plate,
+    })
+    if slots and next(slots) then return true end
+
+    local model = GetEntityModel(vehicle)
+    local name = getVehicleName(model)
+    local metadata = {
+        plate = plate,
+        name = name,
+        label = ('%s - %s'):format(locale('key'), name),
+    }
+
+    local success = exports.ox_inventory:AddItem(source, shared.keysAsItems.item, 1, metadata)
+    if success and not skipNotification then
+        exports.qbx_core:Notify(source, locale('notify.keys_taken'))
+    end
+    return success
+end
+
+--- Give the vehicle keys to the user
+---@param source number
+---@param vehicle number
+---@param skipNotification? boolean
+---@param temporary? boolean
+function GiveKeys(source, vehicle, skipNotification, temporary)
+    if shared.keysAsItems.enabled and not temporary then
+        return GiveKeysItem(source, vehicle, skipNotification)
+    end
+
     local citizenid = getCitizenId(source)
     if not citizenid then return end
 
     local sessionId = Entity(vehicle).state.sessionId or exports.qbx_core:CreateSessionId(vehicle)
     local keys = Player(source).state.keysList or {}
-    if keys[sessionId] then return end
 
+    if keys[sessionId] then return end
     keys[sessionId] = true
 
     Player(source).state:set('keysList', keys, true)
     if not skipNotification then
         exports.qbx_core:Notify(source, locale('notify.keys_taken'))
     end
+
     return true
 end
 
 exports('GiveKeys', GiveKeys)
 
+--- @param source number
+--- @param vehicle number
+local function HasKeysItem(source, vehicle)
+    local plate = qbx.getVehiclePlate(vehicle)
+    if not plate then return false end
+    local count = exports.ox_inventory:Search(source, 'count', shared.keysAsItems.item, {
+        plate = plate,
+    })
+    return count and count > 0
+end
+
 ---@param src number
 ---@param vehicle number
 ---@return boolean
 function HasKeys(src, vehicle)
+    if shared.keysAsItems.enabled and HasKeysItem(src, vehicle) then
+        return true
+    end
+
     local keysList = Player(src).state.keysList
     if keysList then
         local sessionId = Entity(vehicle).state.sessionId
@@ -117,10 +212,11 @@ function HasKeys(src, vehicle)
         end
     end
 
-    local owner = Entity(vehicle).state.owner
-    if owner and getCitizenId(src) == owner then
-        GiveKeys(src, vehicle)
-        return true
+    if shared.grantKeysIfOwner then
+        local owner = Entity(vehicle).state.owner
+        if owner and getCitizenId(src) == owner then
+            return GiveKeys(src, vehicle)
+        end
     end
 
     return false

@@ -24,6 +24,7 @@ local hardLockpickSkillCheck = {
 }
 
 return {
+    useTarget = true, -- Whether to use target system for interactions
     vehicleMaximumLockingDistance = 5.0, -- Maximum distance for vehicle locking
     getKeysWhenEngineIsRunning = true, -- when enabled, gives keys to a player who doesn't have them if they enter the driver seat when the engine is running
     keepEngineOnWhenAbandoned = true, -- when enabled, keeps a vehicle's engine running after exiting
@@ -246,5 +247,18 @@ return {
         `WEAPON_SNOWBALL`,
         `WEAPON_SMOKEGRENADE`,
         -- Add more weapon names as needed
+    },
+
+    keyVendors = {
+        model = `a_m_m_prolhost_01`, -- Ped model for the key vendor
+        showBlip = true, -- Whether to show a blip for the key vendor
+        locations = { -- Ped locations
+            vec4(-825.88, -261.36, 38.0, 302.66),
+        },
+        blip = { -- Blip settings
+            sprite = 186,
+            color = 3,
+            scale = 0.8,
+        },
     },
 }

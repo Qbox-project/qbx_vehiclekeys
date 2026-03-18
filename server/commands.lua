@@ -47,7 +47,7 @@ local function transferKeys(source, target, enforceSrcHasKeys)
                 givenKeys = true
             end
         end
-        
+
         if not givenKeys then return end
         exports.qbx_core:Notify(source, locale('notify.gave_keys'))
     else -- Give keys to closest player
@@ -72,7 +72,7 @@ lib.addCommand(locale('addcom.givekeys'), {
         },
     },
     restricted = false,
-}, function (source, args)
+}, function(source, args)
     transferKeys(source, args[locale('addcom.givekeys_id')], true)
 end)
 
@@ -87,8 +87,11 @@ lib.addCommand(locale('addcom.addkeys'), {
         },
     },
     restricted = 'group.admin',
-}, function (source, args)
-    if not exports.qbx_core:IsOptin(source) then exports.qbx_core:Notify(source, locale('error.not_optin'), 'error') return end
+}, function(source, args)
+    if not exports.qbx_core:IsOptin(source) then
+        exports.qbx_core:Notify(source, locale('notify.not_optin'), 'error')
+        return
+    end
     local playerId = args[locale('addcom.addkeys_id')]
     transferKeys(source, playerId, false)
 end)
