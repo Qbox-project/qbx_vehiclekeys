@@ -8,19 +8,27 @@ local function toggleLock(vehicle)
     if vehicleConfig.noLock or vehicleConfig.shared then return end
     if GetIsVehicleAccessible(vehicle) then
 
-        lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
+        local propModel = joaat('m23_2_prop_m32_carkey_fob_01a')
+        RequestModel(propModel)
+        while not HasModelLoaded(propModel) do Wait(0) end
 
-        --- if the statebag is out of sync, rely on it as the source of truth and sync the client to the statebag's value
+        local prop = CreateObject(propModel, 0, 0, 0, true, true, false)
+        while not DoesEntityExist(prop) do Wait(0) end
+
+        AttachEntityToEntity(
+            prop, cache.ped,
+            GetPedBoneIndex(cache.ped, 57005), 0.12, 0.04, 0.0, 27.42, 180.8, 176.34, true, true, false, true, 1, true)
+
+        lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
+		
+		--- if the statebag is out of sync, rely on it as the source of truth and sync the client to the statebag's value
         local stateBagValue = Entity(vehicle).state.doorslockstate
         if GetVehicleDoorLockStatus(vehicle) ~= stateBagValue then
             SetVehicleDoorsLocked(vehicle, stateBagValue)
         end
-
         local lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1
-
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
         exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
-
         qbx.playAudio({ audioName = 'Remote_Control_Fob', audioRef = 'PI_Menu_Sounds', source = vehicle })
         SetVehicleLights(vehicle, 2)
         Wait(250)
@@ -29,6 +37,9 @@ local function toggleLock(vehicle)
         SetVehicleLights(vehicle, 0)
         Wait(300)
         ClearPedTasks(cache.ped)
+
+        DeleteObject(prop)
+        SetModelAsNoLongerNeeded(propModel)
     else
         exports.qbx_core:Notify(locale('notify.no_keys'), 'error')
     end
