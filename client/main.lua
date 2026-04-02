@@ -52,14 +52,12 @@ local function toggleLock(vehicle)
     if GetIsVehicleAccessible(vehicle) then
         local prop = createPropOnBone(
             cache.ped,
-            'm23_2_prop_m32_carkey_fob_01a', -- prop model
-            57005, -- player bone
-            vector3(0.12, 0.04, 0.0), -- coords
-            vector3(27.42, 180.8, 176.34) -- rotation
+            'm23_2_prop_m32_carkey_fob_01a',
+            57005,
+            vector3(0.12, 0.04, 0.0),
+            vector3(27.42, 180.8, 176.34)
         )
-
         lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
-
         local stateBagValue = Entity(vehicle).state.doorslockstate
         if GetVehicleDoorLockStatus(vehicle) ~= stateBagValue then
             SetVehicleDoorsLocked(vehicle, stateBagValue)
@@ -74,16 +72,7 @@ local function toggleLock(vehicle)
         Wait(200)
         SetVehicleLights(vehicle, 0)
         Wait(300)
-
-        -- Wait for the animation to fully finish before cleaning up the prop
-        lib.waitFor(function()
-            if not IsEntityPlayingAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3) then
-                return true
-            end
-        end, 3000)
-
         ClearPedTasks(cache.ped)
-
         if prop then
             DeleteObject(prop)
         end
