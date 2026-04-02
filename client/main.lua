@@ -59,7 +59,7 @@ local function toggleLock(vehicle)
         local prop = createPropOnBone(
             cache.ped,
             'm23_2_prop_m32_carkey_fob_01a', -- prop model
-            57005, -- player bone
+            57005, -- player bone (animation uses right hand)
             vector3(0.12, 0.04, 0.0), -- coords
             vector3(27.42, 180.8, 176.34) -- rotation
         )
