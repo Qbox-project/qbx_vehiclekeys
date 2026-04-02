@@ -66,13 +66,17 @@ local function toggleLock(vehicle)
 
         lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
 
+        --- if the statebag is out of sync, rely on it as the source of truth and sync the client to the statebag's value
         local stateBagValue = Entity(vehicle).state.doorslockstate
         if GetVehicleDoorLockStatus(vehicle) ~= stateBagValue then
             SetVehicleDoorsLocked(vehicle, stateBagValue)
         end
+        
         local lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1
+        
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
         exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
+        
         qbx.playAudio({ audioName = 'Remote_Control_Fob', audioRef = 'PI_Menu_Sounds', source = vehicle })
         SetVehicleLights(vehicle, 2)
         Wait(250)
@@ -80,7 +84,6 @@ local function toggleLock(vehicle)
         Wait(200)
         SetVehicleLights(vehicle, 0)
         Wait(300)
-
         ClearPedTasks(cache.ped)
 
         if prop then
