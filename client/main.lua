@@ -9,6 +9,12 @@ local config = require 'config.client'
 ---@return number|nil prop The created prop entity, or nil if it failed
 local function createPropOnBone(ped, modelName, boneId, coords, rotation)
     local model = joaat(modelName)
+
+    if not IsModelValid(model) then
+        warn(('Attempted to load invalid model: %s'):format(modelName))
+        return nil
+    end
+
     local loaded = lib.waitFor(function()
         RequestModel(model)
         if HasModelLoaded(model) then return true end
