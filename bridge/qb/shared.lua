@@ -14,7 +14,7 @@ function GetVehiclesFromPlate(plate)
     for i = 1, #vehicles do
         local vehicle = vehicles[i]
         local vehPlate = qbx.getVehiclePlate(vehicle)
-        if plate == vehPlate or GetVehicleNumberPlateText(vehicle) then
+        if plate == (vehPlate or GetVehicleNumberPlateText(vehicle)) then
             vehEntityFromPlate[#vehEntityFromPlate + 1] = vehicle
         end
     end
