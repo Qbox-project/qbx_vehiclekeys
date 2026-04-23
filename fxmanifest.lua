@@ -20,6 +20,7 @@ client_scripts {
     'client/functions.lua',
     'client/searchkeys.lua',
     'client/main.lua',
+    'client/autolock.lua',
     'client/carjack.lua',
     'bridge/qb/client.lua',
 }
