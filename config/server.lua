@@ -1,6 +1,7 @@
 return {
     runClearCronMinutes = 5,
     distanceToHandKeys = 3,
+    distanceToVehicle = 7.5,             -- Max distance (m) between a player and a vehicle for server-side key-grant events to be honored. Prevents granting keys to vehicles the player isn't actually next to.
     ---@type table<WeaponTypeGroup, number>
     carjackChance = {                    -- Probability of successful carjacking based on weapon used
         [WeaponTypeGroup.MELEE] = 0.0,
