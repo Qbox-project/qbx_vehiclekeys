@@ -1,5 +1,54 @@
 local config = require 'config.client'
 
+---Creates a prop attached to a ped's bone (right hand)
+---@param ped number The ped entity to attach the prop to
+---@param modelName string The model name of the prop to create
+---@param boneId number The bone ID to attach the prop to
+---@param coords vector3 The position offset from the bone
+---@param rotation vector3 The rotation offset from the bone
+---@return number|nil prop The created prop entity, or nil if it failed
+local function createPropOnBone(ped, modelName, boneId, coords, rotation)
+    local model = joaat(modelName)
+
+    if not IsModelValid(model) then
+        warn(('Attempted to load invalid model: %s'):format(modelName))
+        return nil
+    end
+
+    local loaded = lib.waitFor(function()
+        RequestModel(model)
+        if HasModelLoaded(model) then return true end
+    end, 5000) -- 5 second timeout, returns nil if it fails
+
+    if not loaded then
+        warn(('Failed to load keyfob model: %s'):format(modelName))
+        return nil
+    end
+
+    local prop = CreateObject(model, 0, 0, 0, true, true, false)
+    lib.waitFor(function()
+        if DoesEntityExist(prop) then return true end
+    end, 5000)
+
+    if not DoesEntityExist(prop) then
+        warn(('Failed to create object for model: %s'):format(modelName))
+        SetModelAsNoLongerNeeded(model)
+        return nil
+    end
+
+    AttachEntityToEntity(
+        prop,
+        ped,
+        GetPedBoneIndex(ped, boneId),
+        coords.x, coords.y, coords.z,
+        rotation.x, rotation.y, rotation.z,
+        true, true, false, true, 1, true
+    )
+
+    SetModelAsNoLongerNeeded(model)
+    return prop
+end
+
 ---client uses key fob to toggle the door locks
 ---@param vehicle number The entity number of the vehicle.
 local function toggleLock(vehicle)
@@ -7,6 +56,13 @@ local function toggleLock(vehicle)
     local vehicleConfig = GetVehicleConfig(vehicle)
     if vehicleConfig.noLock or vehicleConfig.shared then return end
     if GetIsVehicleAccessible(vehicle) then
+        local prop = createPropOnBone(
+            cache.ped,
+            'm23_2_prop_m32_carkey_fob_01a', -- prop model
+            57005, -- player bone (animation uses right hand)
+            vector3(0.12, 0.04, 0.0), -- coords
+            vector3(27.42, 180.8, 176.34) -- rotation
+        )
 
         lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
 
@@ -15,12 +71,12 @@ local function toggleLock(vehicle)
         if GetVehicleDoorLockStatus(vehicle) ~= stateBagValue then
             SetVehicleDoorsLocked(vehicle, stateBagValue)
         end
-
+        
         local lockstate = (GetVehicleDoorLockStatus(vehicle) % 2) + 1
-
+        
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockstate)
         exports.qbx_core:Notify(locale(lockstate == 2 and 'notify.vehicle_locked' or 'notify.vehicle_unlocked'))
-
+        
         qbx.playAudio({ audioName = 'Remote_Control_Fob', audioRef = 'PI_Menu_Sounds', source = vehicle })
         SetVehicleLights(vehicle, 2)
         Wait(250)
@@ -29,6 +85,10 @@ local function toggleLock(vehicle)
         SetVehicleLights(vehicle, 0)
         Wait(300)
         ClearPedTasks(cache.ped)
+
+        if prop then
+            DeleteObject(prop)
+        end
     else
         exports.qbx_core:Notify(locale('notify.no_keys'), 'error')
     end
