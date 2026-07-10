@@ -206,23 +206,6 @@ RegisterNetEvent('qbx_vehiclekeys:client:OnLostKeys', function()
     end
 end)
 
-for _, info in pairs(config.sharedKeys) do
-    if info.enableAutolock then
-        lib.onCache('vehicle', function (vehicle)
-            local leftVehicle = cache.vehicle
-            if not vehicle and leftVehicle then
-                local isShared = AreKeysJobShared(leftVehicle)
-                local isAutolockEnabled = config.sharedKeys[QBX.PlayerData.job.name]?.enableAutolock
-
-                if isShared and isAutolockEnabled then
-                    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(leftVehicle), 2)
-                end
-            end
-        end)
-        break
-    end
-end
-
 qbx.entityStateHandler('doorslockstate', function(entity, _, value)
     if entity == 0 then return end
     SetVehicleDoorsLocked(entity, value)

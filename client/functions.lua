@@ -1,25 +1,20 @@
 local config = require 'config.client'
 
----Grants keys for job shared vehicles
+--- Checks if the vehicle is shared for the player's current job and if the player meets the requirements to use shared keys.
 ---@param vehicle number The entity number of the vehicle.
+---@param skipNotification? boolean
 ---@return boolean? `true` if the vehicle is shared for the player's current job, `nil` if the player has no job or is off duty.
-function AreKeysJobShared(vehicle)
+function AreKeysJobShared(vehicle, skipNotification)
+    if not config.sharedKeys then return end
     local job = QBX.PlayerData.job
     if not job then return end
-    local jobName = job.name
-    local jobProfile = config.sharedKeys[jobName]
+    local jobProfile = config.sharedKeys[job.name]
     if not jobProfile then return end
 
-    assert(
-        jobProfile.classes or jobProfile.vehicles,
-        string.format(
-            'Vehicles not configured for the %s job.',
-            jobName
-        )
-    )
-
-    if jobProfile.requireOnDuty and not QBX.PlayerData.job.onduty then
-        exports.qbx_core:Notify(locale('notify.require_on_duty'), 'error')
+    if jobProfile.requireOnDuty and not job.onduty then
+        if not skipNotification then
+            exports.qbx_core:Notify(locale('notify.require_on_duty'), 'error')
+        end
         return
     end
 
