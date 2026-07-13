@@ -62,4 +62,18 @@ return {
             -- }
         }
     },
+
+    -- Decay configuration for lockpicks
+    decayConfig = {
+        lockpick = {
+            maxDurability = 100,
+            decayOnUse = 5,
+            decayOnFail = 15,
+        },
+        advancedlockpick = {
+            maxDurability = 100,
+            decayOnUse = 3,
+            decayOnFail = 10,
+        }
+    }
 }
