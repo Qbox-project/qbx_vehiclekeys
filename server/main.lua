@@ -1,4 +1,17 @@
 local config = require 'config.server'
+local lockStateCooldown = {}
+
+local function canSetLockState(source, vehicle)
+    if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) or GetEntityType(vehicle) ~= 2 then return false end
+
+    local ped = GetPlayerPed(source)
+    if ped == 0 or #(GetEntityCoords(ped) - GetEntityCoords(vehicle)) > config.distanceToVehicle then return false end
+
+    local now = GetGameTimer()
+    if lockStateCooldown[source] and now - lockStateCooldown[source] < 500 then return false end
+    lockStateCooldown[source] = now
+    return true
+end
 
 ---@param veh number
 ---@param state string
@@ -51,8 +64,13 @@ RegisterNetEvent('qb-vehiclekeys:server:breakLockpick', function(itemName)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:setVehLockState', function(netId, state)
+    local src = source
     local vehicle = NetworkGetEntityFromNetworkId(netId)
-	if type(state) ~= 'number' or not DoesEntityExist(vehicle) then return end
+	if (state ~= 1 and state ~= 2) or not canSetLockState(src, vehicle) then return end
     if state == 2 then state = 'lock' else state = 'unlock' end
 	setLockState(vehicle, state)
+end)
+
+AddEventHandler('playerDropped', function()
+    lockStateCooldown[source] = nil
 end)
