@@ -45,7 +45,7 @@
         "removed_keys_player": "De sleutels voor het voertuig met kenteken %s zijn van je afgenomen!",
         "player_offline": "Deze speler is niet online!",
         "vehicle_is_unlocked": "Voertuig staat niet op slot!",
-        "not_optin": "U bent niet aangemeld voor administratieve taken. (/kies om te schakelen)",
+        "not_optin": "U bent niet aangemeld voor administratieve taken. (/optin om te schakelen)",
         "require_on_duty": "Dit voertuig is uitsluitend bestemd voor dienstdoend personeel."
     },
     "progress": {
