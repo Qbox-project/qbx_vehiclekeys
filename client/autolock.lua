@@ -23,7 +23,8 @@ if not isAutolockEnabled then return end -- No need to run this code if autolock
 
 lib.onCache('vehicle', function (vehicle, leftVehicle)
     if not vehicle and leftVehicle and DoesEntityExist(leftVehicle) then
-        local jobProfile = autolockProfiles[QBX.PlayerData.job.name]
+        local job = QBX.PlayerData.job
+        local jobProfile = job and autolockProfiles[job.name]
         if jobProfile and AreKeysJobShared(leftVehicle, true) then
             TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(leftVehicle), 2)
         end
