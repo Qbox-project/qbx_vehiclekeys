@@ -23,7 +23,8 @@ qbx.entityStateHandler(stateKey, function(ped, _, visible)
         return
     end
 
-    if pending[ped] ~= request or not DoesEntityExist(ped) or not Entity(ped).state[stateKey] then
+    if pending[ped] ~= request or not DoesEntityExist(ped) then
+        if pending[ped] == request then pending[ped] = nil end
         SetModelAsNoLongerNeeded(model)
         return
     end
