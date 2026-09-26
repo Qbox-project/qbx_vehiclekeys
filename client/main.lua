@@ -48,16 +48,17 @@ local function onEnteringDriverSeat()
             Wait(0)
         end
     end)
-    
-    if(config.getKeysWhenEntering) then
-        TriggerServerEvent('qbx_vehiclekeys:server:tookKeys', VehToNet(vehicle))
-    end
-    
+
     local vehicleConfig = GetVehicleConfig(vehicle)
     if vehicleConfig.shared then return end
 
     local isVehicleAccessible = GetIsVehicleAccessible(vehicle)
     if isVehicleAccessible then return end
+
+    if config.getKeysWhenEntering then
+        TriggerServerEvent('qbx_vehiclekeys:server:tookKeys', VehToNet(vehicle))
+        return
+    end
 
     local isVehicleRunning = GetIsVehicleEngineRunning(vehicle)
     if config.getKeysWhenEngineIsRunning and isVehicleRunning then
