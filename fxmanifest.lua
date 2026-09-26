@@ -19,6 +19,7 @@ client_scripts {
     '@qbx_core/modules/playerdata.lua',
     'client/functions.lua',
     'client/searchkeys.lua',
+    'client/keyfob.lua',
     'client/main.lua',
     'client/autolock.lua',
     'client/carjack.lua',
