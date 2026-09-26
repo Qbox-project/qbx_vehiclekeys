@@ -3,7 +3,7 @@ game 'gta5'
 
 description 'vehicle key management system'
 repository 'https://github.com/Qbox-project/qbx_vehiclekeys'
-version '1.0.2'
+version '1.0.3'
 
 ox_lib 'locale'
 
@@ -20,6 +20,7 @@ client_scripts {
     'client/functions.lua',
     'client/searchkeys.lua',
     'client/main.lua',
+    'client/autolock.lua',
     'client/carjack.lua',
     'bridge/qb/client.lua',
 }

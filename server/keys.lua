@@ -128,8 +128,25 @@ end
 
 exports('HasKeys', HasKeys)
 
+---Checks whether the player's ped is close enough to a vehicle to legitimately request keys for it.
+---Server-side key-grant events are triggered by the client, so without this check a player could
+---grant themselves keys to any vehicle on the server by spoofing its network id.
+---@param source number ID of the player
+---@param vehicle number
+---@return boolean
+function IsPlayerNearVehicle(source, vehicle)
+    if not vehicle or vehicle == 0 or not DoesEntityExist(vehicle) then return false end
+    local ped = GetPlayerPed(source)
+    if ped == 0 then return false end
+    return #(GetEntityCoords(ped) - GetEntityCoords(vehicle)) <= config.distanceToVehicle
+end
+
+exports('IsPlayerNearVehicle', IsPlayerNearVehicle)
+
 lib.callback.register('qbx_vehiclekeys:server:giveKeys', function(source, netId)
-    GiveKeys(source, NetworkGetEntityFromNetworkId(netId))
+    local vehicle = NetworkGetEntityFromNetworkId(netId)
+    if not IsPlayerNearVehicle(source, vehicle) then return end
+    GiveKeys(source, vehicle)
 end)
 
 AddStateBagChangeHandler('vehicleid', '', function(bagName, _, vehicleId)
