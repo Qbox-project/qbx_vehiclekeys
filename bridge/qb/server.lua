@@ -1,11 +1,14 @@
 if GetConvar('qbx_vehiclekeys:enableBridge', 'true') ~= 'true' then return end
 
-local function giveKeys(source, plate)
+---@param source number ID of the player
+---@param plate? string
+---@param enforceProximity? boolean When true (client-triggered path), only grant keys to vehicles the player is actually next to.
+local function giveKeys(source, plate, enforceProximity)
     local vehicles = plate and GetVehiclesFromPlate(plate) or {GetVehiclePedIsIn(GetPlayerPed(source), false)}
     local success = false
     for i = 1, #vehicles do
         local vehicle = vehicles[i]
-        if DoesEntityExist(vehicle) then
+        if DoesEntityExist(vehicle) and (not enforceProximity or IsPlayerNearVehicle(source, vehicle)) then
             if GiveKeys(source, vehicles[i], true) then
                 success = true
             end
@@ -41,7 +44,7 @@ end
 CreateQbExport('RemoveKeys', removeKeys)
 
 RegisterNetEvent('qb-vehiclekeys:server:AcquireVehicleKeys', function(plate)
-    giveKeys(source, plate)
+    giveKeys(source, plate, true)
 end)
 
 RegisterNetEvent('qb-vehiclekeys:server:removeKeys', function(plate)

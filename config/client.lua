@@ -69,7 +69,7 @@ return {
     sharedKeys = { -- Share keys amongst employees. Employees can lock/unlock any job-listed vehicle
         police = { -- Job name
             enableAutolock = true,
-            requireOnduty = true,
+            requireOnDuty = true,
             classes = {},
             vehicles = {
                 [`police`] = true,  -- Vehicle model
@@ -78,14 +78,14 @@ return {
         },
         ambulance = {
             enableAutolock = true,
-            requireOnduty = true,
+            requireOnDuty = true,
             classes = {},
             vehicles = {
                 [`ambulance`] = true,
             },
         },
         mechanic = {
-            requireOnduty = false,
+            requireOnDuty = false,
             vehicles = {
                 [`towtruck`] = true,
             }
